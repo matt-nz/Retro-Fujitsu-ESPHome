@@ -14,14 +14,11 @@ CONF_TX_PIN = "tx_pin"
 # transceiver's RX. Plain pin numbers rather than ESPHome's GPIO pin schema, since
 # these are passed straight through to Arduino's HardwareSerial::begin(baud, config,
 # rxPin, txPin) rather than used as an ESPHome-managed GPIOPin.
-CONFIG_SCHEMA = (
-    climate.CLIMATE_SCHEMA.extend(
-        {
-            cv.GenerateID(): cv.declare_id(FujitsuClimate),
-            cv.Optional(CONF_RX_PIN, default=16): cv.int_range(min=0, max=39),
-            cv.Optional(CONF_TX_PIN, default=17): cv.int_range(min=0, max=39),
-        }
-    ).extend(cv.COMPONENT_SCHEMA)
+CONFIG_SCHEMA = climate.climate_schema(FujitsuClimate).extend(
+    {
+        cv.Optional(CONF_RX_PIN, default=16): cv.int_range(min=0, max=39),
+        cv.Optional(CONF_TX_PIN, default=17): cv.int_range(min=0, max=39),
+    }
 )
 
 
