@@ -363,7 +363,9 @@ void FujitsuClimate::update_climate_state_() {
     if (now_ms - this->state_log_last_ms_ >= 1000) {
       this->state_log_last_ms_ = now_ms;
       ESP_LOGD(TAG, "State updated - mode=%d target=%.0f current=%.0f fan=%d preset=%d", this->mode,
-               this->target_temperature, this->current_temperature, (int)this->fan_mode.value_or(-1), (int)this->preset.value_or(-1));
+               this->target_temperature, this->current_temperature,
+               this->fan_mode.has_value() ? static_cast<int>(*this->fan_mode) : -1,
+               this->preset.has_value() ? static_cast<int>(*this->preset) : -1);
     }
     this->publish_state();
   }
