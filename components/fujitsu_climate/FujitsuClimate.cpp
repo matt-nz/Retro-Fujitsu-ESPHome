@@ -302,7 +302,7 @@ void FujitsuClimate::update_climate_state_() {
 
   bool on = local.onOff == 1;
   climate::ClimateMode new_mode = on ? this->fuji_mode_to_climate_mode_(static_cast<FujiMode>(local.acMode))
-                                      : climate::CLIMATE_MODE_OFF;
+                                     : climate::CLIMATE_MODE_OFF;
   if (new_mode != this->mode) {
     this->mode = new_mode;
     updated = true;
@@ -363,7 +363,7 @@ void FujitsuClimate::update_climate_state_() {
     if (now_ms - this->state_log_last_ms_ >= 1000) {
       this->state_log_last_ms_ = now_ms;
       ESP_LOGD(TAG, "State updated - mode=%d target=%.0f current=%.0f fan=%d preset=%d", this->mode,
-               this->target_temperature, this->current_temperature, this->fan_mode.value_or(-1), this->preset.value_or(-1));
+               this->target_temperature, this->current_temperature, (int)this->fan_mode.value_or(-1), (int)this->preset.value_or(-1));
     }
     this->publish_state();
   }
@@ -374,8 +374,8 @@ void FujitsuClimate::update_climate_state_() {
   // real, recurring value, not a one-off).
   float new_setpoint = new_mode == climate::CLIMATE_MODE_FAN_ONLY ? NAN : static_cast<float>(local.temperature);
   bool setpoint_changed = !this->corrected_sensors_initialized_ ||
-                           !(new_setpoint == this->last_corrected_setpoint_ ||
-                             (std::isnan(new_setpoint) && std::isnan(this->last_corrected_setpoint_)));
+                          !(new_setpoint == this->last_corrected_setpoint_ ||
+                            (std::isnan(new_setpoint) && std::isnan(this->last_corrected_setpoint_)));
   if (setpoint_changed) {
     this->last_corrected_setpoint_ = new_setpoint;
     if (this->corrected_setpoint_sensor_ != nullptr) {
@@ -421,7 +421,7 @@ void FujitsuClimate::update_sync_status_(const FujiFrame &local) {
     this->requested_fan_ = actual_fan;
     this->requested_at_ms_ = last_frame_ms;
     ESP_LOGD(TAG, "Sync tracking seeded from first real frame: on=%d mode=%d setpoint=%d fan=%d", actual_on,
-              static_cast<int>(actual_mode), actual_setpoint, static_cast<int>(actual_fan));
+             static_cast<int>(actual_mode), actual_setpoint, static_cast<int>(actual_fan));
   }
 
   // Settle window: don't judge sync until at least one real decoded frame has
@@ -649,7 +649,7 @@ void FujitsuClimate::dump_config() {
 void FujitsuClimate::set_control_enabled(bool enabled) {
   this->control_enabled_ = enabled;
   ESP_LOGW(TAG, "Aircon control %s", enabled ? "ENABLED -- HA commands will now be sent to the real unit"
-                                              : "disabled -- back to read-only monitoring");
+                                            : "disabled -- back to read-only monitoring");
 }
 
 void FujitsuClimate::set_thermo_write_test(bool enabled) {
@@ -682,12 +682,9 @@ climate::ClimateTraits FujitsuClimate::traits() {
       climate::CLIMATE_PRESET_ECO,
   });
 
-  traits.set_supports_current_temperature(true);
   traits.set_visual_min_temperature(16.0f);
   traits.set_visual_max_temperature(30.0f);
   traits.set_visual_temperature_step(1.0f);
-  traits.set_supports_two_point_target_temperature(false);
-  traits.set_supports_action(true);
 
   return traits;
 }
