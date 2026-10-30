@@ -131,7 +131,13 @@ bool FujiHeatPump::waitForFrame() {
     int bytesRead = _serial->readBytes(readBuf, 8);
 
     if (bytesRead < 8) {
-      // skip incomplete frame
+      if (debugPrint && bytesRead > 0) {
+        Serial.printf("<-- partial (%d/8):", bytesRead);
+        for (int i = 0; i < bytesRead; i++) {
+          Serial.printf(" %02X", readBuf[i]);
+        }
+        Serial.printf("\n");
+      }
       return false;
     }
 

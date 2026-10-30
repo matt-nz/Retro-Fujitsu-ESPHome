@@ -7,6 +7,7 @@ from . import fujitsu_climate_ns, FujitsuClimate
 
 CONF_RX_PIN = "rx_pin"
 CONF_TX_PIN = "tx_pin"
+CONF_DEBUG = "debug"
 
 # Phase 4 rebuild: rx_pin/tx_pin replace the old uart_id reference (see __init__.py).
 # Defaults match this project's known-good wiring (hardware-and-protocol.md): GPIO16
@@ -18,6 +19,7 @@ CONFIG_SCHEMA = climate.climate_schema(FujitsuClimate).extend(
     {
         cv.Optional(CONF_RX_PIN, default=16): cv.int_range(min=0, max=39),
         cv.Optional(CONF_TX_PIN, default=17): cv.int_range(min=0, max=39),
+        cv.Optional(CONF_DEBUG, default=False): cv.boolean,
     }
 )
 
@@ -28,3 +30,4 @@ async def to_code(config):
     await climate.register_climate(var, config)
     cg.add(var.set_rx_pin(config[CONF_RX_PIN]))
     cg.add(var.set_tx_pin(config[CONF_TX_PIN]))
+    cg.add(var.set_debug(config[CONF_DEBUG]))

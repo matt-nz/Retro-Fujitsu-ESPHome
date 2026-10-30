@@ -131,9 +131,7 @@ void FujitsuClimate::setup() {
   pinMode(this->rx_pin_, INPUT_PULLUP);
 
   this->heat_pump.connect(&Serial2, /*secondary=*/true, this->rx_pin_, this->tx_pin_);
-  // Upstream's own debugPrint field (not a setDebug() method -- vendored verbatim,
-  // see FujiHeatPump.h) defaults to false already; set explicitly here for clarity.
-  this->heat_pump.debugPrint = false;
+  this->heat_pump.debugPrint = this->debug_;
 
   ESP_LOGI(TAG, "Fujitsu Climate (Phase 4): connecting as SECONDARY on Serial2, rx=%d tx=%d",
            this->rx_pin_, this->tx_pin_);

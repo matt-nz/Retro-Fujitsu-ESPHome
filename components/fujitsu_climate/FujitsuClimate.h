@@ -88,6 +88,7 @@ class FujitsuClimate : public climate::Climate, public Component {
   // (hardware-and-protocol.md): GPIO16 = RX (from the LIN3TL transceiver), GPIO17 = TX.
   void set_rx_pin(int pin) { rx_pin_ = pin; }
   void set_tx_pin(int pin) { tx_pin_ = pin; }
+  void set_debug(bool enabled) { debug_ = enabled; }
 
   // Kill switch (added for this rebuild) -- hardware-and-protocol.md's "ESP32 is
   // never the boss" design principle calls for exactly this: a way to put the system
@@ -148,6 +149,7 @@ class FujitsuClimate : public climate::Climate, public Component {
  protected:
   bool hardware_present_{false};
   bool control_enabled_{false};
+  bool debug_{false};
   int rx_pin_{16};
   int tx_pin_{17};
 
