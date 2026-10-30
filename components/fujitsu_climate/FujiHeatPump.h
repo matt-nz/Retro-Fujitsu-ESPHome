@@ -180,7 +180,7 @@ class FujiHeatPump {
 
   FujiFrame decodeFrame();
   void encodeFrame(FujiFrame ff);
-  void printFrame(byte buf[8], FujiFrame ff);
+  void printFrame(const char *prefix, byte buf[8], FujiFrame ff);
 
   bool pendingFrame = false;
 

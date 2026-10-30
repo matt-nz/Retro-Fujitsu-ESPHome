@@ -6,6 +6,12 @@
 // ---------------------------------------------------------------------------
 
 #include "FujiHeatPump.h"
+#include "esphome/core/log.h"
+#include <cstdio>
+
+namespace {
+static const char *const TAG = "fujitsu.heatpump";
+}
 
 FujiFrame FujiHeatPump::decodeFrame() {
   FujiFrame ff;
@@ -103,11 +109,18 @@ void FujiHeatPump::connect(HardwareSerial *serial, bool secondary, int rxPin = -
   lastFrameReceived = 0;
 }
 
-void FujiHeatPump::printFrame(byte buf[8], FujiFrame ff) {
-  Serial.printf("%X %X %X %X %X %X %X %X  ", buf[0], buf[1], buf[2], buf[3], buf[4], buf[5], buf[6], buf[7]);
-  Serial.printf(" mSrc: %d mDst: %d mType: %d write: %d login: %d unknown: %d onOff: %d temp: %d, mode: %d cP:%d uM:%d cTemp:%d acError:%d \n",
-                ff.messageSource, ff.messageDest, ff.messageType, ff.writeBit, ff.loginBit, ff.unknownBit, ff.onOff,
-                ff.temperature, ff.acMode, ff.controllerPresent, ff.updateMagic, ff.controllerTemp, ff.acError);
+void FujiHeatPump::printFrame(const char *prefix, byte buf[8], FujiFrame ff) {
+  ESP_LOGI(TAG,
+           "%s %02X %02X %02X %02X %02X %02X %02X %02X  mSrc:%u mDst:%u mType:%u write:%u login:%u "
+           "unknown:%u onOff:%u temp:%u mode:%u cP:%u uM:%u cTemp:%u acError:%u",
+           prefix, static_cast<unsigned>(buf[0]), static_cast<unsigned>(buf[1]), static_cast<unsigned>(buf[2]),
+           static_cast<unsigned>(buf[3]), static_cast<unsigned>(buf[4]), static_cast<unsigned>(buf[5]),
+           static_cast<unsigned>(buf[6]), static_cast<unsigned>(buf[7]), static_cast<unsigned>(ff.messageSource),
+           static_cast<unsigned>(ff.messageDest), static_cast<unsigned>(ff.messageType),
+           static_cast<unsigned>(ff.writeBit), static_cast<unsigned>(ff.loginBit), static_cast<unsigned>(ff.unknownBit),
+           static_cast<unsigned>(ff.onOff), static_cast<unsigned>(ff.temperature), static_cast<unsigned>(ff.acMode),
+           static_cast<unsigned>(ff.controllerPresent), static_cast<unsigned>(ff.updateMagic),
+           static_cast<unsigned>(ff.controllerTemp), static_cast<unsigned>(ff.acError));
 }
 
 void FujiHeatPump::sendPendingFrame() {
@@ -132,11 +145,12 @@ bool FujiHeatPump::waitForFrame() {
 
     if (bytesRead < 8) {
       if (debugPrint && bytesRead > 0) {
-        Serial.printf("<-- partial (%d/8):", bytesRead);
+        char partial[24] = {};
+        size_t used = 0;
         for (int i = 0; i < bytesRead; i++) {
-          Serial.printf(" %02X", readBuf[i]);
+          used += snprintf(partial + used, sizeof(partial) - used, " %02X", static_cast<unsigned>(readBuf[i]));
         }
-        Serial.printf("\n");
+        ESP_LOGI(TAG, "<-- partial (%d/8):%s", bytesRead, partial);
       }
       return false;
     }
@@ -171,8 +185,7 @@ bool FujiHeatPump::waitForFrame() {
     }
 
     if (debugPrint) {
-      Serial.printf("<-- ");
-      printFrame(readBuf, ff);
+      printFrame("<--", readBuf, ff);
     }
 
     if (ff.messageDest == controllerAddress) {
@@ -286,8 +299,7 @@ bool FujiHeatPump::waitForFrame() {
         ff.swingStep = currentState.swingStep;
         ff.acError = currentState.acError;
       } else if (ff.messageType == static_cast<byte>(FujiMessageType::ERROR)) {
-        Serial.printf("AC ERROR RECV: ");
-        printFrame(readBuf, ff);
+        printFrame("AC ERROR RECV:", readBuf, ff);
         // handle errors here
         return false;
       }
@@ -323,8 +335,7 @@ bool FujiHeatPump::waitForFrame() {
       encodeFrame(ff);
 
       if (debugPrint) {
-        Serial.printf("--> ");
-        printFrame(writeBuf, ff);
+        printFrame("-->", writeBuf, ff);
       }
 
       for (int i = 0; i < 8; i++) {
