@@ -132,6 +132,9 @@ void FujitsuClimate::setup() {
 
   this->heat_pump.connect(&Serial2, /*secondary=*/true, this->rx_pin_, this->tx_pin_);
   this->heat_pump.debugPrint = this->debug_;
+  if (this->debug_) {
+    Serial.printf("Fujitsu UART debug enabled (RX GPIO%d, TX GPIO%d)\n", this->rx_pin_, this->tx_pin_);
+  }
 
   ESP_LOGI(TAG, "Fujitsu Climate (Phase 4): connecting as SECONDARY on Serial2, rx=%d tx=%d",
            this->rx_pin_, this->tx_pin_);
