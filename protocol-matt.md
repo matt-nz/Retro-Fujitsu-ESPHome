@@ -184,13 +184,23 @@ disconnect or power down the ESP32 immediately if the bus behaves unexpectedly.
 
 ## Experimental HA State Observation
 
-The component now separately scans the continuous decoded byte stream for the two
-repeatable patterns above, without changing the vendored `0x21` login/reply decoder:
+The component separately parses the continuous decoded byte stream into `0x7F`-delimited
+messages (`FujiPassiveStream.h`; see the stream-structure section of
+`docs/protocol-investigation-status-2026-10-31.md`), without changing the vendored `0x21`
+login/reply decoder:
 
-- `7F 22 03 <value> 02 5F 7E 7F` updates the climate entity from the observed
-  controller selection, using only the values mapped from the captures in this note.
-- `7F 24 03 7F 14 03` sets the climate entity to Off and retains its last known
-  setpoint and fan setting.
+- A setting message `7F 22|12 03|13 <value> 02 5F 7E` (remote message or unit echo)
+  updates the climate entity from the observed controller selection, using only the
+  values mapped from the captures in this note. The echo carries the same state and does
+  not republish.
+- A power-off message `7F 24|14 03` sets the climate entity to Off and retains its last
+  known setpoint and fan setting. A status message whose running flag (`7F 28|18 13|17 ..`,
+  byte 2 bit 2) falls from running to idle also sets Off, in case the power-off message
+  was lost.
+- Boot limitation: mode, fan and setpoint are only sent when the remote changes them, so
+  after a reboot HA stays unknown until the next remote button press.
+
+`tests/passive_stream_test.cpp` replays all nine captures through the parser.
 
 This is an experimental, receive-only state path. It can show the wired controller's
 selected mode, fan setting, and known setpoint in HA before the ESP32 has joined as a

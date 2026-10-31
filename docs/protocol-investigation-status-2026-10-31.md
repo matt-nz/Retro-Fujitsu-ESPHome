@@ -70,3 +70,107 @@ When providing these materials to another protocol analyst, ask them to:
 Materials: this note, [`../protocol-matt.md`](../protocol-matt.md), all nine logs in
 [`../captures/matt-captures/`](../captures/matt-captures/), the current
 `components/fujitsu_climate/FujiHeatPump.cpp`, and the included sniffer sketch.
+
+## Follow-up analysis — raw replay and related projects
+
+The nine `matt-captures` logs were replayed by extracting each `RX raw` read, joining
+the reads in file order (so UART read boundaries are not treated as frame boundaries),
+then inverting each byte and searching for the two observed signatures. This recovered
+24,585 bytes, 79 occurrences of the candidate 8-byte frame, and 14 occurrences of the
+6-byte Off signature. These are signature occurrences, not 79 or 14 independent button
+presses or protocol transactions.
+
+| Capture | Candidate frame occurrences | Observed byte-3 values | Off signature occurrences |
+|---|---:|---|---:|
+| `auto-heat.log` | 8 | `52 72 09 BC 79` | 2 |
+| `cold.log` | 16 | `52 72 09 BC 79 C4` | 4 |
+| `fan_changes.log` | 4 | `F6 E6 EA F2` | 0 |
+| `heat_20_22_18.log` | 8 | `09 92 B2 D2 72 52` | 2 |
+| `hot-fan-cold-auto.log` | 13 | `52 72 09 BC 79` | 3 |
+| `on_off.log` | 1 | `09` | 1 |
+| `raw.log` | 28 | `F6 E6 EA F2 0B 03 05 09 BC BD B9 BA 79 7B 73 75` | 1 |
+| `running_standby.log` | 0 | — | 0 |
+| `startup.log` | 1 | `F2` | 1 |
+
+This independently confirms that byte 3 varies across the operator-labeled mode, fan,
+and setpoint captures while the candidate prefix/suffix stay constant. It does not
+establish a bit-field layout, checksum, bus address meaning, or that the candidate is
+the frame the ESP32 should transmit. The observed `0x20` HEAT setpoint step and the
+mode-specific fan value tables are still correlations; the next useful capture is a
+HEAT fan sweep repeated at a second fixed setpoint, with the physical controller's
+model and each button change timestamped. That tests whether setpoint and fan effects
+combine independently or interact in byte 3.
+
+### Public-project comparison (searched 31 Oct 2026)
+
+- [`unreality/FujiHeatPump`](https://github.com/unreality/FujiHeatPump) is the upstream
+  3-wire remote-interface library already vendored by this project. Its README describes
+  primary/secondary controller roles, and warns that the primary's one secondary-presence
+  check occurs about four seconds after power-on; its example replies after 50–60 ms.
+  This supports the implemented protocol family and highlights why login/reply timing
+  matters, but does not independently confirm compatibility with this AOT30L/ART30LUAK
+  installation. This repository's measured timing takes precedence over the generic
+  upstream delay.
+- [`Omniflux/esphome-fujitsu-halcyon`](https://github.com/Omniflux/esphome-fujitsu-halcyon)
+  targets Fujitsu AirStage-H / Halcyon units on the three-wire RWB bus; its documented
+  example family includes ACY-series equipment. It is a useful architectural comparison,
+  but no AOT30L/ART30LUAK match or shared byte-level encoding was found.
+- [`danirebollo/FujiWired2WiFi`](https://github.com/danirebollo/FujiWired2WiFi) describes
+  a wired half-duplex UART Fujitsu interface and names the ACY100UIA-LL as an example.
+  It likewise provides no evidence that its frame format applies to this older unit.
+- GitHub searches for `AOT30L`, `ART30LUAK`, `AR-3TA3`, Fujitsu LIN/UART, and related
+  protocol terms did not surface another independent decoder for this exact model
+  family. This is evidence that the present captures are unusually valuable, not proof
+  that no other implementation or service documentation exists.
+
+### Home Assistant control boundary
+
+The current HA climate `control()` path uses the vendored secondary-controller
+protocol: it records a requested power/mode/setpoint/fan update and sends it as a
+reply to a frame addressed to the configured secondary (`0x21`). The candidate
+`0x22` observer is receive-only and only reports wired-controller selections; it is
+not a safe basis for inventing a transmit frame. The climate entity also exposes
+requested-versus-decoded state synchronization so an eventual live command can be
+checked against the unit's subsequent decoded state.
+
+This paragraph's original recommendation (exercise the `0x21` path next) is superseded
+by the stream-structure finding below: the stream in these captures does not look like
+the 8-byte upstream frames that path assumes. Keep the HA control-enable switch as the
+stop/disable mechanism, and do not transmit anything synthesized from these captures.
+
+## Stream structure finding (`startup.log`, TX enabled)
+
+The log contains no `-->` lines, so the ESP32 never transmitted even with TX enabled.
+The upstream engine only replies to an 8-byte read whose decoded destination is `0x21`;
+that never occurs because the read chunks are not the protocol's frames.
+
+Joining the reads and splitting the inverted stream at each `0x7F` shows variable-length
+messages, not 8-byte frames (all nine logs agree):
+
+| Message (inverted bytes) | Observed when |
+|---|---|
+| `7F 28 13 08` then `7F 18 13 48 80` | Repeating poll/response pair while the unit is off |
+| `7F 28 17 08` then `7F 18 17 48 80` | Same pair while the unit is on (byte 2 `13`→`17`) |
+| `7F 22 03 <v> 02 5F 7E`, then `7F 12 03 <v> 02 5F 7E` | A wired-remote setting change, then the same body with `12` |
+| `7F 28 17 0A` | Once or twice around a state change |
+| `7F 24 03`, then `7F 14 03` | Power off |
+
+In `startup.log` and `on_off.log` the on/off sequence is consistent: the unit starts
+on `28 13`; the `22 03 <v>` message and its `12 03 <v>` echo appear; one `28 17 0A`
+follows; polls become `28 17 08`. After `24 03` / `14 03`, polls return to `28 13`.
+So byte 2 of the poll tracks on/off in these logs.
+
+Working hypothesis (not proven): the high nibble of the second byte is a direction
+(`2` = wired remote to unit, `1` = unit reply) and the low nibble is a message class
+(`8` poll, `2` settings, `4` power). If so, `0x22` is not a bus address, and this
+unit (AOT30L series) uses a different protocol from the `0x20`/`0x21` frames in
+`PROTOCOL.md`. No checksum has been identified; `5F` stays constant while byte 3 changes.
+
+Consequences:
+- The vendored secondary-controller engine does not match this bus and cannot log in.
+  Do not enable or test transmit from this repository's current decoder.
+- A new passive decoder should split on `0x7F`, using the table above, rather than on
+  8-byte reads.
+- Next capture: a power-on cycle, then one single change per press with timestamps. Also
+  capture an idle period long enough to see whether room temperature or any other value
+  ever changes in the poll responses (`7F 18 .. 48 80`).

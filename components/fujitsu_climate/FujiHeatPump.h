@@ -45,6 +45,8 @@
 #include <Arduino.h>
 #include <HardwareSerial.h>
 
+#include "FujiPassiveStream.h"
+
 const byte kModeIndex = 3;
 const byte kModeMask = 0b00001110;
 const byte kModeOffset = 1;
@@ -127,8 +129,9 @@ class FujiHeatPump {
   HardwareSerial *_serial;
   byte readBuf[8];
   byte writeBuf[8];
-  byte observedFrameWindow[8]{0};
-  byte observedFrameWindowSize = 0;
+  fuji_passive::Parser passiveParser;
+  bool passiveRunningKnown = false;
+  bool passiveRunning = false;
   FujiObservedControllerState observedControllerState;
   uint32_t observedControllerStateRevision = 0;
 
@@ -200,6 +203,7 @@ class FujiHeatPump {
   bool pendingFrame = false;
 
   void inspectObservedControllerByte(byte value);
+  void setObservedOff();
 
   // Deviation #1 from upstream -- see the file-header comment above. Upstream hardcodes
   // 50 here; this project's own measured bus timing (3B.23: 0-10.9ms real CTRL->UNIT
