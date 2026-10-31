@@ -240,6 +240,19 @@ esphome logs retrofujitsu.yaml 2>&1 | python3 tools/capture_labels.py captures/m
 python3 tools/decode_timeline.py captures/matt-captures/my-test.log
 ```
 
+Without the `esphome` CLI installed (for example when ESPHome only runs as a Home Assistant
+add-on), `pip install aioesphomeapi` and use `tools/api_log_capture.py` instead; it reads the
+device's logs from the native API and applies the same labels. It is untested against a real
+device so far:
+
+```
+python3 tools/api_log_capture.py <device-ip> captures/matt-captures/my-test.log [--key API_KEY]
+```
+
+If neither is possible, copy the add-on's log view into a file and add label lines by hand,
+in the form `[HH:MM:SS.mmm][LABEL] heat 24`, using the same clock as the log's timestamps
+(note the HA host's clock may differ from yours). `decode_timeline.py` accepts those.
+
 While capturing, press a remote button, then type a short label (for example `heat 24` or
 `fan high`) and Enter. `capture_labels.py` writes the label into the log with the same
 clock. `decode_timeline.py` prints every non-routine bus message in time order, grouped
