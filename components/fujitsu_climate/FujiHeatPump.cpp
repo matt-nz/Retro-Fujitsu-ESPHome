@@ -28,9 +28,9 @@ bool same_observed_state(const FujiObservedControllerState &a, const FujiObserve
 }
 }  // namespace
 
-// Receive-only. The AOT30L bus carries 0x7F-delimited messages (see FujiPassiveStream.h), not
-// the 8-byte frames the secondary-controller engine below assumes, so state is taken from the
-// wired remote's setting/power messages here. Nothing is transmitted.
+// The AOT30L observer reads 0x7F-delimited messages (see FujiPassiveStream.h), not the
+// 8-byte frames the secondary-controller engine below assumes. The observer remains passive;
+// a separately gated, one-shot captured-frame experiment is implemented below.
 void FujiHeatPump::inspectObservedControllerByte(byte value) {
   fuji_passive::Message message;
   if (!passiveParser.feed(value, &message)) {
@@ -225,6 +225,31 @@ void FujiHeatPump::sendPendingFrame() {
 
     _serial->readBytes(writeBuf, 8);  // read back our own frame so we dont process it again
   }
+}
+
+bool FujiHeatPump::sendCapturedHeat20OnMessage() {
+  if (_serial == nullptr) {
+    ESP_LOGE(TAG, "Cannot send AOT30 test message: UART is not connected");
+    return false;
+  }
+  if (_serial->available() > 0) {
+    ESP_LOGW(TAG, "AOT30 test TX blocked: UART receive data is pending");
+    return false;
+  }
+
+  const size_t written = _serial->write(fuji_aot30::kCapturedHeat20OnUart.data(),
+                                        fuji_aot30::kCapturedHeat20OnUart.size());
+  _serial->flush();
+  if (written != fuji_aot30::kCapturedHeat20OnUart.size()) {
+    ESP_LOGE(TAG, "AOT30 test message write incomplete: wrote %u of %u bytes",
+             static_cast<unsigned>(written),
+             static_cast<unsigned>(fuji_aot30::kCapturedHeat20OnUart.size()));
+    return false;
+  }
+
+  ESP_LOGW(TAG, "AOT30 experimental TX sent captured HEAT 20 ON frame once "
+                "(UART: 80 DD FC 69 FD A0 81; decoded: 7F 22 03 96 02 5F 7E)");
+  return true;
 }
 
 bool FujiHeatPump::waitForFrame() {

@@ -89,6 +89,7 @@ static void fujitsu_bus_task(void *pv) {
   ESP_LOGD(TAG, "fujitsu_bus_task started on core %d", xPortGetCoreID());
 
   for (;;) {
+    climate->process_aot30_test_tx_request();
     bool frame_received = climate->heat_pump.waitForFrame();
     if (frame_received) {
       // Reply immediately -- see FujiHeatPump.h's Deviation #1 comment for why this
@@ -697,6 +698,64 @@ void FujitsuClimate::set_control_enabled(bool enabled) {
   this->control_enabled_ = enabled;
   ESP_LOGW(TAG, "Aircon control %s", enabled ? "ENABLED -- HA commands will now be sent to the real unit"
                                             : "disabled -- back to read-only monitoring");
+}
+
+void FujitsuClimate::set_aot30_test_tx_enabled(bool enabled) {
+  this->aot30_test_tx_enabled_.store(enabled);
+  if (enabled) {
+    this->aot30_test_tx_sent_.store(false);
+    ESP_LOGW(TAG, "AOT30 experimental TX armed for one captured HEAT 20 ON test frame");
+  } else {
+    this->aot30_test_tx_requested_.store(false);
+    ESP_LOGW(TAG, "AOT30 experimental TX disarmed");
+  }
+}
+
+void FujitsuClimate::request_aot30_heat20_on_test() {
+  if (!this->aot30_test_tx_enabled_.load()) {
+    ESP_LOGW(TAG, "AOT30 test TX rejected: turn on the separate experimental TX arm switch first");
+    return;
+  }
+  if (this->aot30_test_tx_sent_.load()) {
+    ESP_LOGW(TAG, "AOT30 test TX rejected: one frame has already been sent; disarm and re-arm to retry");
+    return;
+  }
+
+  bool expected = false;
+  if (!this->aot30_test_tx_requested_.compare_exchange_strong(expected, true)) {
+    ESP_LOGW(TAG, "AOT30 test TX rejected: a frame is already queued");
+    return;
+  }
+  ESP_LOGW(TAG, "AOT30 captured HEAT 20 ON test frame queued");
+}
+
+void FujitsuClimate::process_aot30_test_tx_request() {
+  if (!this->aot30_test_tx_requested_.exchange(false)) {
+    return;
+  }
+  if (!this->aot30_test_tx_enabled_.load()) {
+    ESP_LOGW(TAG, "AOT30 test TX cancelled: experimental TX was disarmed before send");
+    return;
+  }
+  if (this->aot30_test_tx_sent_.load()) {
+    ESP_LOGW(TAG, "AOT30 test TX cancelled: one frame has already been sent");
+    return;
+  }
+
+  const uint32_t now = millis();
+  if (now < 5000) {
+    ESP_LOGW(TAG, "AOT30 test TX blocked: wait five seconds after ESP startup, then queue it again");
+    return;
+  }
+  const uint32_t last_bus_activity = static_cast<uint32_t>(this->heat_pump.getLastPassiveMessage());
+  if (last_bus_activity != 0 && now - last_bus_activity < 5000) {
+    ESP_LOGW(TAG, "AOT30 test TX blocked: recognized bus traffic within the last five seconds");
+    return;
+  }
+
+  if (this->heat_pump.sendCapturedHeat20OnMessage()) {
+    this->aot30_test_tx_sent_.store(true);
+  }
 }
 
 void FujitsuClimate::set_thermo_write_test(bool enabled) {

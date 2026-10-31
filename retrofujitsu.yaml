@@ -26,6 +26,8 @@
 # day (state-of-play.md's "4A.1" section) after a locking hardening pass following a
 # crash, so this is a considered change, not an oversight. Flip it off in HA/the web
 # UI any time you want read-only monitoring (e.g. while testing new firmware).
+# The separately armed AOT30 experiment below is a one-frame captured HEAT 20 ON test,
+# not a general transmitter or the normal climate-control path.
 
 esphome:
   name: aircon
@@ -464,6 +466,20 @@ switch:
     turn_off_action:
       - lambda: 'id(fujitsu_hp)->set_thermo_write_test(false);'
 
+  # One-shot AOT30L protocol experiment. Keep disarmed except when testing with the
+  # wired remote disconnected; firmware sends only the captured HEAT 20 ON frame.
+  - platform: template
+    name: "AOT30 Experimental TX Arm"
+    id: aot30_test_tx_arm
+    icon: "mdi:transit-connection-variant"
+    entity_category: diagnostic
+    optimistic: true
+    restore_mode: ALWAYS_OFF
+    turn_on_action:
+      - lambda: 'id(fujitsu_hp)->set_aot30_test_tx_enabled(true);'
+    turn_off_action:
+      - lambda: 'id(fujitsu_hp)->set_aot30_test_tx_enabled(false);'
+
   # Economy Mode as a standalone switch -- added 21 Aug 2026. climate.preset already
   # supports CLIMATE_PRESET_ECO (confirmed live-adopted, both directions, same day),
   # but neither the web UI nor a plain HA dashboard surfaces a preset control the same
@@ -488,6 +504,12 @@ button:
   - platform: safe_mode
     name: "Safe Mode Boot"
     entity_category: diagnostic
+  - platform: template
+    name: "Send Captured HEAT 20 ON Test"
+    icon: "mdi:transmission-tower"
+    entity_category: diagnostic
+    on_press:
+      - lambda: 'id(fujitsu_hp)->request_aot30_heat20_on_test();'
 
 # Diagnostic interval
 interval:

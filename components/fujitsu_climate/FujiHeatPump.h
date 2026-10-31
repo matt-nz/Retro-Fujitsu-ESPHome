@@ -45,6 +45,7 @@
 #include <Arduino.h>
 #include <HardwareSerial.h>
 
+#include "FujiAot30Transmit.h"
 #include "FujiPassiveStream.h"
 
 const byte kModeIndex = 3;
@@ -126,7 +127,7 @@ struct FujiObservedControllerState {
 
 class FujiHeatPump {
  private:
-  HardwareSerial *_serial;
+  HardwareSerial *_serial{nullptr};
   byte readBuf[8];
   byte writeBuf[8];
   fuji_passive::Parser passiveParser;
@@ -222,6 +223,7 @@ class FujiHeatPump {
 
   bool waitForFrame();
   void sendPendingFrame();
+  bool sendCapturedHeat20OnMessage();
   bool isBound();
   bool updatePending();
 

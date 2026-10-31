@@ -16,11 +16,12 @@
 // vendored FujiHeatPump engine (see FujiHeatPump.h) -- completely decoupled from
 // ESPHome's own loop budget, WiFi, and the HA API connection. FujiHeatPump itself now
 // owns the automatic reply loop (waitForFrame() replies to every addressed frame
-// unconditionally), so all the one-shot arm/test machinery is retired along with it --
+// unconditionally), so the prior upstream-protocol one-shot machinery is retired --
 // see FujitsuClimate.cpp's control() for how real HA commands reach it now, gated
 // behind a kill switch (control_enabled_) per hardware-and-protocol.md's "ESP32 is
 // never the boss" design principle, since command adoption under continuous presence
-// has not yet been tested live.
+// has not yet been tested live. A separate experimental button can send one captured
+// AOT30L setting frame; it is not part of the upstream reply/control path.
 //
 // 20 Aug 2026 update: added set_thermo_sensor_text_sensor()/update_thermo_sensor_() --
 // a passive, clearly-labelled-unconfirmed diagnostic for the raw controllerPresent
@@ -56,6 +57,8 @@
 #include "esphome/components/time/real_time_clock.h"
 
 #include "FujiHeatPump.h"
+
+#include <atomic>
 
 #ifdef ESP32
 #include <freertos/FreeRTOS.h>
@@ -97,6 +100,9 @@ class FujitsuClimate : public climate::Climate, public Component {
   // retrofujitsu.yaml).
   void set_control_enabled(bool enabled);
   bool get_control_enabled() const { return control_enabled_; }
+  void set_aot30_test_tx_enabled(bool enabled);
+  void request_aot30_heat20_on_test();
+  void process_aot30_test_tx_request();
 
   // Diagnostics (trimmed for this rebuild -- see the .cpp file's top-of-file comment
   // for which of the old exploratory diagnostics were retired and why).
@@ -152,6 +158,9 @@ class FujitsuClimate : public climate::Climate, public Component {
   bool hardware_present_{false};
   bool control_enabled_{false};
   bool debug_{false};
+  std::atomic<bool> aot30_test_tx_enabled_{false};
+  std::atomic<bool> aot30_test_tx_requested_{false};
+  std::atomic<bool> aot30_test_tx_sent_{false};
   int rx_pin_{16};
   int tx_pin_{17};
 
