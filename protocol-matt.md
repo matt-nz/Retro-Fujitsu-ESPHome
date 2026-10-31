@@ -1,50 +1,53 @@
 # Fujitsu Heat Pump Protocol Notes
 
-## Capture Format and Candidate Frame
+> **Provenance and status.** These notes were first written by an AI assistant from live
+> captures of this installation (indoor unit ART30RL, wired remote part 9364911014, an
+> older remote that does not display a room temperature). On 31 Oct 2026 they were audited
+> against the committed captures in `captures/matt-captures/`; corrections are folded in
+> below, and statements that no committed capture supports are marked as such. The open
+> source Retro-Fujitsu project this repository's code comes from (`PROTOCOL.md`,
+> `docs/session-*`) targets a similar but different unit, and its 8-byte `0x20`/`0x21`
+> frames have not been seen on this bus. Treat everything here as observed correlation,
+> not a validated specification.
 
-The ESPHome log records UART reads in chunks of up to 8 bytes; those reads are not
-guaranteed to start at a protocol frame boundary. The logged bus bytes decode to the
-candidate frames below by XORing each byte with `0xFF`. The ESPHome UART is configured
-for 500 baud, 8E1.
+## Capture Format and Setting Message
 
-The full-round fan-speed capture repeatedly contains this candidate 8-byte frame:
+The ESPHome log records UART reads of up to 8 bytes; read boundaries do not line up with
+the protocol. Each logged byte inverts (`XOR 0xFF`) to the bus data below. The UART is
+configured for 500 baud, 8E1.
+
+After inversion the stream is a series of variable-length messages that each start with
+`0x7F` (see the stream-structure section of
+[`docs/protocol-investigation-status-2026-10-31.md`](docs/protocol-investigation-status-2026-10-31.md)
+for the full list). Most tables below use the setting message:
 
 ```
-Decoded:      7F 22 03 <byte3> 02 5F 7E 7F
-Captured bus: 80 DD FC <~byte3> FD A0 81 80
+Decoded:      7F 22 03 <value> 02 5F 7E      remote -> unit
+Decoded:      7F 12 03 <value> 02 5F 7E      unit echo of the same state
+Captured bus: 80 DD FC <~value> FD A0 81     (remote message)
 ```
 
-In that capture, byte 3 is the only byte that changes within this frame as the selected
-fan speed changes. This establishes a repeatable correlation for this capture, not the
-meaning of every byte or the frame's role on the bus. In particular, `0x22` is the
-destination value produced by the current decoder's address mask; it has not been
-confirmed as the wired controller's address.
+Earlier versions of this note showed a trailing `7F` as part of an 8-byte frame; it is the
+start of the next message. `<value>` is the only byte that changes across all the setting
+messages in the captures; it follows the selected mode, fan speed and setpoint. The second
+byte's `0x22`/`0x12` is probably a direction and message class rather than an address
+(unproven), and its third byte is `03` or `13` for reasons not yet understood. No checksum
+has been identified: `02 5F 7E` is constant. The checksum equations in earlier versions of
+this note did not fit these messages and should not be used. Do not transmit based on this
+note.
 
-Earlier address, field, checksum, and command-sequence interpretations in this note are
-hypotheses, not a validated protocol specification. The checksum equations previously
-listed here do not fit this candidate frame: decoded byte 5 is `0x5F`, while
-`0x7F XOR 0x22` is `0x5D`; decoded byte 6 remains `0x7E` as byte 3 changes. Do not rely
-on those equations or transmit based on this note.
-
-## Example Frames
+## Example Messages
 
 ### Fan Low (operator-labeled capture)
 ```
-Decoded:      7F 22 03 09 02 5F 7E 7F
-Captured bus: 80 DD FC F6 FD A0 81 80
+Decoded:      7F 22 03 09 02 5F 7E
+Captured bus: 80 DD FC F6 FD A0 81
 ```
 
-### 17°C Setpoint (operator-labeled capture)
-```
-Decoded:      7F 12 03 32 02 5F 7E 7F
-Captured bus: 80 ED FC CD FD A0 81 80
-```
-
-### Other observed frame
-```
-Decoded:      7F 28 13 48 80 7F 28 17
-Captured bus: 80 D7 EC B7 7F 80 D7 E8
-```
+Earlier versions also listed a "17°C setpoint" example (`value` `0x32`) and an "other
+observed frame" (`7F 28 13 48 80 7F 28 17`). Neither appears in the committed captures.
+The first is only what the HEAT setpoint pattern below would predict; the second does not
+match any message shape and was probably a corrupted read.
 
 ## Live Capture Findings
 
@@ -59,13 +62,15 @@ with `0xFF`. The following setpoint changes were made in HEAT mode with the unit
 | 21°C | `0xB2` | `0x4D` |
 | 22°C | `0xD2` | `0x2D` |
 | 23°C | `0xF2` | `0x0D` |
-| 24°C | `0x12` | `0xED` |
+| 24°C (not in committed captures) | `0x12` | `0xED` |
 
 The 18→19→18°C test was repeated while powered on and produced `0x52`→`0x72`→`0x52`.
-The 20→22→18°C test produced `0x92`→`0xD2`→`0xB2`→`0x92`→`0x72`→`0x52`. A later
-23→24→23°C test produced `0xF2`→`0x12`→`0xF2`, confirming the `+0x20` step wraps at
-`0xFF`. These observations apply to the tested HEAT frames; they do not establish that
-every frame type or operating mode uses the same byte layout.
+The 20→22→18°C test (`heat_20_22_18.log`) produced `0x92`→`0xB2`→`0xD2`→`0xB2`→`0x92`
+→`0x72`→`0x52`, one value per degree. A later 23→24→23°C HEAT test was reported to produce
+`0xF2`→`0x12`→`0xF2` (the `+0x20` step wrapping at `0xFF`), but no committed capture
+contains `0x12`, so 24°C and the wrap are unverified. Setpoints other than 18–23°C in
+HEAT have not been captured. These observations apply to HEAT; they do not establish that
+every operating mode uses the same layout.
 
 In COOL mode, a separate 23→24→23°C test produced decoded byte 3 values
 `0xBC`→`0xC4`→`0xBC` (captured bytes `0x43`→`0x3B`→`0x43`). This confirms the byte
@@ -73,24 +78,26 @@ tracks the setpoint in COOL mode too, but the observed one-degree change is `+0x
 not the `+0x20` seen in HEAT. A combined HEAT/Cool capture at 23°C showed `0xF2` in
 HEAT and `0xBC` in COOL, confirming the mode dependence at the same setpoint.
 
-The `hot-fan-cold-auto.log` mode cycle, with no reported setpoint or fan-speed changes,
-produced these decoded byte 3 values:
+The `hot-fan-cold-auto.log` capture steps the HEAT setpoint 18→19→18°C (`0x52`→`0x72`
+→`0x52`) and then cycles modes twice. The remote setting values, in order, were:
 
-| Selected mode | Decoded byte 3 | Captured bus byte 3 |
+| Selected mode | Decoded `<value>` | Captured bus byte |
 |---|---:|---:|
-| HEAT | `0xF2` | `0x0D` |
+| HEAT (18°C) | `0x52` | `0xAD` |
 | FAN | `0x09` | `0xF6` |
 | COOL | `0xBC` | `0x43` |
 | AUTO | `0x79` | `0x86` |
-| HEAT again | `0xF2` | `0x0D` |
+| HEAT (18°C) | `0x52` | `0xAD` |
 
-This confirms repeatable byte values correlated with the selected operating modes in
-that cycle. However, `0x09` also appeared during an earlier fan-speed test labeled LOW,
-so byte 3 should not yet be described as a standalone mode field.
+Earlier versions of this note listed HEAT as `0xF2` here; that value is HEAT at 23°C
+(see `raw.log`), not what this log shows. The COOL and AUTO setpoints were not recorded;
+the `23°C` attached to them in the code's mapping is an assumption (supported for COOL by
+the 23→24→23°C test). `0x09` also appeared during a fan-speed test labeled LOW, so
+`<value>` is not a standalone mode field.
 
 A dedicated fan-speed capture was then made with the unit held in HEAT at 23°C, changing
 the wired controller's fan setting LOW → AUTO → HIGH → MEDIUM → LOW. Four successive
-candidate frames changed decoded byte 3 as follows:
+setting messages changed decoded byte 3 as follows:
 
 | Selected fan setting | Decoded byte 3 | Captured bus byte 3 |
 |---|---:|---:|
@@ -107,7 +114,7 @@ has no electrical path to transmit onto the heat-pump bus. This is a software se
 not evidence that the ESP sent commands during this passive capture.
 
 A second fan-speed cycle was captured in FAN mode, starting and ending at LOW:
-LOW → AUTO → HIGH → MEDIUM → LOW. The four intervening candidate frames produced:
+LOW → AUTO → HIGH → MEDIUM → LOW. The four intervening setting messages produced:
 
 | Selected fan setting | Decoded byte 3 | Captured bus byte 3 |
 |---|---:|---:|
@@ -123,8 +130,8 @@ mode-dependent; do not treat either set of values as a universal standalone fan 
 
 A full-round capture then swept fan speed through FAN, COOL, AUTO, and HEAT modes, with
 no setpoint changes and about five seconds between button presses. The boot and
-power-on traffic is excluded here; the aligned candidate frame
-`7F 22 03 <byte3> 02 5F 7E 7F` was compared. For FAN, COOL, and AUTO, the reported
+power-on traffic is excluded here; the setting message
+`7F 22 03 <byte3> 02 5F 7E` was compared. For FAN, COOL, and AUTO, the reported
 sequence was LOW → AUTO → HIGH → MEDIUM → LOW. HEAT has four observed values, beginning
 at AUTO and ending at LOW:
 
@@ -135,52 +142,37 @@ at AUTO and ending at LOW:
 | AUTO | `79` → `7B` → `73` → `75` → `79` |
 | HEAT | `F6` → `E6` → `EA` → `F2` (AUTO → HIGH → MEDIUM → LOW) |
 
-Within each mode, only byte 3 changes in this candidate frame as fan speed is cycled;
-the other seven decoded bytes remain `7F 22 03` (prefix), `02 5F 7E 7F` (suffix).
+Within each mode, only byte 3 changes in this message as fan speed is cycled;
+the other six bytes remain `7F 22 03` (prefix) and `02 5F 7E` (suffix).
 The first FAN-mode HIGH sample was split across an 8-byte receive window, but the
-adjacent bytes reconstruct it as the same candidate frame with byte 3 `03`. The full
+adjacent bytes reconstruct it as the same setting message with byte 3 `03`. The full
 round trip therefore reinforces that byte 3 tracks fan selection, with a different
 encoding for each operating mode. It is still an observed field correlation, not a
 validated bit-level decoder.
 
-An off transition also produced the decoded sequence `7F 24 03 7F 14 03 ...` (captured
-bytes begin `80 DB FC 80 EB FC ...`) in two captures. Treat this as a repeatable observed
-signature, not a fully decoded power-off command.
+Every power-off in the captures (15 across eight logs) produced the two messages
+`7F 24 03` (remote) and `7F 14 03` (unit echo); captured bytes begin `80 DB FC 80 EB FC`.
+While the unit is on, polls are `7F 28 17 08` and replies `7F 18 17 48 80`; after power-off
+they return to `13`. This is a repeatable observed signature, not a fully decoded command.
 
 The off signature and other historical observations remain only partially decoded; do
 not use this note alone as a specification for transmitting commands.
 
-## Compatibility With the Current ESPHome Decoder
+## Compatibility With the Vendored ESPHome Decoder (superseded)
 
-The current vendored decoder in `components/fujitsu_climate/FujiHeatPump.cpp` updates
-controller state only for frames addressed to its configured secondary address `0x21`.
-The repository's earlier deployed-board capture documents a different frame addressed
-to that controller: source `0x20` → destination `0x21` (see
-`docs/session-5A-checkin-2026-10-03.md`). The candidate frames in the fan-cycle captures
-decode as source `0x7F` → destination `0x22`; the engine stores those as other frames
-and does not use them to update climate state or the received-frame timestamp.
-In the full-round `raw.log`, all 25 decoded occurrences with destination `0x22` are
-other frames, and there are no decoded frames addressed to `0x21`. Thus, for this log,
-the component's "never seen" status reflects that it received no frames for its
-configured secondary address; it does not mean the UART received no bytes.
+Earlier versions of this note analysed these captures with the vendored decoder's 8-byte
+frames, reporting "source `0x7F` -> destination `0x22`" and 25 "other frames" in `raw.log`.
+That was an artefact: the bus does not carry 8-byte frames. Consequences:
 
-The ESP32 TX wire was physically disconnected during these tests. The secondary
-implementation listens for primary frames and must transmit replies to complete its
-presence/login exchange, so this setup cannot establish that the ESP32 joined the bus.
-It is plausible that the observed traffic/addressing differs because the ESP32 never
-joined, but this alone does not explain the decoded destination `0x22`: the documented
-primary address is `0x20`, and the candidate frame's role/boundary is not proven. The
-offline capture therefore cannot tell us what destination or frame sequence would be
-seen after a secondary successfully joins.
-
-The current field decoder also interprets byte 3 with separate mode and fan masks. For
-example, it maps candidate byte `0xF2` to mode value 1 (FAN), even though this value was
-labeled HEAT in the capture. The fan-cycle captures establish that these candidate
-frames carry state correlated with selected mode and fan speed, but do not establish
-that they are the frames the ESPHome climate entity should consume. Do not change the
-live address/decoder based on this evidence alone. Any test that reconnects TX should
-first be planned around the existing reply/login behavior and performed with a way to
-disconnect or power down the ESP32 immediately if the bus behaves unexpectedly.
+- The vendored `0x20`/`0x21` secondary-login engine never sees a frame addressed to `0x21`
+  on this bus, so it never replies. No capture contains a `-->` reply line.
+- The `0x20` -> `0x21` frames in `docs/session-5A-checkin-2026-10-03.md` come from the other
+  project's unit and have not been seen here.
+- Because Bus Status / Bus Alive depend on `0x21` traffic, they stay at "Never Seen" on
+  this bus.
+- Whether the ESP32's TX was connected varied by capture: the operator reported TX
+  disconnected for the fan-speed captures; `startup.log` and `tx-enabled-new-build.log`
+  were made with TX enabled; the others were not recorded.
 
 ## Experimental HA State Observation
 
@@ -212,14 +204,16 @@ See the follow-up analysis in
 This is an experimental, receive-only state path. It can show the wired controller's
 selected mode, fan setting, and known setpoint in HA before the ESP32 has joined as a
 secondary. It does **not** prove that the indoor unit accepted the command or that the
-compressor is actively heating/cooling. The current-temperature field remains unknown
-until the existing `0x21` protocol path provides it. Unmapped byte-3 values are ignored
-rather than guessed; for partially mapped observations, HA retains the last known
-field. The component's Bus Status/Bus Alive signals continue to mean that traffic for
-the configured `0x21` secondary was received.
+compressor is actively heating/cooling. No room temperature has been found on this bus (the
+remote does not display one, and no message byte varies with room conditions), so the
+current-temperature field stays unknown; use an external temperature sensor. Unmapped
+`<value>` bytes are ignored rather than guessed; for partially mapped observations, HA
+retains the last known field. The component's Bus Status/Bus Alive signals are still keyed
+to `0x21` traffic, so they read "Never Seen" on this bus (not yet changed).
 
 The mapping currently covers FAN values `03`, `05`, `09`, `0B`; AUTO values `73`,
 `75`, `79`, `7B` at 23°C; COOL values `B9`, `BA`, `BC`, `BD` at 23°C and `C4` at
-24°C; and HEAT values `12`, `52`, `72`, `92`, `B2`, `D2`, `E6`, `EA`, `F2`, `F6`.
+24°C; and HEAT values `12` (24°C, not seen in any committed capture), `52`, `72`, `92`,
+`B2`, `D2`, `E6`, `EA`, `F2`, `F6`.
 The 24°C COOL value does not update fan mode because its fan mapping has not been
 confirmed. No commands are transmitted by this observation path.
