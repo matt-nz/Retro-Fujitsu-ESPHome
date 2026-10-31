@@ -228,3 +228,34 @@ verified:
 Next validation: capture the same sequence with the unit already running at ESP32 boot, to
 confirm that HA stays unknown until the next remote press, and with the mains power-up
 captured from the very first byte to see what the `7F 12 01` start-up message is.
+
+## Capturing one setting at a time
+
+The ESPHome log already carries millisecond timestamps from the computer's clock, so each
+remote press can be matched to the messages it produced. Two helper scripts in
+[`../tools/`](../tools/) make this easy:
+
+```
+esphome logs retrofujitsu.yaml 2>&1 | python3 tools/capture_labels.py captures/matt-captures/my-test.log
+python3 tools/decode_timeline.py captures/matt-captures/my-test.log
+```
+
+While capturing, press a remote button, then type a short label (for example `heat 24` or
+`fan high`) and Enter. `capture_labels.py` writes the label into the log with the same
+clock. `decode_timeline.py` prints every non-routine bus message in time order, grouped
+under each label, with the unit's running/idle changes marked and discontinuities shown;
+`--all` also prints the routine poll/reply pairs. It prints raw bytes and does not
+interpret them.
+
+Tips:
+- Wait at least five seconds between presses so the two-round exchange for one change does
+  not run into the next.
+- Start with the unit idle, turn it on, run the whole experiment, and turn it off. The
+  running/idle marker and the `24 03` / `14 03` power-off messages then bracket the run
+  without any extra labels.
+- Without a keyboard, known values can act as markers instead: a fan change decodes
+  unambiguously (for example in FAN mode `03` is HIGH and `09` is LOW). Bracket each test
+  with one so the log can be split afterwards. Typed labels are cleaner, because a marker
+  press is itself a state change.
+- Useful sets to capture: every setpoint 16–30°C in each mode, DRY mode, and any other
+  remote buttons (swing, economy, timer), one change per label.
