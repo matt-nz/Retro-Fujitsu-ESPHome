@@ -272,3 +272,35 @@ Tips:
   press is itself a state change.
 - Useful sets to capture: every setpoint 16–30°C in each mode, DRY mode, and any other
   remote buttons (swing, economy, timer), one change per label.
+
+## Setting-value bit-field model (hypothesis, 31 Oct 2026)
+
+All 22 labeled (mode, setpoint, fan) values in the captures fit one model with no
+mismatches. Write the setpoint as `T` and the fan setting as a 3-bit code
+(`high` = 1, `medium` = 2, `low` = 4, `auto` = 5); then the setting byte is
+
+```
+value = ((T << 3 | fan) << shift | marker) & 0xFF
+  COOL        shift 0  marker 0b0
+  FAN, AUTO   shift 1  marker 0b1     (FAN carries no setpoint: T = 0)
+  HEAT        shift 2  marker 0b10
+```
+
+Examples: COOL 23°C low fan `BC` = `10111 100`; AUTO 23°C low `79` = `0111 100 1`; HEAT
+23°C low `F2` = `111 100 10`. Fan only changes the 3-bit field, and the field moves left
+with the mode, which is why the same fan setting gives different bytes per mode.
+
+This also predicts values that no committed capture contains but the earlier AI notes
+reported: HEAT 24°C = `12` and 17°C = `32`. That is weak independent support for those
+notes, not confirmation, so `0x12` stays unmapped in the parser.
+
+Consequence and test: the shift pushes setpoint bits out of the byte. In HEAT only the low
+three bits of `T` survive, so 16 and 24°C both give `12`, 17 and 25 give `32`, and so on up
+to 22 and 30 (`D2`). COOL (16–30°C) and AUTO have no collisions. If the remote sends the
+full setpoint, the missing bits must be somewhere else in the message (for example the
+`03`/`13` byte), or the unit infers them. Capturing HEAT at 24–30°C, and 16–17°C, and
+comparing every byte of the setting messages tests this directly. Predicted values for
+COOL 16–30°C at low fan: `84 8C 94 9C A4 AC B4 BC C4 CC D4 DC E4 EC F4`.
+
+The model is a description of 22 observations, not a validated spec. Quiet fan, DRY, and
+any other remote settings are unmodelled.
