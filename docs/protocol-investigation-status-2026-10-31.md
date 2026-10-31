@@ -182,8 +182,49 @@ and fan changes; room temperature remains unavailable.
 
 Despite `Control enabled: YES -- LIVE`, this capture contains no `-->` replies and no
 8-byte decoded reads with destination `0x21`. It therefore provides no evidence of a
-secondary login or transmission. The log predates the passive stream parser integration
-in firmware, so the next software validation is to build and flash the current branch,
-then verify the same HA state sequence and confirm that the new parser remains receive-only.
-Only after that should secondary joining be investigated separately; do not infer a
-transmit frame from these captures.
+secondary login or transmission. Do not infer a transmit frame from these captures.
+
+### Firmware verification (build compiled 31 Oct 2026 21:40, with the passive parser)
+
+This log was made with the build that includes the passive parser (its debug lines
+`Observed controller ON state` / `Observed controller OFF` come from that code). The ESP32
+was booted at 21:51:20; the first bus traffic arrived at 21:51:43, about 23 s later (the
+unit powering up); the remote then drove these changes. HA's climate entity followed every
+step:
+
+| Time | Remote action | Setting byte | HA climate result |
+|---|---|---|---|
+| 21:52:12 | On, HEAT 23°C | `F2` | HEAT, 23°C, fan LOW |
+| 21:52:23 | 22°C | `D2` | HEAT, 22°C, fan LOW kept |
+| 21:52:24 | 21°C | `B2` | HEAT, 21°C |
+| 21:52:26 | 20°C | `92` | HEAT, 20°C |
+| 21:52:29 | FAN mode | `09` | FAN_ONLY, fan LOW, no setpoint |
+| 21:52:35 | Fan AUTO | `0B` | FAN_ONLY, fan AUTO |
+| 21:52:39 | Fan HIGH | `03` | FAN_ONLY, fan HIGH |
+| 21:52:45 | Fan MEDIUM | `05` | FAN_ONLY, fan MEDIUM |
+| 21:52:50 | Off | `24 03` / `14 03` | OFF, last fan setting kept |
+
+Each state published once (the unit's echo did not republish). Still not working or not
+verified:
+- ESPHome logged `Current Temperature: 0.00°C` even though the component's own debug line
+  says `current=nan`. Check in HA whether the current temperature shows as unknown or as 0°C;
+  if 0°C, the entity needs to be fixed so it does not report a false reading.
+- HA action stays `IDLE` while the unit is on, by design (the remote's selection is not
+  proof the compressor is running).
+
+### Message exchange details seen in this log
+
+- Each remote change produces an exchange: `22 03 <v>` (remote), `12 03 <v>` (unit echo),
+  `28 17 0A` (poll with `0A`), then `12 03 <v>` again. Most changes were then repeated as a
+  second round with the second byte's bit 4 set: `22 13 <v>`, `12 13 <v>`, `28 17 0A`,
+  `12 13 <v>`. Only the power-on (`F2`) and the switch to FAN mode (`09`) had just the first
+  round, so the meaning of the `03` / `13` difference is not yet understood.
+- At bus start-up the unit sends one short message `7F 12 01` before the normal poll cycle
+  (also at the start of `startup.log`). It is not decoded and the parser reports it as
+  unknown; it may be a unit-ready announcement.
+- The poll replies in every capture are the fixed `7F 18 13|17 48 80`, so no room temperature
+  or other measurement has appeared on the bus yet.
+
+Next validation: capture the same sequence with the unit already running at ESP32 boot, to
+confirm that HA stays unknown until the next remote press, and with the mains power-up
+captured from the very first byte to see what the `7F 12 01` start-up message is.
