@@ -143,15 +143,15 @@ bool FujiHeatPump::waitForFrame() {
     memset(readBuf, 0, 8);
     int bytesRead = _serial->readBytes(readBuf, 8);
 
-    if (bytesRead < 8) {
-      if (debugPrint && bytesRead > 0) {
-        char partial[24] = {};
-        size_t used = 0;
-        for (int i = 0; i < bytesRead; i++) {
-          used += snprintf(partial + used, sizeof(partial) - used, " %02X", static_cast<unsigned>(readBuf[i]));
-        }
-        ESP_LOGI(TAG, "<-- partial (%d/8):%s", bytesRead, partial);
+    if (debugPrint && bytesRead > 0) {
+      char rawBytes[25] = {};
+      for (int i = 0; i < bytesRead; i++) {
+        snprintf(rawBytes + i * 3, sizeof(rawBytes) - i * 3, " %02X", static_cast<unsigned>(readBuf[i]));
       }
+      ESP_LOGI(TAG, "RX raw (%d/8, before XOR):%s", bytesRead, rawBytes);
+    }
+
+    if (bytesRead < 8) {
       return false;
     }
 
