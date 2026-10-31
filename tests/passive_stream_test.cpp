@@ -166,7 +166,7 @@ static size_t count_kind(const std::vector<Message> &msgs, Kind k, Direction d) 
 
 static void test_captures(const std::string &dir) {
   const char *files[] = {"auto-heat.log", "cold.log", "fan_changes.log",     "heat_20_22_18.log", "hot-fan-cold-auto.log",
-                         "on_off.log",    "raw.log",  "running_standby.log", "startup.log"};
+                         "on_off.log",    "raw.log",  "running_standby.log", "startup.log", "tx-enabled-new-build.log"};
   size_t total_unknown = 0, total_messages = 0;
 
   for (const char *name : files) {
@@ -245,6 +245,12 @@ static void test_captures(const std::string &dir) {
   for (const auto &m : standby) {
     CHECK(m.kind != Kind::STATUS || !m.running);
   }
+
+  auto tx_enabled = parse(load_stream(dir + "/tx-enabled-new-build.log", &ok));
+  CHECK(ok);
+  CHECK((setting_values(tx_enabled) == std::vector<uint8_t>{0xF2, 0xD2, 0xB2, 0x92, 0x09, 0x0B, 0x03, 0x05}));
+  CHECK(count_kind(tx_enabled, Kind::POWER_OFF, Direction::REMOTE_TO_UNIT) == 1);
+  CHECK(count_kind(tx_enabled, Kind::POWER_OFF, Direction::UNIT_TO_REMOTE) == 1);
 }
 
 int main(int argc, char **argv) {

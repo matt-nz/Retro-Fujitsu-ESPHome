@@ -138,14 +138,14 @@ by the stream-structure finding below: the stream in these captures does not loo
 the 8-byte upstream frames that path assumes. Keep the HA control-enable switch as the
 stop/disable mechanism, and do not transmit anything synthesized from these captures.
 
-## Stream structure finding (`startup.log`, TX enabled)
+## Stream structure finding (`startup.log` and TX-enabled follow-up)
 
 The log contains no `-->` lines, so the ESP32 never transmitted even with TX enabled.
 The upstream engine only replies to an 8-byte read whose decoded destination is `0x21`;
 that never occurs because the read chunks are not the protocol's frames.
 
 Joining the reads and splitting the inverted stream at each `0x7F` shows variable-length
-messages, not 8-byte frames (all nine logs agree):
+messages, not 8-byte frames (the original nine logs and the TX-enabled follow-up agree):
 
 | Message (inverted bytes) | Observed when |
 |---|---|
@@ -168,9 +168,22 @@ unit (AOT30L series) uses a different protocol from the `0x20`/`0x21` frames in
 
 Consequences:
 - The vendored secondary-controller engine does not match this bus and cannot log in.
-  Do not enable or test transmit from this repository's current decoder.
-- A new passive decoder should split on `0x7F`, using the table above, rather than on
-  8-byte reads.
-- Next capture: a power-on cycle, then one single change per press with timestamps. Also
-  capture an idle period long enough to see whether room temperature or any other value
-  ever changes in the poll responses (`7F 18 .. 48 80`).
+  Do not use it to transmit on this bus.
+- `FujiPassiveStream.h` now splits the stream on `0x7F`; host replay tests cover the
+  original captures and the TX-enabled follow-up. This passive parser does not transmit.
+
+The TX-enabled follow-up (`../captures/matt-captures/tx-enabled-new-build.log`) was made
+with firmware 4A.12b-rc1. About 30 seconds after logging began, the remote was turned on
+in HEAT at 23°C, stepped down to 20°C, switched to FAN, cycled through LOW → AUTO →
+HIGH → MEDIUM, then turned off. Offline replay reconstructs the remote-to-unit setting
+values `F2 D2 B2 92 09 0B 03 05`, followed by one power-off message and its unit echo.
+These match the operator's actions. The HA log also reports the matching mode, setpoint,
+and fan changes; room temperature remains unavailable.
+
+Despite `Control enabled: YES -- LIVE`, this capture contains no `-->` replies and no
+8-byte decoded reads with destination `0x21`. It therefore provides no evidence of a
+secondary login or transmission. The log predates the passive stream parser integration
+in firmware, so the next software validation is to build and flash the current branch,
+then verify the same HA state sequence and confirm that the new parser remains receive-only.
+Only after that should secondary joining be investigated separately; do not infer a
+transmit frame from these captures.

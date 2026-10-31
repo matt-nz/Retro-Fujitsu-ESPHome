@@ -200,7 +200,14 @@ login/reply decoder:
 - Boot limitation: mode, fan and setpoint are only sent when the remote changes them, so
   after a reboot HA stays unknown until the next remote button press.
 
-`tests/passive_stream_test.cpp` replays all nine captures through the parser.
+`tests/passive_stream_test.cpp` replays all ten captures through the parser, including
+the TX-enabled follow-up. Its remote setting sequence decodes to `F2 D2 B2 92 09 0B
+03 05` (HEAT 23→20°C, then FAN LOW → AUTO → HIGH → MEDIUM), followed by one remote
+power-off message and its unit echo. The ESPHome log reports the corresponding HA state
+changes. Despite the firmware's `Control enabled: YES -- LIVE` setting, there are no
+`-->` reply logs; this capture does not demonstrate a secondary login or bus transmission.
+See the follow-up analysis in
+[`docs/protocol-investigation-status-2026-10-31.md`](docs/protocol-investigation-status-2026-10-31.md).
 
 This is an experimental, receive-only state path. It can show the wired controller's
 selected mode, fan setting, and known setpoint in HA before the ESP32 has joined as a
