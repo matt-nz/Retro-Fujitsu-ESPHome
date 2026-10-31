@@ -195,14 +195,14 @@ values in order:
 ```
 
 Each degree changes the byte by `+0x08`; `BD` at 23°C matches the already observed
-COOL/AUTO value. No 31°C setting change was made; the `T31` label is not evidence of a
-31°C remote setting or a 30°C maximum. The 28°C step follows the sequence (`E5`) and is
-consistent with the reported setpoint despite the operator's concern about that part
-of the test. This supports decoding the observed COOL/AUTO sequence from 18 through
-30°C. Other COOL fan settings remain mapped only at 23°C, and the isolated 24°C value
-`C4` still has unknown fan. Host replay tests now include this capture and verify the
-full sequence. The capture ends with an Off message, but it has no Off label, so
-operator intent for that final transition is not established.
+COOL/AUTO value. The remote's COOL setpoint range is 18-30°C; the `T31` label was not
+a setting change and does not indicate a 31°C option. The 28°C step follows the
+sequence (`E5`) and is consistent with the reported setpoint despite the operator's
+concern about that part of the test. This supports decoding the observed COOL/AUTO
+sequence across the remote's full range. Other COOL fan settings remain mapped only at
+23°C, and the isolated 24°C value `C4` still has unknown fan. Host replay tests now
+include this capture and verify the full sequence. The capture ends with an Off message,
+but it has no Off label, so operator intent for that final transition is not established.
 
 This capture adds passive state evidence only; it contains no outgoing `-->` reply and
 does not demonstrate secondary login.

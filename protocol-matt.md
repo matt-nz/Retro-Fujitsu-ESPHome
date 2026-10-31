@@ -219,7 +219,7 @@ The mapping currently covers FAN values `03`, `05`, `09`, `0B`; AUTO values `73`
 `E6`, `EA`, `F2`, `F6`. The COOL/AUTO sweep is recorded in
 [`captures/matt-captures/cold-test.log`](captures/matt-captures/cold-test.log) and
 replayed by `tests/passive_stream_test.cpp`. The `T31` label was not a 31°C setting
-change, so no 31°C behavior is established. HEAT `12` (24°C) is deliberately not mapped
-because no committed capture contains it. The isolated 24°C COOL value `C4` does not
-update fan mode because that fan mapping has not been confirmed. No commands are
-transmitted by this observation path.
+change; the remote's COOL setpoint range is 18-30°C. HEAT `12` (24°C) is deliberately
+not mapped because no committed capture contains it. The isolated 24°C COOL value `C4`
+does not update fan mode because that fan mapping has not been confirmed. No commands
+are transmitted by this observation path.
