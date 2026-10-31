@@ -89,22 +89,26 @@ static void fujitsu_bus_task(void *pv) {
   ESP_LOGD(TAG, "fujitsu_bus_task started on core %d", xPortGetCoreID());
 
   for (;;) {
-    if (climate->heat_pump.waitForFrame()) {
+    bool frame_received = climate->heat_pump.waitForFrame();
+    if (frame_received) {
       // Reply immediately -- see FujiHeatPump.h's Deviation #1 comment for why this
       // project doesn't reproduce upstream's delay(60) here.
       climate->heat_pump.sendPendingFrame();
       climate->pending_update = false;
+    }
 
-      if (xSemaphoreTake(climate->lock, pdMS_TO_TICKS(200)) == pdTRUE) {
+    uint32_t observed_revision = climate->heat_pump.getObservedControllerStateRevision();
+    bool observed_changed = observed_revision != climate->copied_observed_state_revision;
+    if ((frame_received || observed_changed) && xSemaphoreTake(climate->lock, pdMS_TO_TICKS(200)) == pdTRUE) {
+      if (frame_received) {
         memcpy(&(climate->shared_state), climate->heat_pump.getCurrentState(), sizeof(FujiFrame));
-        xSemaphoreGive(climate->lock);
       }
-    } else {
-      // Nothing was available to read this pass -- yield rather than busy-spinning.
-      // This bus has real idle stretches between UNIT+CTRL cycles (3B.23 measured up
-      // to ~11ms in Dual DIP mode, and there's always some gap between full 16-byte
-      // cycles even in Normal mode), so a 1-tick yield here doesn't risk missing a
-      // reply window the way it would if inserted after a real receive.
+      climate->shared_observed_state = climate->heat_pump.getObservedControllerState();
+      climate->copied_observed_state_revision = observed_revision;
+      xSemaphoreGive(climate->lock);
+    }
+
+    if (!frame_received) {
       vTaskDelay(pdMS_TO_TICKS(1));
     }
   }
@@ -122,6 +126,7 @@ void FujitsuClimate::setup() {
   this->lock = xSemaphoreCreateBinary();
   xSemaphoreGive(this->lock);
   memcpy(&this->shared_state, this->heat_pump.getCurrentState(), sizeof(FujiFrame));
+  this->shared_observed_state = this->heat_pump.getObservedControllerState();
 
   // Pull-up on the RX pin -- carried forward unchanged from the previous version's
   // uart: block (hardware-and-protocol.md: "Without it the floating pin crashes the
@@ -284,69 +289,93 @@ void FujitsuClimate::update_bus_status_() {
 }
 
 void FujitsuClimate::update_climate_state_() {
-  if (!this->hardware_present_) {
-    return;  // keep the NAN/OFF defaults until the first real frame arrives
-  }
-
   FujiFrame local{};
+  FujiObservedControllerState observed{};
 #ifdef ESP32
   if (xSemaphoreTake(this->lock, pdMS_TO_TICKS(50)) != pdTRUE) {
     return;  // didn't get the lock this tick -- try again next loop() call, cheap either way
   }
   local = this->shared_state;
+  observed = this->shared_observed_state;
   xSemaphoreGive(this->lock);
 #else
   return;
 #endif
 
+  const bool use_observed_state = !this->hardware_present_;
+  if (use_observed_state && !observed.valid) {
+    return;
+  }
+
   bool updated = false;
 
-  bool on = local.onOff == 1;
-  climate::ClimateMode new_mode = on ? this->fuji_mode_to_climate_mode_(static_cast<FujiMode>(local.acMode))
-                                     : climate::CLIMATE_MODE_OFF;
+  bool on = use_observed_state ? observed.on : local.onOff == 1;
+  bool mode_valid = !use_observed_state || observed.mode_valid;
+  FujiMode decoded_mode = static_cast<FujiMode>(use_observed_state ? observed.mode : local.acMode);
+  climate::ClimateMode new_mode = this->mode;
+  if (!on) {
+    new_mode = climate::CLIMATE_MODE_OFF;
+  } else if (mode_valid) {
+    new_mode = this->fuji_mode_to_climate_mode_(decoded_mode);
+  }
   if (new_mode != this->mode) {
     this->mode = new_mode;
     updated = true;
   }
 
-  // Fixed 20 Aug 2026: this used to clear the setpoint to NAN whenever the raw byte
-  // read exactly 0, in ANY mode -- but per hardware-and-protocol.md/state-of-play.md,
-  // only FAN_ONLY genuinely carries no setpoint; every other mode (including AUTO)
-  // has been live-confirmed to report a real setpoint. Scoping this to FAN_ONLY
-  // specifically stops a real setpoint from being hidden in other modes.
-  float new_target = static_cast<float>(local.temperature);
-  if (new_mode == climate::CLIMATE_MODE_FAN_ONLY) {
-    new_target = NAN;  // FAN mode carries no setpoint -- see hardware-and-protocol.md
+  float new_target = this->target_temperature;
+  if (use_observed_state) {
+    if (observed.temperature_valid) {
+      new_target = static_cast<float>(observed.temperature);
+    } else if (mode_valid && decoded_mode == FujiMode::FAN) {
+      new_target = NAN;
+    }
+  } else {
+    // The vendored protocol carries no setpoint in FAN_ONLY mode.
+    new_target = static_cast<float>(local.temperature);
+    if (new_mode == climate::CLIMATE_MODE_FAN_ONLY) {
+      new_target = NAN;
+    }
   }
   if (!(new_target == this->target_temperature) && !(std::isnan(new_target) && std::isnan(this->target_temperature))) {
     this->target_temperature = new_target;
     updated = true;
   }
 
-  float new_current = static_cast<float>(local.controllerTemp);
-  if (new_current != this->current_temperature) {
-    this->current_temperature = new_current;
-    updated = true;
+  if (!use_observed_state) {
+    float new_current = static_cast<float>(local.controllerTemp);
+    if (new_current != this->current_temperature) {
+      this->current_temperature = new_current;
+      updated = true;
+    }
   }
 
-  climate::ClimateFanMode new_fan = this->fuji_fan_to_climate_fan_(static_cast<FujiFanMode>(local.fanMode));
-  if (new_fan != this->fan_mode) {
-    this->fan_mode = new_fan;
-    updated = true;
+  if (!use_observed_state || observed.fan_valid) {
+    FujiFanMode decoded_fan = static_cast<FujiFanMode>(use_observed_state ? observed.fan_mode : local.fanMode);
+    climate::ClimateFanMode new_fan = this->fuji_fan_to_climate_fan_(decoded_fan);
+    if (new_fan != this->fan_mode) {
+      this->fan_mode = new_fan;
+      updated = true;
+    }
   }
 
-  climate::ClimatePreset new_preset =
-      local.economyMode ? climate::CLIMATE_PRESET_ECO : climate::CLIMATE_PRESET_NONE;
-  if (new_preset != this->preset) {
-    this->preset = new_preset;
-    updated = true;
+  if (!use_observed_state) {
+    climate::ClimatePreset new_preset =
+        local.economyMode ? climate::CLIMATE_PRESET_ECO : climate::CLIMATE_PRESET_NONE;
+    if (new_preset != this->preset) {
+      this->preset = new_preset;
+      updated = true;
+    }
   }
 
-  climate::ClimateAction new_action = climate::CLIMATE_ACTION_IDLE;
+  climate::ClimateAction new_action = this->action;
   if (!on) {
     new_action = climate::CLIMATE_ACTION_OFF;
-  } else {
-    switch (static_cast<FujiMode>(local.acMode)) {
+  } else if (use_observed_state) {
+    // The aligned frame records the controller's selection, not compressor activity.
+    new_action = climate::CLIMATE_ACTION_IDLE;
+  } else if (mode_valid) {
+    switch (decoded_mode) {
       case FujiMode::HEAT: new_action = climate::CLIMATE_ACTION_HEATING; break;
       case FujiMode::COOL: new_action = climate::CLIMATE_ACTION_COOLING; break;
       case FujiMode::DRY: new_action = climate::CLIMATE_ACTION_DRYING; break;
@@ -375,7 +404,10 @@ void FujitsuClimate::update_climate_state_() {
   // loop() tick, so they need their own change-detection rather than publishing
   // unconditionally every time (NaN-safe -- local.temperature == 0 in FAN mode is a
   // real, recurring value, not a one-off).
-  float new_setpoint = new_mode == climate::CLIMATE_MODE_FAN_ONLY ? NAN : static_cast<float>(local.temperature);
+  float new_setpoint = this->target_temperature;
+  if (!use_observed_state) {
+    new_setpoint = new_mode == climate::CLIMATE_MODE_FAN_ONLY ? NAN : static_cast<float>(local.temperature);
+  }
   bool setpoint_changed = !this->corrected_sensors_initialized_ ||
                           !(new_setpoint == this->last_corrected_setpoint_ ||
                             (std::isnan(new_setpoint) && std::isnan(this->last_corrected_setpoint_)));
@@ -386,11 +418,13 @@ void FujitsuClimate::update_climate_state_() {
     }
   }
 
-  float new_room_temp = static_cast<float>(local.controllerTemp);
-  if (!this->corrected_sensors_initialized_ || new_room_temp != this->last_corrected_room_temp_) {
-    this->last_corrected_room_temp_ = new_room_temp;
-    if (this->corrected_room_temp_sensor_ != nullptr) {
-      this->corrected_room_temp_sensor_->publish_state(new_room_temp);
+  if (!use_observed_state) {
+    float new_room_temp = static_cast<float>(local.controllerTemp);
+    if (!this->corrected_sensors_initialized_ || new_room_temp != this->last_corrected_room_temp_) {
+      this->last_corrected_room_temp_ = new_room_temp;
+      if (this->corrected_room_temp_sensor_ != nullptr) {
+        this->corrected_room_temp_sensor_->publish_state(new_room_temp);
+      }
     }
   }
 
@@ -399,10 +433,12 @@ void FujitsuClimate::update_climate_state_() {
   // 2 Sep 2026 -- requested-vs-actual state sync (plan-to-completion.md). Uses the
   // same decoded frame this function just processed, so it stays exactly in step
   // with the climate entity's own state -- see update_sync_status_() below.
-  this->update_sync_status_(local);
+  if (!use_observed_state) {
+    this->update_sync_status_(local);
 
-  // 4A.12 -- control-authority attribution, same decoded frame again.
-  this->update_attribution_(local);
+    // 4A.12 -- control-authority attribution, same decoded frame again.
+    this->update_attribution_(local);
+  }
 }
 
 void FujitsuClimate::update_sync_status_(const FujiFrame &local) {

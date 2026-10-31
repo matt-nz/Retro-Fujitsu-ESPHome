@@ -136,6 +136,8 @@ class FujitsuClimate : public climate::Climate, public Component {
   // FreeRTOS task function isn't a member function and needs a pointer to work with).
   FujiHeatPump heat_pump;
   FujiFrame shared_state;
+  FujiObservedControllerState shared_observed_state;
+  uint32_t copied_observed_state_revision{0};
 #ifdef ESP32
   SemaphoreHandle_t lock{nullptr};
   TaskHandle_t task_handle{nullptr};

@@ -111,11 +111,26 @@ typedef struct FujiFrames {
   byte messageDest = 0;
 } FujiFrame;
 
+struct FujiObservedControllerState {
+  bool valid = false;
+  bool on = false;
+  bool mode_valid = false;
+  byte mode = 0;
+  bool fan_valid = false;
+  byte fan_mode = 0;
+  bool temperature_valid = false;
+  byte temperature = 0;
+};
+
 class FujiHeatPump {
  private:
   HardwareSerial *_serial;
   byte readBuf[8];
   byte writeBuf[8];
+  byte observedFrameWindow[8]{0};
+  byte observedFrameWindowSize = 0;
+  FujiObservedControllerState observedControllerState;
+  uint32_t observedControllerStateRevision = 0;
 
   byte controllerAddress;
   bool controllerIsPrimary = true;
@@ -183,6 +198,8 @@ class FujiHeatPump {
   void printFrame(const char *prefix, byte buf[8], FujiFrame ff);
 
   bool pendingFrame = false;
+
+  void inspectObservedControllerByte(byte value);
 
   // Deviation #1 from upstream -- see the file-header comment above. Upstream hardcodes
   // 50 here; this project's own measured bus timing (3B.23: 0-10.9ms real CTRL->UNIT
@@ -267,6 +284,8 @@ class FujiHeatPump {
   FujiFrame *getCurrentState();
   FujiFrame *getUpdateState();
   byte getUpdateFields();
+  FujiObservedControllerState getObservedControllerState() { return observedControllerState; }
+  uint32_t getObservedControllerStateRevision() { return observedControllerStateRevision; }
 
   bool debugPrint = false;
 };

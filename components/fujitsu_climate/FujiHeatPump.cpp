@@ -11,6 +11,197 @@
 
 namespace {
 static const char *const TAG = "fujitsu.heatpump";
+
+bool decode_observed_controller_state(byte value, FujiObservedControllerState *state) {
+  state->valid = true;
+  state->on = true;
+  state->mode_valid = true;
+  state->fan_valid = false;
+  state->temperature_valid = false;
+
+  switch (value) {
+    case 0x03:
+      state->mode = static_cast<byte>(FujiMode::FAN);
+      state->fan_mode = static_cast<byte>(FujiFanMode::FAN_HIGH);
+      state->fan_valid = true;
+      return true;
+    case 0x05:
+      state->mode = static_cast<byte>(FujiMode::FAN);
+      state->fan_mode = static_cast<byte>(FujiFanMode::FAN_MEDIUM);
+      state->fan_valid = true;
+      return true;
+    case 0x09:
+      state->mode = static_cast<byte>(FujiMode::FAN);
+      state->fan_mode = static_cast<byte>(FujiFanMode::FAN_LOW);
+      state->fan_valid = true;
+      return true;
+    case 0x0B:
+      state->mode = static_cast<byte>(FujiMode::FAN);
+      state->fan_mode = static_cast<byte>(FujiFanMode::FAN_AUTO);
+      state->fan_valid = true;
+      return true;
+
+    case 0x73:
+      state->mode = static_cast<byte>(FujiMode::AUTO);
+      state->fan_mode = static_cast<byte>(FujiFanMode::FAN_HIGH);
+      state->fan_valid = true;
+      state->temperature = 23;
+      state->temperature_valid = true;
+      return true;
+    case 0x75:
+      state->mode = static_cast<byte>(FujiMode::AUTO);
+      state->fan_mode = static_cast<byte>(FujiFanMode::FAN_MEDIUM);
+      state->fan_valid = true;
+      state->temperature = 23;
+      state->temperature_valid = true;
+      return true;
+    case 0x79:
+      state->mode = static_cast<byte>(FujiMode::AUTO);
+      state->fan_mode = static_cast<byte>(FujiFanMode::FAN_LOW);
+      state->fan_valid = true;
+      state->temperature = 23;
+      state->temperature_valid = true;
+      return true;
+    case 0x7B:
+      state->mode = static_cast<byte>(FujiMode::AUTO);
+      state->fan_mode = static_cast<byte>(FujiFanMode::FAN_AUTO);
+      state->fan_valid = true;
+      state->temperature = 23;
+      state->temperature_valid = true;
+      return true;
+
+    case 0xB9:
+      state->mode = static_cast<byte>(FujiMode::COOL);
+      state->fan_mode = static_cast<byte>(FujiFanMode::FAN_HIGH);
+      state->fan_valid = true;
+      state->temperature = 23;
+      state->temperature_valid = true;
+      return true;
+    case 0xBA:
+      state->mode = static_cast<byte>(FujiMode::COOL);
+      state->fan_mode = static_cast<byte>(FujiFanMode::FAN_MEDIUM);
+      state->fan_valid = true;
+      state->temperature = 23;
+      state->temperature_valid = true;
+      return true;
+    case 0xBC:
+      state->mode = static_cast<byte>(FujiMode::COOL);
+      state->fan_mode = static_cast<byte>(FujiFanMode::FAN_LOW);
+      state->fan_valid = true;
+      state->temperature = 23;
+      state->temperature_valid = true;
+      return true;
+    case 0xBD:
+      state->mode = static_cast<byte>(FujiMode::COOL);
+      state->fan_mode = static_cast<byte>(FujiFanMode::FAN_AUTO);
+      state->fan_valid = true;
+      state->temperature = 23;
+      state->temperature_valid = true;
+      return true;
+    case 0xC4:
+      state->mode = static_cast<byte>(FujiMode::COOL);
+      state->temperature = 24;
+      state->temperature_valid = true;
+      return true;
+
+    case 0xE6:
+      state->mode = static_cast<byte>(FujiMode::HEAT);
+      state->fan_mode = static_cast<byte>(FujiFanMode::FAN_HIGH);
+      state->fan_valid = true;
+      state->temperature = 23;
+      state->temperature_valid = true;
+      return true;
+    case 0xEA:
+      state->mode = static_cast<byte>(FujiMode::HEAT);
+      state->fan_mode = static_cast<byte>(FujiFanMode::FAN_MEDIUM);
+      state->fan_valid = true;
+      state->temperature = 23;
+      state->temperature_valid = true;
+      return true;
+    case 0xF2:
+      state->mode = static_cast<byte>(FujiMode::HEAT);
+      state->fan_mode = static_cast<byte>(FujiFanMode::FAN_LOW);
+      state->fan_valid = true;
+      state->temperature = 23;
+      state->temperature_valid = true;
+      return true;
+    case 0xF6:
+      state->mode = static_cast<byte>(FujiMode::HEAT);
+      state->fan_mode = static_cast<byte>(FujiFanMode::FAN_AUTO);
+      state->fan_valid = true;
+      state->temperature = 23;
+      state->temperature_valid = true;
+      return true;
+
+    case 0x12:
+    case 0x52:
+    case 0x72:
+    case 0x92:
+    case 0xB2:
+    case 0xD2:
+      state->mode = static_cast<byte>(FujiMode::HEAT);
+      state->temperature_valid = true;
+      state->temperature = value == 0x12 ? 24 : static_cast<byte>(18 + ((value - 0x52) / 0x20));
+      return true;
+    default:
+      state->valid = false;
+      state->mode_valid = false;
+      return false;
+  }
+}
+}
+
+void FujiHeatPump::inspectObservedControllerByte(byte value) {
+  if (observedFrameWindowSize < sizeof(observedFrameWindow)) {
+    observedFrameWindow[observedFrameWindowSize++] = value;
+  } else {
+    memmove(observedFrameWindow, observedFrameWindow + 1, sizeof(observedFrameWindow) - 1);
+    observedFrameWindow[sizeof(observedFrameWindow) - 1] = value;
+  }
+
+  if (observedFrameWindowSize >= 6) {
+    for (byte offset = 0; offset <= observedFrameWindowSize - 6; offset++) {
+      if (observedFrameWindow[offset] == 0x7F && observedFrameWindow[offset + 1] == 0x24 &&
+          observedFrameWindow[offset + 2] == 0x03 && observedFrameWindow[offset + 3] == 0x7F &&
+          observedFrameWindow[offset + 4] == 0x14 && observedFrameWindow[offset + 5] == 0x03) {
+        bool changed = !observedControllerState.valid || observedControllerState.on;
+        observedControllerState.valid = true;
+        observedControllerState.on = false;
+        observedControllerState.mode_valid = false;
+        observedControllerState.fan_valid = false;
+        observedControllerState.temperature_valid = false;
+        if (changed) {
+          observedControllerStateRevision++;
+        }
+        if (debugPrint && changed) {
+          ESP_LOGD(TAG, "Observed controller OFF signature");
+        }
+        return;
+      }
+    }
+  }
+
+  if (observedFrameWindowSize != sizeof(observedFrameWindow) || observedFrameWindow[0] != 0x7F ||
+      observedFrameWindow[1] != 0x22 || observedFrameWindow[2] != 0x03 || observedFrameWindow[4] != 0x02 ||
+      observedFrameWindow[5] != 0x5F || observedFrameWindow[6] != 0x7E || observedFrameWindow[7] != 0x7F) {
+    return;
+  }
+
+  FujiObservedControllerState decoded;
+  if (!decode_observed_controller_state(observedFrameWindow[3], &decoded)) {
+    if (debugPrint) {
+      ESP_LOGD(TAG, "Unmapped controller state byte: 0x%02X", observedFrameWindow[3]);
+    }
+    return;
+  }
+  observedControllerState = decoded;
+  observedControllerStateRevision++;
+  if (debugPrint) {
+    ESP_LOGD(TAG, "Observed controller ON state: value=0x%02X mode=%u fan_valid=%u fan=%u temp_valid=%u temp=%u",
+             observedFrameWindow[3], static_cast<unsigned>(decoded.mode), static_cast<unsigned>(decoded.fan_valid),
+             static_cast<unsigned>(decoded.fan_mode), static_cast<unsigned>(decoded.temperature_valid),
+             static_cast<unsigned>(decoded.temperature));
+  }
 }
 
 FujiFrame FujiHeatPump::decodeFrame() {
@@ -149,6 +340,10 @@ bool FujiHeatPump::waitForFrame() {
         snprintf(rawBytes + i * 3, sizeof(rawBytes) - i * 3, " %02X", static_cast<unsigned>(readBuf[i]));
       }
       ESP_LOGI(TAG, "RX raw (%d/8, before XOR):%s", bytesRead, rawBytes);
+    }
+
+    for (int i = 0; i < bytesRead; i++) {
+      this->inspectObservedControllerByte(readBuf[i] ^ 0xFF);
     }
 
     if (bytesRead < 8) {
