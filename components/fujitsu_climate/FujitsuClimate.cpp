@@ -163,15 +163,23 @@ void FujitsuClimate::update_bus_status_() {
   // observed ill effect. It's a single machine word; worst case a status display is
   // one tick stale, which doesn't matter for a health indicator on a ~1s cadence.
   unsigned long last_frame = this->heat_pump.getLastFrameReceived();
+  // Bus activity also counts recognised passive messages: on installations that do not use
+  // the 0x20/0x21 frames last_frame stays 0 forever. hardware_present_ below deliberately
+  // still follows last_frame only, because it switches the climate entity to the 0x21 decode.
+  unsigned long last_passive = this->heat_pump.getLastPassiveMessage();
+  unsigned long last_bus = last_frame;
+  if (last_passive != 0 && (last_frame == 0 || static_cast<int32_t>(last_passive - last_frame) > 0)) {
+    last_bus = last_passive;
+  }
   uint32_t now = millis();
-  bool alive = last_frame != 0 && (now - static_cast<uint32_t>(last_frame)) < BUS_TIMEOUT_MS;
+  bool alive = last_bus != 0 && (now - static_cast<uint32_t>(last_bus)) < BUS_TIMEOUT_MS;
 
   if (!this->hardware_present_ && last_frame != 0) {
     this->hardware_present_ = true;
     ESP_LOGI(TAG, "First frame received -- hardware confirmed present");
   }
 
-  uint8_t state = alive ? 1 : (last_frame != 0 ? 2 : 3);
+  uint8_t state = alive ? 1 : (last_bus != 0 ? 2 : 3);
 
   // loop() runs far faster than this actually changes -- only publish_state() on a
   // real transition, not on every tick (see the header comment next to
@@ -187,7 +195,7 @@ void FujitsuClimate::update_bus_status_() {
   if (state != this->last_bus_state_) {
     this->last_bus_state_ = state;
     if (this->bus_status_text_sensor_ != nullptr) {
-      this->bus_status_text_sensor_->publish_state(alive ? "Bus OK" : (last_frame != 0 ? "No Signal" : "Never Seen"));
+      this->bus_status_text_sensor_->publish_state(alive ? "Bus OK" : (last_bus != 0 ? "No Signal" : "Never Seen"));
     }
   }
 

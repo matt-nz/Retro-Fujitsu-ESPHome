@@ -130,6 +130,7 @@ class FujiHeatPump {
   byte readBuf[8];
   byte writeBuf[8];
   fuji_passive::Parser passiveParser;
+  unsigned long lastPassiveMessage = 0;
   bool passiveRunningKnown = false;
   bool passiveRunning = false;
   FujiObservedControllerState observedControllerState;
@@ -247,6 +248,11 @@ class FujiHeatPump {
   // 1000ms-or-less threshold flickers on them. Read-only; doesn't change isBound()'s
   // own behaviour or anything upstream.
   unsigned long getLastFrameReceived() { return lastFrameReceived; }
+
+  // Time of the last recognised passive-parser message (0 = none yet). Unlike
+  // getLastFrameReceived() this does not depend on traffic addressed to 0x21, so it shows
+  // that the bus is alive on AOT30L/ART30RL installations.
+  unsigned long getLastPassiveMessage() { return lastPassiveMessage; }
 
   // Deviation #3 -- see the file-header comment above. Raw, passive, unconfirmed --
   // NOT the same as FujiFrame::controllerPresent on currentState (which, for a

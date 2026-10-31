@@ -100,8 +100,8 @@ inline bool decode_setting(uint8_t value, Setting *out) {
       out->temperature = 24;
       return true;
 
-    // HEAT setpoint steps of +0x20 per degree (wraps at 0xFF); fan not mapped.
-    case 0x12:
+    // HEAT setpoint steps of +0x20 per degree; fan not mapped. 18-23 C only: 0x12 (24 C) and
+    // other setpoints are not in any committed capture, so they stay unmapped.
     case 0x52:
     case 0x72:
     case 0x92:
@@ -109,7 +109,7 @@ inline bool decode_setting(uint8_t value, Setting *out) {
     case 0xD2:
       out->mode = kModeHeat;
       out->temperature_valid = true;
-      out->temperature = value == 0x12 ? 24 : static_cast<uint8_t>(18 + ((value - 0x52) / 0x20));
+      out->temperature = static_cast<uint8_t>(18 + ((value - 0x52) / 0x20));
       return true;
     default:
       return false;

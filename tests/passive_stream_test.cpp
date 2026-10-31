@@ -97,7 +97,7 @@ static void test_decode_table() {
   CHECK(decode_setting(0x92, &s) && s.temperature == 20);
   CHECK(decode_setting(0xB2, &s) && s.temperature == 21);
   CHECK(decode_setting(0xD2, &s) && s.temperature == 22);
-  CHECK(decode_setting(0x12, &s) && s.temperature == 24);
+  CHECK(!decode_setting(0x12, &s));  // 24 C HEAT has not been captured
   CHECK(!decode_setting(0x00, &s) && !decode_setting(0x7F, &s) && !decode_setting(0xFF, &s));
 }
 

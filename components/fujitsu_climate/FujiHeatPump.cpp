@@ -37,6 +37,10 @@ void FujiHeatPump::inspectObservedControllerByte(byte value) {
     return;
   }
 
+  if (message.kind != fuji_passive::Kind::UNKNOWN) {
+    lastPassiveMessage = millis();
+  }
+
   switch (message.kind) {
     case fuji_passive::Kind::SETTING: {
       fuji_passive::Setting setting;

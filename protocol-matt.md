@@ -168,8 +168,8 @@ That was an artefact: the bus does not carry 8-byte frames. Consequences:
   on this bus, so it never replies. No capture contains a `-->` reply line.
 - The `0x20` -> `0x21` frames in `docs/session-5A-checkin-2026-10-03.md` come from the other
   project's unit and have not been seen here.
-- Because Bus Status / Bus Alive depend on `0x21` traffic, they stay at "Never Seen" on
-  this bus.
+- Bus Status / Bus Alive originally depended on `0x21` traffic and would have stayed at
+  "Never Seen" on this bus; they now also count recognised passive messages.
 - Whether the ESP32's TX was connected varied by capture: the operator reported TX
   disconnected for the fan-speed captures; `startup.log` and `tx-enabled-new-build.log`
   were made with TX enabled; the others were not recorded.
@@ -208,12 +208,13 @@ compressor is actively heating/cooling. No room temperature has been found on th
 remote does not display one, and no message byte varies with room conditions), so the
 current-temperature field stays unknown; use an external temperature sensor. Unmapped
 `<value>` bytes are ignored rather than guessed; for partially mapped observations, HA
-retains the last known field. The component's Bus Status/Bus Alive signals are still keyed
-to `0x21` traffic, so they read "Never Seen" on this bus (not yet changed).
+retains the last known field. Bus Status/Bus Alive report "alive" while recognised
+messages arrive (timeout 4 s); the climate entity still follows the passive state because
+no `0x21` frame is ever received.
 
 The mapping currently covers FAN values `03`, `05`, `09`, `0B`; AUTO values `73`,
 `75`, `79`, `7B` at 23°C; COOL values `B9`, `BA`, `BC`, `BD` at 23°C and `C4` at
-24°C; and HEAT values `12` (24°C, not seen in any committed capture), `52`, `72`, `92`,
-`B2`, `D2`, `E6`, `EA`, `F2`, `F6`.
+24°C; and HEAT values `52`, `72`, `92`, `B2`, `D2`, `E6`, `EA`, `F2`, `F6`. HEAT `12` (24°C) is
+deliberately not mapped because no committed capture contains it.
 The 24°C COOL value does not update fan mode because its fan mapping has not been
 confirmed. No commands are transmitted by this observation path.
