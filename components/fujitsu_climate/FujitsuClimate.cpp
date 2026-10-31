@@ -704,9 +704,9 @@ void FujitsuClimate::set_aot30_test_tx_enabled(bool enabled) {
   this->aot30_test_tx_enabled_.store(enabled);
   if (enabled) {
     this->aot30_test_tx_sent_.store(false);
-    ESP_LOGW(TAG, "AOT30 experimental TX armed for one captured HEAT 20 ON test frame");
+    ESP_LOGW(TAG, "AOT30 experimental TX armed for one test sequence");
   } else {
-    this->aot30_test_tx_requested_.store(false);
+    this->aot30_test_tx_request_.store(Aot30TestRequest::NONE);
     ESP_LOGW(TAG, "AOT30 experimental TX disarmed");
   }
 }
@@ -721,16 +721,35 @@ void FujitsuClimate::request_aot30_heat20_on_test() {
     return;
   }
 
-  bool expected = false;
-  if (!this->aot30_test_tx_requested_.compare_exchange_strong(expected, true)) {
+  Aot30TestRequest expected = Aot30TestRequest::NONE;
+  if (!this->aot30_test_tx_request_.compare_exchange_strong(expected, Aot30TestRequest::HEAT20)) {
     ESP_LOGW(TAG, "AOT30 test TX rejected: a frame is already queued");
     return;
   }
   ESP_LOGW(TAG, "AOT30 captured HEAT 20 ON test frame queued");
 }
 
+void FujitsuClimate::request_aot30_startup_heat20_on_test() {
+  if (!this->aot30_test_tx_enabled_.load()) {
+    ESP_LOGW(TAG, "AOT30 startup test TX rejected: turn on the separate experimental TX arm switch first");
+    return;
+  }
+  if (this->aot30_test_tx_sent_.load()) {
+    ESP_LOGW(TAG, "AOT30 startup test TX rejected: a test has already been sent; disarm and re-arm to retry");
+    return;
+  }
+
+  Aot30TestRequest expected = Aot30TestRequest::NONE;
+  if (!this->aot30_test_tx_request_.compare_exchange_strong(expected, Aot30TestRequest::STARTUP_AND_HEAT20)) {
+    ESP_LOGW(TAG, "AOT30 startup test TX rejected: a frame is already queued");
+    return;
+  }
+  ESP_LOGW(TAG, "AOT30 candidate startup + HEAT 20 ON test queued");
+}
+
 void FujitsuClimate::process_aot30_test_tx_request() {
-  if (!this->aot30_test_tx_requested_.exchange(false)) {
+  const Aot30TestRequest request = this->aot30_test_tx_request_.exchange(Aot30TestRequest::NONE);
+  if (request == Aot30TestRequest::NONE) {
     return;
   }
   if (!this->aot30_test_tx_enabled_.load()) {
@@ -753,7 +772,10 @@ void FujitsuClimate::process_aot30_test_tx_request() {
     return;
   }
 
-  if (this->heat_pump.sendCapturedHeat20OnMessage()) {
+  const bool sent = request == Aot30TestRequest::STARTUP_AND_HEAT20
+                        ? this->heat_pump.sendCandidateStartupAndHeat20On()
+                        : this->heat_pump.sendCapturedHeat20OnMessage();
+  if (sent) {
     this->aot30_test_tx_sent_.store(true);
   }
 }

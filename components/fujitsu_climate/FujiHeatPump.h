@@ -224,6 +224,7 @@ class FujiHeatPump {
   bool waitForFrame();
   void sendPendingFrame();
   bool sendCapturedHeat20OnMessage();
+  bool sendCandidateStartupAndHeat20On();
   bool isBound();
   bool updatePending();
 

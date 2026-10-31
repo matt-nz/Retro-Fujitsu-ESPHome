@@ -252,6 +252,46 @@ bool FujiHeatPump::sendCapturedHeat20OnMessage() {
   return true;
 }
 
+bool FujiHeatPump::sendCandidateStartupAndHeat20On() {
+  if (_serial == nullptr) {
+    ESP_LOGE(TAG, "Cannot send AOT30 startup experiment: UART is not connected");
+    return false;
+  }
+  if (_serial->available() > 0) {
+    ESP_LOGW(TAG, "AOT30 startup experiment blocked: UART receive data is pending");
+    return false;
+  }
+
+  const size_t startup_written = _serial->write(fuji_aot30::kCandidateStartupSequenceUart.data(),
+                                                fuji_aot30::kCandidateStartupSequenceUart.size());
+  _serial->flush();
+  if (startup_written != fuji_aot30::kCandidateStartupSequenceUart.size()) {
+    ESP_LOGE(TAG, "AOT30 startup sequence write incomplete: wrote %u of %u bytes",
+             static_cast<unsigned>(startup_written),
+             static_cast<unsigned>(fuji_aot30::kCandidateStartupSequenceUart.size()));
+    return false;
+  }
+
+  ESP_LOGW(TAG, "AOT30 experimental startup sequence sent once "
+                "(UART: 80 D7 EC F7 80 ED FE; decoded: 7F 28 13 08 7F 12 01)");
+  delay(fuji_aot30::kStartupToSettingDelayMs);
+
+  const size_t setting_written = _serial->write(fuji_aot30::kCapturedHeat20OnUart.data(),
+                                                fuji_aot30::kCapturedHeat20OnUart.size());
+  _serial->flush();
+  if (setting_written != fuji_aot30::kCapturedHeat20OnUart.size()) {
+    ESP_LOGE(TAG, "AOT30 HEAT 20 setting write incomplete: wrote %u of %u bytes",
+             static_cast<unsigned>(setting_written),
+             static_cast<unsigned>(fuji_aot30::kCapturedHeat20OnUart.size()));
+    return false;
+  }
+
+  ESP_LOGW(TAG, "AOT30 experimental HEAT 20 ON setting sent once after %u ms "
+                "(UART: 80 DD FC 69 FD A0 81; decoded: 7F 22 03 96 02 5F 7E)",
+           static_cast<unsigned>(fuji_aot30::kStartupToSettingDelayMs));
+  return true;
+}
+
 bool FujiHeatPump::waitForFrame() {
   FujiFrame ff;
 

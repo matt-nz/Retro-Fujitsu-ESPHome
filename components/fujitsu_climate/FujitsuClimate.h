@@ -59,6 +59,7 @@
 #include "FujiHeatPump.h"
 
 #include <atomic>
+#include <cstdint>
 
 #ifdef ESP32
 #include <freertos/FreeRTOS.h>
@@ -102,6 +103,7 @@ class FujitsuClimate : public climate::Climate, public Component {
   bool get_control_enabled() const { return control_enabled_; }
   void set_aot30_test_tx_enabled(bool enabled);
   void request_aot30_heat20_on_test();
+  void request_aot30_startup_heat20_on_test();
   void process_aot30_test_tx_request();
 
   // Diagnostics (trimmed for this rebuild -- see the .cpp file's top-of-file comment
@@ -155,11 +157,13 @@ class FujitsuClimate : public climate::Climate, public Component {
   volatile bool pending_update{false};
 
  protected:
+  enum class Aot30TestRequest : uint8_t { NONE, HEAT20, STARTUP_AND_HEAT20 };
+
   bool hardware_present_{false};
   bool control_enabled_{false};
   bool debug_{false};
   std::atomic<bool> aot30_test_tx_enabled_{false};
-  std::atomic<bool> aot30_test_tx_requested_{false};
+  std::atomic<Aot30TestRequest> aot30_test_tx_request_{Aot30TestRequest::NONE};
   std::atomic<bool> aot30_test_tx_sent_{false};
   int rx_pin_{16};
   int tx_pin_{17};

@@ -26,7 +26,7 @@
 # day (state-of-play.md's "4A.1" section) after a locking hardening pass following a
 # crash, so this is a considered change, not an oversight. Flip it off in HA/the web
 # UI any time you want read-only monitoring (e.g. while testing new firmware).
-# The separately armed AOT30 experiment below is a one-frame captured HEAT 20 ON test,
+# The separately armed AOT30 experiments below are one-shot captured-frame tests,
 # not a general transmitter or the normal climate-control path.
 
 esphome:
@@ -466,8 +466,8 @@ switch:
     turn_off_action:
       - lambda: 'id(fujitsu_hp)->set_thermo_write_test(false);'
 
-  # One-shot AOT30L protocol experiment. Keep disarmed except when testing with the
-  # wired remote disconnected; firmware sends only the captured HEAT 20 ON frame.
+  # One-shot AOT30L protocol experiments. Keep disarmed except when testing with the
+  # wired remote disconnected.
   - platform: template
     name: "AOT30 Experimental TX Arm"
     id: aot30_test_tx_arm
@@ -510,6 +510,12 @@ button:
     entity_category: diagnostic
     on_press:
       - lambda: 'id(fujitsu_hp)->request_aot30_heat20_on_test();'
+  - platform: template
+    name: "Send Startup + HEAT 20 ON Test"
+    icon: "mdi:transmission-tower"
+    entity_category: diagnostic
+    on_press:
+      - lambda: 'id(fujitsu_hp)->request_aot30_startup_heat20_on_test();'
 
 # Diagnostic interval
 interval:
