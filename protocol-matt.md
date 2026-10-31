@@ -192,7 +192,7 @@ login/reply decoder:
 - Boot limitation: mode, fan and setpoint are only sent when the remote changes them, so
   after a reboot HA stays unknown until the next remote button press.
 
-`tests/passive_stream_test.cpp` replays all ten captures through the parser, including
+`tests/passive_stream_test.cpp` replays all eleven captures through the parser, including
 the TX-enabled follow-up. Its remote setting sequence decodes to `F2 D2 B2 92 09 0B
 03 05` (HEAT 23→20°C, then FAN LOW → AUTO → HIGH → MEDIUM), followed by one remote
 power-off message and its unit echo. The ESPHome log reports the corresponding HA state
@@ -213,8 +213,13 @@ messages arrive (timeout 4 s); the climate entity still follows the passive stat
 no `0x21` frame is ever received.
 
 The mapping currently covers FAN values `03`, `05`, `09`, `0B`; AUTO values `73`,
-`75`, `79`, `7B` at 23°C; COOL values `B9`, `BA`, `BC`, `BD` at 23°C and `C4` at
-24°C; and HEAT values `52`, `72`, `92`, `B2`, `D2`, `E6`, `EA`, `F2`, `F6`. HEAT `12` (24°C) is
-deliberately not mapped because no committed capture contains it.
-The 24°C COOL value does not update fan mode because its fan mapping has not been
-confirmed. No commands are transmitted by this observation path.
+`75`, `79`, `7B` at 23°C; COOL values `B9`, `BA`, `BC` for HIGH/MEDIUM/LOW fan at
+23°C, `C4` at 24°C with fan unknown, and `95`, `9D`, `A5`, `AD`, `B5`, `BD`, `C5`,
+`CD`, `D5`, `DD`, `E5`, `ED`, `F5` for AUTO fan at 18-30°C; and HEAT values `52`, `72`, `92`, `B2`, `D2`,
+`E6`, `EA`, `F2`, `F6`. The COOL/AUTO sweep is recorded in
+[`captures/matt-captures/cold-test.log`](captures/matt-captures/cold-test.log) and
+replayed by `tests/passive_stream_test.cpp`. The `T31` label was not a 31°C setting
+change, so no 31°C behavior is established. HEAT `12` (24°C) is deliberately not mapped
+because no committed capture contains it. The isolated 24°C COOL value `C4` does not
+update fan mode because that fan mapping has not been confirmed. No commands are
+transmitted by this observation path.

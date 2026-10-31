@@ -1,0 +1,1242 @@
+[23:00:26.494][CAPTURE] connected to heatpump.local
+[23:00:26.614][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 E7 EC B7 7F 80 D7 EC
+[23:00:26.619][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 18 13 48 80 7F 28 13  mSrc:127 mDst:24 mType:1 write:0 login:0 unknown:0 onOff:0 temp:0 mode:4 cP:0 uM:7 cTemp:20 acError:0
+[23:00:26.841][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): F7 80 E7 EC B7 7F 80 D7
+[23:00:26.841][I][fujitsu.heatpump:204][FujiTask]: <-- 08 7F 18 13 48 80 7F 28  mSrc:8 mDst:127 mType:1 write:1 login:1 unknown:0 onOff:1 temp:72 mode:1 cP:1 uM:8 cTemp:63 acError:0
+[23:00:27.045][D][status_led:049]: 'Status LED': Setting state OFF
+[23:00:27.059][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): EC F7 80 E7 EC B7 7F 80
+[23:00:27.063][I][fujitsu.heatpump:204][FujiTask]: <-- 13 08 7F 18 13 48 80 7F  mSrc:19 mDst:8 mType:3 write:1 login:0 unknown:0 onOff:0 temp:19 mode:4 cP:0 uM:4 cTemp:0 acError:0
+[23:00:27.250][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): D7 EC F7 80 E7 EC B7 7F
+[23:00:27.253][I][fujitsu.heatpump:204][FujiTask]: <-- 28 13 08 7F 18 13 48 80  mSrc:40 mDst:19 mType:0 write:1 login:0 unknown:0 onOff:1 temp:24 mode:7 cP:0 uM:1 cTemp:36 acError:0
+[23:00:27.659][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 D7 EC F7 80 E7 EC B7
+[23:00:27.689][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 28 13 08 7F 18 13 48  mSrc:127 mDst:40 mType:1 write:0 login:1 unknown:0 onOff:0 temp:127 mode:4 cP:1 uM:1 cTemp:9 acError:0
+[23:00:27.696][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 7F 80 D7 EC F7 80 E7 EC
+[23:00:27.699][I][fujitsu.heatpump:204][FujiTask]: <-- 80 7F 28 13 08 7F 18 13  mSrc:128 mDst:127 mType:2 write:1 login:1 unknown:0 onOff:1 temp:8 mode:1 cP:0 uM:7 cTemp:12 acError:0
+[23:00:28.027][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): B7 7F 80 D7 EC F7 80 E7
+[23:00:28.033][I][fujitsu.heatpump:204][FujiTask]: <-- 48 80 7F 28 13 08 7F 18  mSrc:72 mDst:0 mType:3 write:1 login:0 unknown:1 onOff:0 temp:19 mode:4 cP:1 uM:0 cTemp:63 acError:0
+[23:00:28.141][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): EC B7 7F 80 D7 EC F7 80
+[23:00:28.145][I][fujitsu.heatpump:204][FujiTask]: <-- 13 48 80 7F 28 13 08 7F  mSrc:19 mDst:72 mType:0 write:0 login:0 unknown:0 onOff:1 temp:40 mode:7 cP:0 uM:1 cTemp:4 acError:0
+[23:00:28.479][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E7 EC B7 7F 80 D7 EC F7
+[23:00:28.483][I][fujitsu.heatpump:204][FujiTask]: <-- 18 13 48 80 7F 28 13 08  mSrc:24 mDst:19 mType:0 write:1 login:0 unknown:0 onOff:0 temp:127 mode:0 cP:1 uM:2 cTemp:9 acError:1
+[23:00:28.519][D][status_led:049]: 'Status LED': Setting state ON
+[23:00:28.589][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 E7 EC B7 7F 80 D7 EC
+[23:00:28.594][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 18 13 48 80 7F 28 13  mSrc:127 mDst:24 mType:1 write:0 login:0 unknown:0 onOff:0 temp:0 mode:4 cP:0 uM:7 cTemp:20 acError:0
+[23:00:28.891][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): F7 80 E7 EC B7 7F 80 D7
+[23:00:28.891][I][fujitsu.heatpump:204][FujiTask]: <-- 08 7F 18 13 48 80 7F 28  mSrc:8 mDst:127 mType:1 write:1 login:1 unknown:0 onOff:1 temp:72 mode:1 cP:1 uM:8 cTemp:63 acError:0
+[23:00:29.031][D][status_led:049]: 'Status LED': Setting state OFF
+[23:00:29.036][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): EC F7 80 E7 EC B7 7F 80
+[23:00:29.041][I][fujitsu.heatpump:204][FujiTask]: <-- 13 08 7F 18 13 48 80 7F  mSrc:19 mDst:8 mType:3 write:1 login:0 unknown:0 onOff:0 temp:19 mode:4 cP:0 uM:4 cTemp:0 acError:0
+[23:00:29.299][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): D7 EC F7 80 E7 EC B7 7F
+[23:00:29.325][I][fujitsu.heatpump:204][FujiTask]: <-- 28 13 08 7F 18 13 48 80  mSrc:40 mDst:19 mType:0 write:1 login:0 unknown:0 onOff:1 temp:24 mode:7 cP:0 uM:1 cTemp:36 acError:0
+[23:00:29.427][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 D7 EC F7 80 E7 EC B7
+[23:00:29.430][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 28 13 08 7F 18 13 48  mSrc:127 mDst:40 mType:1 write:0 login:1 unknown:0 onOff:0 temp:127 mode:4 cP:1 uM:1 cTemp:9 acError:0
+[23:00:29.708][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 7F 80 D7 EC F7 80 E7 EC
+[23:00:29.735][I][fujitsu.heatpump:204][FujiTask]: <-- 80 7F 28 13 08 7F 18 13  mSrc:128 mDst:127 mType:2 write:1 login:1 unknown:0 onOff:1 temp:8 mode:1 cP:0 uM:7 cTemp:12 acError:0
+[23:00:29.868][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): B7 7F 80 D7 EC F7 80 E7
+[23:00:29.877][I][fujitsu.heatpump:204][FujiTask]: <-- 48 80 7F 28 13 08 7F 18  mSrc:72 mDst:0 mType:3 write:1 login:0 unknown:1 onOff:0 temp:19 mode:4 cP:1 uM:0 cTemp:63 acError:0
+[23:00:30.109][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): EC B7 7F 80 D7 EC F7 80
+[23:00:30.122][I][fujitsu.heatpump:204][FujiTask]: <-- 13 48 80 7F 28 13 08 7F  mSrc:19 mDst:72 mType:0 write:0 login:0 unknown:0 onOff:1 temp:40 mode:7 cP:0 uM:1 cTemp:4 acError:0
+[23:00:30.318][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E7 EC B7 7F 80 D7 EC F7
+[23:00:30.322][I][fujitsu.heatpump:204][FujiTask]: <-- 18 13 48 80 7F 28 13 08  mSrc:24 mDst:19 mType:0 write:1 login:0 unknown:0 onOff:0 temp:127 mode:0 cP:1 uM:2 cTemp:9 acError:1
+[23:00:30.732][D][status_led:049]: 'Status LED': Setting state ON
+[23:00:30.758][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 E7 EC B7 7F 80 D7 EC
+[23:00:30.758][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 18 13 48 80 7F 28 13  mSrc:127 mDst:24 mType:1 write:0 login:0 unknown:0 onOff:0 temp:0 mode:4 cP:0 uM:7 cTemp:20 acError:0
+[23:00:30.772][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): F7 80 E7 EC B7 7F 80 D7
+[23:00:30.774][I][fujitsu.heatpump:204][FujiTask]: <-- 08 7F 18 13 48 80 7F 28  mSrc:8 mDst:127 mType:1 write:1 login:1 unknown:0 onOff:1 temp:72 mode:1 cP:1 uM:8 cTemp:63 acError:0
+[23:00:31.141][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): EC F7 80 E7 EC B7 7F 80
+[23:00:31.145][I][fujitsu.heatpump:204][FujiTask]: <-- 13 08 7F 18 13 48 80 7F  mSrc:19 mDst:8 mType:3 write:1 login:0 unknown:0 onOff:0 temp:19 mode:4 cP:0 uM:4 cTemp:0 acError:0
+[23:00:31.145][D][status_led:049]: 'Status LED': Setting state OFF
+[23:00:31.181][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): D7 EC F7 80 E7 EC B7 7F
+[23:00:31.187][I][fujitsu.heatpump:204][FujiTask]: <-- 28 13 08 7F 18 13 48 80  mSrc:40 mDst:19 mType:0 write:1 login:0 unknown:0 onOff:1 temp:24 mode:7 cP:0 uM:1 cTemp:36 acError:0
+[23:00:31.403][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 D7 EC F7 80 E7 EC B7
+[23:00:31.410][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 28 13 08 7F 18 13 48  mSrc:127 mDst:40 mType:1 write:0 login:1 unknown:0 onOff:0 temp:127 mode:4 cP:1 uM:1 cTemp:9 acError:0
+[23:00:31.643][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 7F 80 D7 EC F7 80 E7 EC
+[23:00:31.647][I][fujitsu.heatpump:204][FujiTask]: <-- 80 7F 28 13 08 7F 18 13  mSrc:128 mDst:127 mType:2 write:1 login:1 unknown:0 onOff:1 temp:8 mode:1 cP:0 uM:7 cTemp:12 acError:0
+[23:00:31.961][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): B7 7F 80 D7 EC F7 80 E7
+[23:00:31.963][I][fujitsu.heatpump:204][FujiTask]: <-- 48 80 7F 28 13 08 7F 18  mSrc:72 mDst:0 mType:3 write:1 login:0 unknown:1 onOff:0 temp:19 mode:4 cP:1 uM:0 cTemp:63 acError:0
+[23:00:32.079][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): EC B7 7F 80 D7 EC F7 80
+[23:00:32.088][I][fujitsu.heatpump:204][FujiTask]: <-- 13 48 80 7F 28 13 08 7F  mSrc:19 mDst:72 mType:0 write:0 login:0 unknown:0 onOff:1 temp:40 mode:7 cP:0 uM:1 cTemp:4 acError:0
+[23:00:32.371][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E7 EC B7 7F 80 D7 EC F7
+[23:00:32.398][I][fujitsu.heatpump:204][FujiTask]: <-- 18 13 48 80 7F 28 13 08  mSrc:24 mDst:19 mType:0 write:1 login:0 unknown:0 onOff:0 temp:127 mode:0 cP:1 uM:2 cTemp:9 acError:1
+[23:00:32.567][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 E7 EC B7 7F 80 D7 EC
+[23:00:32.571][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 18 13 48 80 7F 28 13  mSrc:127 mDst:24 mType:1 write:0 login:0 unknown:0 onOff:0 temp:0 mode:4 cP:0 uM:7 cTemp:20 acError:0
+[23:00:32.572][D][status_led:049]: 'Status LED': Setting state ON
+[23:00:32.780][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): F7 80 E7 EC B7 7F 80 D7
+[23:00:32.780][I][fujitsu.heatpump:204][FujiTask]: <-- 08 7F 18 13 48 80 7F 28  mSrc:8 mDst:127 mType:1 write:1 login:1 unknown:0 onOff:1 temp:72 mode:1 cP:1 uM:8 cTemp:63 acError:0
+[23:00:32.984][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): EC F7 80 E7 EC B7 7F 80
+[23:00:32.988][I][fujitsu.heatpump:204][FujiTask]: <-- 13 08 7F 18 13 48 80 7F  mSrc:19 mDst:8 mType:3 write:1 login:0 unknown:0 onOff:0 temp:19 mode:4 cP:0 uM:4 cTemp:0 acError:0
+[23:00:33.064][D][status_led:049]: 'Status LED': Setting state OFF
+[23:00:33.141][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): D7 EC F7 80 E7 EC B7 7F
+[23:00:33.151][I][fujitsu.heatpump:204][FujiTask]: <-- 28 13 08 7F 18 13 48 80  mSrc:40 mDst:19 mType:0 write:1 login:0 unknown:0 onOff:1 temp:24 mode:7 cP:0 uM:1 cTemp:36 acError:0
+[23:00:33.394][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 D7 EC F7 80 E7 EC B7
+[23:00:33.399][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 28 13 08 7F 18 13 48  mSrc:127 mDst:40 mType:1 write:0 login:1 unknown:0 onOff:0 temp:127 mode:4 cP:1 uM:1 cTemp:9 acError:0
+[23:00:33.599][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 7F 80 D7 EC F7 80 E7 EC
+[23:00:33.604][I][fujitsu.heatpump:204][FujiTask]: <-- 80 7F 28 13 08 7F 18 13  mSrc:128 mDst:127 mType:2 write:1 login:1 unknown:0 onOff:1 temp:8 mode:1 cP:0 uM:7 cTemp:12 acError:0
+[23:00:33.808][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): B7 7F 80 D7 EC F7 80 E7
+[23:00:33.811][I][fujitsu.heatpump:204][FujiTask]: <-- 48 80 7F 28 13 08 7F 18  mSrc:72 mDst:0 mType:3 write:1 login:0 unknown:1 onOff:0 temp:19 mode:4 cP:1 uM:0 cTemp:63 acError:0
+[23:00:34.214][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): EC B7 7F 80 D7 EC F7 80
+[23:00:34.241][I][fujitsu.heatpump:204][FujiTask]: <-- 13 48 80 7F 28 13 08 7F  mSrc:19 mDst:72 mType:0 write:0 login:0 unknown:0 onOff:1 temp:40 mode:7 cP:0 uM:1 cTemp:4 acError:0
+[23:00:34.254][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E7 EC B7 7F 80 D7 EC F7
+[23:00:34.257][I][fujitsu.heatpump:204][FujiTask]: <-- 18 13 48 80 7F 28 13 08  mSrc:24 mDst:19 mType:0 write:1 login:0 unknown:0 onOff:0 temp:127 mode:0 cP:1 uM:2 cTemp:9 acError:1
+[23:00:34.623][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 E7 EC B7 7F 80 D7 EC
+[23:00:34.627][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 18 13 48 80 7F 28 13  mSrc:127 mDst:24 mType:1 write:0 login:0 unknown:0 onOff:0 temp:0 mode:4 cP:0 uM:7 cTemp:20 acError:0
+[23:00:34.627][D][status_led:049]: 'Status LED': Setting state ON
+[23:00:34.689][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): F7 80 E7 EC B7 7F 80 D7
+[23:00:34.689][I][fujitsu.heatpump:204][FujiTask]: <-- 08 7F 18 13 48 80 7F 28  mSrc:8 mDst:127 mType:1 write:1 login:1 unknown:0 onOff:1 temp:72 mode:1 cP:1 uM:8 cTemp:63 acError:0
+[23:00:35.033][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): EC F7 80 E7 EC B7 7F 80
+[23:00:35.060][I][fujitsu.heatpump:204][FujiTask]: <-- 13 08 7F 18 13 48 80 7F  mSrc:19 mDst:8 mType:3 write:1 login:0 unknown:0 onOff:0 temp:19 mode:4 cP:0 uM:4 cTemp:0 acError:0
+[23:00:35.089][D][status_led:049]: 'Status LED': Setting state OFF
+[23:00:35.098][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): D7 EC F7 80 E7 EC B7 7F
+[23:00:35.101][I][fujitsu.heatpump:204][FujiTask]: <-- 28 13 08 7F 18 13 48 80  mSrc:40 mDst:19 mType:0 write:1 login:0 unknown:0 onOff:1 temp:24 mode:7 cP:0 uM:1 cTemp:36 acError:0
+[23:00:35.356][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 D7 EC F7 80 E7 EC B7
+[23:00:35.362][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 28 13 08 7F 18 13 48  mSrc:127 mDst:40 mType:1 write:0 login:1 unknown:0 onOff:0 temp:127 mode:4 cP:1 uM:1 cTemp:9 acError:0
+[23:00:35.647][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 7F 80 D7 EC F7 80 E7 EC
+[23:00:35.650][I][fujitsu.heatpump:204][FujiTask]: <-- 80 7F 28 13 08 7F 18 13  mSrc:128 mDst:127 mType:2 write:1 login:1 unknown:0 onOff:1 temp:8 mode:1 cP:0 uM:7 cTemp:12 acError:0
+[23:00:35.747][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): B7 7F 80 D7 EC F7 80 E7
+[23:00:35.752][I][fujitsu.heatpump:204][FujiTask]: <-- 48 80 7F 28 13 08 7F 18  mSrc:72 mDst:0 mType:3 write:1 login:0 unknown:1 onOff:0 temp:19 mode:4 cP:1 uM:0 cTemp:63 acError:0
+[23:00:36.057][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): EC B7 7F 80 D7 EC F7 80
+[23:00:36.104][I][fujitsu.heatpump:204][FujiTask]: <-- 13 48 80 7F 28 13 08 7F  mSrc:19 mDst:72 mType:0 write:0 login:0 unknown:0 onOff:1 temp:40 mode:7 cP:0 uM:1 cTemp:4 acError:0
+[23:00:36.190][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E7 EC B7 7F 80 D7 EC F7
+[23:00:36.194][I][fujitsu.heatpump:204][FujiTask]: <-- 18 13 48 80 7F 28 13 08  mSrc:24 mDst:19 mType:0 write:1 login:0 unknown:0 onOff:0 temp:127 mode:0 cP:1 uM:2 cTemp:9 acError:1
+[23:00:36.466][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 E7 EC B7 7F 80 D7 EC
+[23:00:36.502][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 18 13 48 80 7F 28 13  mSrc:127 mDst:24 mType:1 write:0 login:0 unknown:0 onOff:0 temp:0 mode:4 cP:0 uM:7 cTemp:20 acError:0
+[23:00:36.602][D][status_led:049]: 'Status LED': Setting state ON
+[23:00:36.640][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): F7 80 E7 EC B7 7F 80 D7
+[23:00:36.645][I][fujitsu.heatpump:204][FujiTask]: <-- 08 7F 18 13 48 80 7F 28  mSrc:8 mDst:127 mType:1 write:1 login:1 unknown:0 onOff:1 temp:72 mode:1 cP:1 uM:8 cTemp:63 acError:0
+[23:00:36.866][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): EC F7 80 E7 EC B7 7F 80
+[23:00:36.869][I][fujitsu.heatpump:204][FujiTask]: <-- 13 08 7F 18 13 48 80 7F  mSrc:19 mDst:8 mType:3 write:1 login:0 unknown:0 onOff:0 temp:19 mode:4 cP:0 uM:4 cTemp:0 acError:0
+[23:00:37.052][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): D7 EC F7 80 E7 EC B7 7F
+[23:00:37.054][I][fujitsu.heatpump:204][FujiTask]: <-- 28 13 08 7F 18 13 48 80  mSrc:40 mDst:19 mType:0 write:1 login:0 unknown:0 onOff:1 temp:24 mode:7 cP:0 uM:1 cTemp:36 acError:0
+[23:00:37.111][D][status_led:049]: 'Status LED': Setting state OFF
+[23:00:37.285][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 D7 EC F7 80 E7 EC B7
+[23:00:37.289][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 28 13 08 7F 18 13 48  mSrc:127 mDst:40 mType:1 write:0 login:1 unknown:0 onOff:0 temp:127 mode:4 cP:1 uM:1 cTemp:9 acError:0
+[23:00:37.492][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 7F 80 D7 EC F7 80 E7 EC
+[23:00:37.499][I][fujitsu.heatpump:204][FujiTask]: <-- 80 7F 28 13 08 7F 18 13  mSrc:128 mDst:127 mType:2 write:1 login:1 unknown:0 onOff:1 temp:8 mode:1 cP:0 uM:7 cTemp:12 acError:0
+[23:00:37.705][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): B7 7F 80 D7 EC F7 80 E7
+[23:00:37.708][I][fujitsu.heatpump:204][FujiTask]: <-- 48 80 7F 28 13 08 7F 18  mSrc:72 mDst:0 mType:3 write:1 login:0 unknown:1 onOff:0 temp:19 mode:4 cP:1 uM:0 cTemp:63 acError:0
+[23:00:38.105][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): EC B7 7F 80 D7 EC F7 80
+[23:00:38.131][I][fujitsu.heatpump:204][FujiTask]: <-- 13 48 80 7F 28 13 08 7F  mSrc:19 mDst:72 mType:0 write:0 login:0 unknown:0 onOff:1 temp:40 mode:7 cP:0 uM:1 cTemp:4 acError:0
+[23:00:38.153][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E7 EC B7 7F 80 D7 EC F7
+[23:00:38.159][I][fujitsu.heatpump:204][FujiTask]: <-- 18 13 48 80 7F 28 13 08  mSrc:24 mDst:19 mType:0 write:1 login:0 unknown:0 onOff:0 temp:127 mode:0 cP:1 uM:2 cTemp:9 acError:1
+[23:00:38.514][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 E7 EC B7 7F 80 D7 EC
+[23:00:38.518][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 18 13 48 80 7F 28 13  mSrc:127 mDst:24 mType:1 write:0 login:0 unknown:0 onOff:0 temp:0 mode:4 cP:0 uM:7 cTemp:20 acError:0
+[23:00:38.593][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): F7 80 E7 EC B7 7F 80 D7
+[23:00:38.597][I][fujitsu.heatpump:204][FujiTask]: <-- 08 7F 18 13 48 80 7F 28  mSrc:8 mDst:127 mType:1 write:1 login:1 unknown:0 onOff:1 temp:72 mode:1 cP:1 uM:8 cTemp:63 acError:0
+[23:00:38.626][D][status_led:049]: 'Status LED': Setting state ON
+[23:00:38.821][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): EC F7 80 E7 EC B7 7F 80
+[23:00:38.825][I][fujitsu.heatpump:204][FujiTask]: <-- 13 08 7F 18 13 48 80 7F  mSrc:19 mDst:8 mType:3 write:1 login:0 unknown:0 onOff:0 temp:19 mode:4 cP:0 uM:4 cTemp:0 acError:0
+[23:00:39.008][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): D7 EC F7 80 E7 EC B7 7F
+[23:00:39.008][I][fujitsu.heatpump:204][FujiTask]: <-- 28 13 08 7F 18 13 48 80  mSrc:40 mDst:19 mType:0 write:1 login:0 unknown:0 onOff:1 temp:24 mode:7 cP:0 uM:1 cTemp:36 acError:0
+[23:00:39.131][D][status_led:049]: 'Status LED': Setting state OFF
+[23:00:39.220][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 D7 EC F7 80 E7 EC B7
+[23:00:39.225][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 28 13 08 7F 18 13 48  mSrc:127 mDst:40 mType:1 write:0 login:1 unknown:0 onOff:0 temp:127 mode:4 cP:1 uM:1 cTemp:9 acError:0
+[23:00:39.440][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 7F 80 D7 EC F7 80 E7 EC
+[23:00:39.444][I][fujitsu.heatpump:204][FujiTask]: <-- 80 7F 28 13 08 7F 18 13  mSrc:128 mDst:127 mType:2 write:1 login:1 unknown:0 onOff:1 temp:8 mode:1 cP:0 uM:7 cTemp:12 acError:0
+[23:00:39.668][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): B7 7F 80 D7 EC F7 80 E7
+[23:00:39.672][I][fujitsu.heatpump:204][FujiTask]: <-- 48 80 7F 28 13 08 7F 18  mSrc:72 mDst:0 mType:3 write:1 login:0 unknown:1 onOff:0 temp:19 mode:4 cP:1 uM:0 cTemp:63 acError:0
+[23:00:39.948][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): EC B7 7F 80 D7 EC F7 80
+[23:00:39.952][I][fujitsu.heatpump:204][FujiTask]: <-- 13 48 80 7F 28 13 08 7F  mSrc:19 mDst:72 mType:0 write:0 login:0 unknown:0 onOff:1 temp:40 mode:7 cP:0 uM:1 cTemp:4 acError:0
+[23:00:40.107][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E7 EC B7 7F 80 D7 EC F7
+[23:00:40.118][I][fujitsu.heatpump:204][FujiTask]: <-- 18 13 48 80 7F 28 13 08  mSrc:24 mDst:19 mType:0 write:1 login:0 unknown:0 onOff:0 temp:127 mode:0 cP:1 uM:2 cTemp:9 acError:1
+[23:00:40.332][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 E7 EC B7 7F 80 D7 EC
+[23:00:40.336][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 18 13 48 80 7F 28 13  mSrc:127 mDst:24 mType:1 write:0 login:0 unknown:0 onOff:0 temp:0 mode:4 cP:0 uM:7 cTemp:20 acError:0
+[23:00:40.562][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): F7 80 E7 EC B7 7F 80 D7
+[23:00:40.567][I][fujitsu.heatpump:204][FujiTask]: <-- 08 7F 18 13 48 80 7F 28  mSrc:8 mDst:127 mType:1 write:1 login:1 unknown:0 onOff:1 temp:72 mode:1 cP:1 uM:8 cTemp:63 acError:0
+[23:00:40.633][D][status_led:049]: 'Status LED': Setting state ON
+[23:00:40.973][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): EC F7 80 E7 EC B7 7F 80
+[23:00:40.973][I][fujitsu.heatpump:204][FujiTask]: <-- 13 08 7F 18 13 48 80 7F  mSrc:19 mDst:8 mType:3 write:1 login:0 unknown:0 onOff:0 temp:19 mode:4 cP:0 uM:4 cTemp:0 acError:0
+[23:00:40.973][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): D7 EC F7 80 E7 EC B7 7F
+[23:00:40.973][I][fujitsu.heatpump:204][FujiTask]: <-- 28 13 08 7F 18 13 48 80  mSrc:40 mDst:19 mType:0 write:1 login:0 unknown:0 onOff:1 temp:24 mode:7 cP:0 uM:1 cTemp:36 acError:0
+[23:00:41.177][D][status_led:049]: 'Status LED': Setting state OFF
+[23:00:41.195][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 D7 EC F7 80 E7 EC B7
+[23:00:41.202][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 28 13 08 7F 18 13 48  mSrc:127 mDst:40 mType:1 write:0 login:1 unknown:0 onOff:0 temp:127 mode:4 cP:1 uM:1 cTemp:9 acError:0
+[23:00:41.586][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 7F 80 D7 EC F7 80 E7 EC
+[23:00:41.614][I][fujitsu.heatpump:204][FujiTask]: <-- 80 7F 28 13 08 7F 18 13  mSrc:128 mDst:127 mType:2 write:1 login:1 unknown:0 onOff:1 temp:8 mode:1 cP:0 uM:7 cTemp:12 acError:0
+[23:00:41.640][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): B7 7F 80 D7 EC F7 80 E7
+[23:00:41.644][I][fujitsu.heatpump:204][FujiTask]: <-- 48 80 7F 28 13 08 7F 18  mSrc:72 mDst:0 mType:3 write:1 login:0 unknown:1 onOff:0 temp:19 mode:4 cP:1 uM:0 cTemp:63 acError:0
+[23:00:41.858][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): EC B7 7F 80 D7 EC F7 80
+[23:00:41.862][I][fujitsu.heatpump:204][FujiTask]: <-- 13 48 80 7F 28 13 08 7F  mSrc:19 mDst:72 mType:0 write:0 login:0 unknown:0 onOff:1 temp:40 mode:7 cP:0 uM:1 cTemp:4 acError:0
+[23:00:42.201][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E7 EC B7 7F 80 D7 EC F7
+[23:00:42.205][I][fujitsu.heatpump:204][FujiTask]: <-- 18 13 48 80 7F 28 13 08  mSrc:24 mDst:19 mType:0 write:1 login:0 unknown:0 onOff:0 temp:127 mode:0 cP:1 uM:2 cTemp:9 acError:1
+[23:00:42.287][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 E7 EC B7 7F 80 D7 EC
+[23:00:42.292][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 18 13 48 80 7F 28 13  mSrc:127 mDst:24 mType:1 write:0 login:0 unknown:0 onOff:0 temp:0 mode:4 cP:0 uM:7 cTemp:20 acError:0
+[23:00:42.611][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): F7 80 E7 EC B7 7F 80 D7
+[23:00:42.620][I][fujitsu.heatpump:204][FujiTask]: <-- 08 7F 18 13 48 80 7F 28  mSrc:8 mDst:127 mType:1 write:1 login:1 unknown:0 onOff:1 temp:72 mode:1 cP:1 uM:8 cTemp:63 acError:0
+[23:00:42.652][D][status_led:049]: 'Status LED': Setting state ON
+[23:00:42.739][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): EC F7 80 E7 EC B7 7F 80
+[23:00:42.743][I][fujitsu.heatpump:204][FujiTask]: <-- 13 08 7F 18 13 48 80 7F  mSrc:19 mDst:8 mType:3 write:1 login:0 unknown:0 onOff:0 temp:19 mode:4 cP:0 uM:4 cTemp:0 acError:0
+[23:00:43.020][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): D7 EC F7 80 E7 EC B7 7F
+[23:00:43.020][I][fujitsu.heatpump:204][FujiTask]: <-- 28 13 08 7F 18 13 48 80  mSrc:40 mDst:19 mType:0 write:1 login:0 unknown:0 onOff:1 temp:24 mode:7 cP:0 uM:1 cTemp:36 acError:0
+[23:00:43.147][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 D7 EC F7 80 E7 EC B7
+[23:00:43.151][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 28 13 08 7F 18 13 48  mSrc:127 mDst:40 mType:1 write:0 login:1 unknown:0 onOff:0 temp:127 mode:4 cP:1 uM:1 cTemp:9 acError:0
+[23:00:43.172][D][status_led:049]: 'Status LED': Setting state OFF
+[23:00:43.430][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 7F 80 D7 EC F7 80 E7 EC
+[23:00:43.459][I][fujitsu.heatpump:204][FujiTask]: <-- 80 7F 28 13 08 7F 18 13  mSrc:128 mDst:127 mType:2 write:1 login:1 unknown:0 onOff:1 temp:8 mode:1 cP:0 uM:7 cTemp:12 acError:0
+[23:00:43.634][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): B7 7F 80 D7 EC F7 80 E7
+[23:00:43.641][I][fujitsu.heatpump:204][FujiTask]: <-- 48 80 7F 28 13 08 7F 18  mSrc:72 mDst:0 mType:3 write:1 login:0 unknown:1 onOff:0 temp:19 mode:4 cP:1 uM:0 cTemp:63 acError:0
+[23:00:43.839][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): EC B7 7F 80 D7 EC F7 80
+[23:00:43.845][I][fujitsu.heatpump:204][FujiTask]: <-- 13 48 80 7F 28 13 08 7F  mSrc:19 mDst:72 mType:0 write:0 login:0 unknown:0 onOff:1 temp:40 mode:7 cP:0 uM:1 cTemp:4 acError:0
+[23:00:44.249][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E7 EC B7 7F 80 D7 EC F7
+[23:00:44.271][I][fujitsu.heatpump:204][FujiTask]: <-- 18 13 48 80 7F 28 13 08  mSrc:24 mDst:19 mType:0 write:1 login:0 unknown:0 onOff:0 temp:127 mode:0 cP:1 uM:2 cTemp:9 acError:1
+[23:00:44.272][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 E7 EC B7 7F 80 D7 EC
+[23:00:44.279][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 18 13 48 80 7F 28 13  mSrc:127 mDst:24 mType:1 write:0 login:0 unknown:0 onOff:0 temp:0 mode:4 cP:0 uM:7 cTemp:20 acError:0
+[23:00:44.658][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): F7 80 E7 EC B7 7F 80 D7
+[23:00:44.686][I][fujitsu.heatpump:204][FujiTask]: <-- 08 7F 18 13 48 80 7F 28  mSrc:8 mDst:127 mType:1 write:1 login:1 unknown:0 onOff:1 temp:72 mode:1 cP:1 uM:8 cTemp:63 acError:0
+[23:00:44.686][D][status_led:049]: 'Status LED': Setting state ON
+[23:00:44.721][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): EC F7 80 E7 EC B7 7F 80
+[23:00:44.725][I][fujitsu.heatpump:204][FujiTask]: <-- 13 08 7F 18 13 48 80 7F  mSrc:19 mDst:8 mType:3 write:1 login:0 unknown:0 onOff:0 temp:19 mode:4 cP:0 uM:4 cTemp:0 acError:0
+[23:00:44.907][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): D7 EC F7 80 E7 EC B7 7F
+[23:00:44.912][I][fujitsu.heatpump:204][FujiTask]: <-- 28 13 08 7F 18 13 48 80  mSrc:40 mDst:19 mType:0 write:1 login:0 unknown:0 onOff:1 temp:24 mode:7 cP:0 uM:1 cTemp:36 acError:0
+[23:00:45.273][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 D7 EC F7 80 E7 EC B7
+[23:00:45.283][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 28 13 08 7F 18 13 48  mSrc:127 mDst:40 mType:1 write:0 login:1 unknown:0 onOff:0 temp:127 mode:4 cP:1 uM:1 cTemp:9 acError:0
+[23:00:45.283][D][status_led:049]: 'Status LED': Setting state OFF
+[23:00:45.355][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 7F 80 D7 EC F7 80 E7 EC
+[23:00:45.361][I][fujitsu.heatpump:204][FujiTask]: <-- 80 7F 28 13 08 7F 18 13  mSrc:128 mDst:127 mType:2 write:1 login:1 unknown:0 onOff:1 temp:8 mode:1 cP:0 uM:7 cTemp:12 acError:0
+[23:00:45.682][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): B7 7F 80 D7 EC F7 80 E7
+[23:00:45.701][I][fujitsu.heatpump:204][FujiTask]: <-- 48 80 7F 28 13 08 7F 18  mSrc:72 mDst:0 mType:3 write:1 login:0 unknown:1 onOff:0 temp:19 mode:4 cP:1 uM:0 cTemp:63 acError:0
+[23:00:45.807][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): EC B7 7F 80 D7 EC F7 80
+[23:00:45.812][I][fujitsu.heatpump:204][FujiTask]: <-- 13 48 80 7F 28 13 08 7F  mSrc:19 mDst:72 mType:0 write:0 login:0 unknown:0 onOff:1 temp:40 mode:7 cP:0 uM:1 cTemp:4 acError:0
+[23:00:46.092][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E7 EC B7 7F 80 D7 EC F7
+[23:00:46.119][I][fujitsu.heatpump:204][FujiTask]: <-- 18 13 48 80 7F 28 13 08  mSrc:24 mDst:19 mType:0 write:1 login:0 unknown:0 onOff:0 temp:127 mode:0 cP:1 uM:2 cTemp:9 acError:1
+[23:00:46.296][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 E7 EC B7 7F 80 D7 EC
+[23:00:46.303][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 18 13 48 80 7F 28 13  mSrc:127 mDst:24 mType:1 write:0 login:0 unknown:0 onOff:0 temp:0 mode:4 cP:0 uM:7 cTemp:20 acError:0
+[23:00:46.501][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): F7 80 E7 EC B7 7F 80 D7
+[23:00:46.506][I][fujitsu.heatpump:204][FujiTask]: <-- 08 7F 18 13 48 80 7F 28  mSrc:8 mDst:127 mType:1 write:1 login:1 unknown:0 onOff:1 temp:72 mode:1 cP:1 uM:8 cTemp:63 acError:0
+[23:00:46.706][D][status_led:049]: 'Status LED': Setting state ON
+[23:00:46.710][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): EC F7 80 E7 EC B7 7F 80
+[23:00:46.711][I][fujitsu.heatpump:204][FujiTask]: <-- 13 08 7F 18 13 48 80 7F  mSrc:19 mDst:8 mType:3 write:1 login:0 unknown:0 onOff:0 temp:19 mode:4 cP:0 uM:4 cTemp:0 acError:0
+[23:00:46.871][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): D7 EC F7 80 E7 EC B7 7F
+[23:00:46.871][I][fujitsu.heatpump:204][FujiTask]: <-- 28 13 08 7F 18 13 48 80  mSrc:40 mDst:19 mType:0 write:1 login:0 unknown:0 onOff:1 temp:24 mode:7 cP:0 uM:1 cTemp:36 acError:0
+[23:00:47.116][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 D7 EC F7 80 E7 EC B7
+[23:00:47.121][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 28 13 08 7F 18 13 48  mSrc:127 mDst:40 mType:1 write:0 login:1 unknown:0 onOff:0 temp:127 mode:4 cP:1 uM:1 cTemp:9 acError:0
+[23:00:47.191][D][status_led:049]: 'Status LED': Setting state OFF
+[23:00:47.309][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 7F 80 D7 EC F7 80 E7 EC
+[23:00:47.312][I][fujitsu.heatpump:204][FujiTask]: <-- 80 7F 28 13 08 7F 18 13  mSrc:128 mDst:127 mType:2 write:1 login:1 unknown:0 onOff:1 temp:8 mode:1 cP:0 uM:7 cTemp:12 acError:0
+[23:00:47.534][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): B7 7F 80 D7 EC F7 80 E7
+[23:00:47.538][I][fujitsu.heatpump:204][FujiTask]: <-- 48 80 7F 28 13 08 7F 18  mSrc:72 mDst:0 mType:3 write:1 login:0 unknown:1 onOff:0 temp:19 mode:4 cP:1 uM:0 cTemp:63 acError:0
+[23:00:47.825][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): EC B7 7F 80 D7 EC F7 80
+[23:00:47.866][I][fujitsu.heatpump:204][FujiTask]: <-- 13 48 80 7F 28 13 08 7F  mSrc:19 mDst:72 mType:0 write:0 login:0 unknown:0 onOff:1 temp:40 mode:7 cP:0 uM:1 cTemp:4 acError:0
+[23:00:47.980][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E7 EC B7 7F 80 D7 EC F7
+[23:00:47.984][I][fujitsu.heatpump:204][FujiTask]: <-- 18 13 48 80 7F 28 13 08  mSrc:24 mDst:19 mType:0 write:1 login:0 unknown:0 onOff:0 temp:127 mode:0 cP:1 uM:2 cTemp:9 acError:1
+[23:00:48.344][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 E7 EC B7 7F 80 D7 EC
+[23:00:48.348][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 18 13 48 80 7F 28 13  mSrc:127 mDst:24 mType:1 write:0 login:0 unknown:0 onOff:0 temp:0 mode:4 cP:0 uM:7 cTemp:20 acError:0
+[23:00:48.432][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): F7 80 E7 EC B7 7F 80 D7
+[23:00:48.437][I][fujitsu.heatpump:204][FujiTask]: <-- 08 7F 18 13 48 80 7F 28  mSrc:8 mDst:127 mType:1 write:1 login:1 unknown:0 onOff:1 temp:72 mode:1 cP:1 uM:8 cTemp:63 acError:0
+[23:00:48.754][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): EC F7 80 E7 EC B7 7F 80
+[23:00:48.774][I][fujitsu.heatpump:204][FujiTask]: <-- 13 08 7F 18 13 48 80 7F  mSrc:19 mDst:8 mType:3 write:1 login:0 unknown:0 onOff:0 temp:19 mode:4 cP:0 uM:4 cTemp:0 acError:0
+[23:00:48.774][D][status_led:049]: 'Status LED': Setting state ON
+[23:00:48.845][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): D7 EC F7 80 E7 EC B7 7F
+[23:00:48.847][I][fujitsu.heatpump:204][FujiTask]: <-- 28 13 08 7F 18 13 48 80  mSrc:40 mDst:19 mType:0 write:1 login:0 unknown:0 onOff:1 temp:24 mode:7 cP:0 uM:1 cTemp:36 acError:0
+[23:00:49.067][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 D7 EC F7 80 E7 EC B7
+[23:00:49.071][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 28 13 08 7F 18 13 48  mSrc:127 mDst:40 mType:1 write:0 login:1 unknown:0 onOff:0 temp:127 mode:4 cP:1 uM:1 cTemp:9 acError:0
+[23:00:49.210][D][status_led:049]: 'Status LED': Setting state OFF
+[23:00:49.293][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 7F 80 D7 EC F7 80 E7 EC
+[23:00:49.297][I][fujitsu.heatpump:204][FujiTask]: <-- 80 7F 28 13 08 7F 18 13  mSrc:128 mDst:127 mType:2 write:1 login:1 unknown:0 onOff:1 temp:8 mode:1 cP:0 uM:7 cTemp:12 acError:0
+[23:00:49.574][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): B7 7F 80 D7 EC F7 80 E7
+[23:00:49.601][I][fujitsu.heatpump:204][FujiTask]: <-- 48 80 7F 28 13 08 7F 18  mSrc:72 mDst:0 mType:3 write:1 login:0 unknown:1 onOff:0 temp:19 mode:4 cP:1 uM:0 cTemp:63 acError:0
+[23:00:49.778][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): EC B7 7F 80 D7 EC F7 80
+[23:00:49.782][I][fujitsu.heatpump:204][FujiTask]: <-- 13 48 80 7F 28 13 08 7F  mSrc:19 mDst:72 mType:0 write:0 login:0 unknown:0 onOff:1 temp:40 mode:7 cP:0 uM:1 cTemp:4 acError:0
+[23:00:49.983][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E7 EC B7 7F 80 D7 EC F7
+[23:00:49.988][I][fujitsu.heatpump:204][FujiTask]: <-- 18 13 48 80 7F 28 13 08  mSrc:24 mDst:19 mType:0 write:1 login:0 unknown:0 onOff:0 temp:127 mode:0 cP:1 uM:2 cTemp:9 acError:1
+[23:00:50.190][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 E7 EC B7 7F 80 D7 EC
+[23:00:50.197][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 18 13 48 80 7F 28 13  mSrc:127 mDst:24 mType:1 write:0 login:0 unknown:0 onOff:0 temp:0 mode:4 cP:0 uM:7 cTemp:20 acError:0
+[23:00:50.418][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): F7 80 E7 EC B7 7F 80 D7
+[23:00:50.423][I][fujitsu.heatpump:204][FujiTask]: <-- 08 7F 18 13 48 80 7F 28  mSrc:8 mDst:127 mType:1 write:1 login:1 unknown:0 onOff:1 temp:72 mode:1 cP:1 uM:8 cTemp:63 acError:0
+[23:00:50.802][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): EC F7 80 E7 EC B7 7F 80
+[23:00:50.817][I][fujitsu.heatpump:204][FujiTask]: <-- 13 08 7F 18 13 48 80 7F  mSrc:19 mDst:8 mType:3 write:1 login:0 unknown:0 onOff:0 temp:19 mode:4 cP:0 uM:4 cTemp:0 acError:0
+[23:00:50.817][D][status_led:049]: 'Status LED': Setting state ON
+[23:00:50.817][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): D7 EC F7 80 E7 EC B7 7F
+[23:00:50.817][I][fujitsu.heatpump:204][FujiTask]: <-- 28 13 08 7F 18 13 48 80  mSrc:40 mDst:19 mType:0 write:1 login:0 unknown:0 onOff:1 temp:24 mode:7 cP:0 uM:1 cTemp:36 acError:0
+[23:00:51.034][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 D7 EC F7 80 E7 EC B7
+[23:00:51.038][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 28 13 08 7F 18 13 48  mSrc:127 mDst:40 mType:1 write:0 login:1 unknown:0 onOff:0 temp:127 mode:4 cP:1 uM:1 cTemp:9 acError:0
+[23:00:51.235][D][status_led:049]: 'Status LED': Setting state OFF
+[23:00:51.249][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 7F 80 D7 EC F7 80 E7 EC
+[23:00:51.256][I][fujitsu.heatpump:204][FujiTask]: <-- 80 7F 28 13 08 7F 18 13  mSrc:128 mDst:127 mType:2 write:1 login:1 unknown:0 onOff:1 temp:8 mode:1 cP:0 uM:7 cTemp:12 acError:0
+[23:00:51.293][LABEL] COLD 18 AUTo FAN
+[23:00:51.621][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): B7 7F 80 D7 EC F7 80 E7
+[23:00:51.624][I][fujitsu.heatpump:204][FujiTask]: <-- 48 80 7F 28 13 08 7F 18  mSrc:72 mDst:0 mType:3 write:1 login:0 unknown:1 onOff:0 temp:19 mode:4 cP:1 uM:0 cTemp:63 acError:0
+[23:00:51.699][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): EC B7 7F 80 D7 EC F7 80
+[23:00:51.702][I][fujitsu.heatpump:204][FujiTask]: <-- 13 48 80 7F 28 13 08 7F  mSrc:19 mDst:72 mType:0 write:0 login:0 unknown:0 onOff:1 temp:40 mode:7 cP:0 uM:1 cTemp:4 acError:0
+[23:00:51.919][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E7 EC B7 7F 80 D7 EC F7
+[23:00:51.925][I][fujitsu.heatpump:204][FujiTask]: <-- 18 13 48 80 7F 28 13 08  mSrc:24 mDst:19 mType:0 write:1 login:0 unknown:0 onOff:0 temp:127 mode:0 cP:1 uM:2 cTemp:9 acError:1
+[23:00:52.236][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 E7 EC B7 7F 80 D7 EC
+[23:00:52.249][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 18 13 48 80 7F 28 13  mSrc:127 mDst:24 mType:1 write:0 login:0 unknown:0 onOff:0 temp:0 mode:4 cP:0 uM:7 cTemp:20 acError:0
+[23:00:52.442][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): F7 80 E7 EC B7 7F 80 D7
+[23:00:52.471][I][fujitsu.heatpump:204][FujiTask]: <-- 08 7F 18 13 48 80 7F 28  mSrc:8 mDst:127 mType:1 write:1 login:1 unknown:0 onOff:1 temp:72 mode:1 cP:1 uM:8 cTemp:63 acError:0
+[23:00:52.597][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): EC F7 80 E7 EC B7 7F 80
+[23:00:52.606][I][fujitsu.heatpump:204][FujiTask]: <-- 13 08 7F 18 13 48 80 7F  mSrc:19 mDst:8 mType:3 write:1 login:0 unknown:0 onOff:0 temp:19 mode:4 cP:0 uM:4 cTemp:0 acError:0
+[23:00:52.850][D][status_led:049]: 'Status LED': Setting state ON
+[23:00:52.851][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): D7 EC F7 80 E7 EC B7 7F
+[23:00:52.851][I][fujitsu.heatpump:204][FujiTask]: <-- 28 13 08 7F 18 13 48 80  mSrc:40 mDst:19 mType:0 write:1 login:0 unknown:0 onOff:1 temp:24 mode:7 cP:0 uM:1 cTemp:36 acError:0
+[23:00:53.007][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 D7 EC F7 80 E7 EC B7
+[23:00:53.016][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 28 13 08 7F 18 13 48  mSrc:127 mDst:40 mType:1 write:0 login:1 unknown:0 onOff:0 temp:127 mode:4 cP:1 uM:1 cTemp:9 acError:0
+[23:00:53.236][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 7F 80 DD FC 6A FD A0 81
+[23:00:53.239][I][fujitsu.heatpump:204][FujiTask]: <-- 80 7F 22 03 95 02 5F 7E  mSrc:128 mDst:127 mType:2 write:0 login:1 unknown:0 onOff:1 temp:21 mode:1 cP:1 uM:0 cTemp:47 acError:0
+[23:00:53.266][D][status_led:049]: 'Status LED': Setting state OFF
+[23:00:53.500][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 ED FC 6A FD A0 81 80
+[23:00:53.502][D][fujitsu.heatpump:049][FujiTask]: Unmapped controller state byte: 0x95
+[23:00:53.502][D][fujitsu.heatpump:049][FujiTask]: Unmapped controller state byte: 0x95
+[23:00:53.507][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 12 03 95 02 5F 7E 7F  mSrc:127 mDst:18 mType:0 write:0 login:0 unknown:0 onOff:1 temp:2 mode:2 cP:0 uM:5 cTemp:63 acError:1
+[23:00:53.693][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): D7 E8 F5 80 ED FC 6A FD
+[23:00:53.697][I][fujitsu.heatpump:204][FujiTask]: <-- 28 17 0A 7F 12 03 95 02  mSrc:40 mDst:23 mType:0 write:1 login:0 unknown:0 onOff:1 temp:18 mode:7 cP:1 uM:0 cTemp:10 acError:0
+[23:00:54.079][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): A0 81 80 D7 E8 F7 80 E7
+[23:00:54.106][D][fujitsu.heatpump:049][FujiTask]: Unmapped controller state byte: 0x95
+[23:00:54.106][I][fujitsu.heatpump:204][FujiTask]: <-- 5F 7E 7F 28 17 08 7F 18  mSrc:95 mDst:126 mType:3 write:1 login:1 unknown:0 onOff:0 temp:23 mode:4 cP:1 uM:0 cTemp:63 acError:0
+[23:00:54.146][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E8 B7 7F 80 D7 E8 F7 80
+[23:00:54.147][I][fujitsu.heatpump:204][FujiTask]: <-- 17 48 80 7F 28 17 08 7F  mSrc:23 mDst:72 mType:0 write:0 login:0 unknown:0 onOff:1 temp:40 mode:7 cP:0 uM:1 cTemp:4 acError:0
+[23:00:54.367][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E7 E8 B7 7F 80 D7 E8 F7
+[23:00:54.372][I][fujitsu.heatpump:204][FujiTask]: <-- 18 17 48 80 7F 28 17 08  mSrc:24 mDst:23 mType:0 write:1 login:0 unknown:0 onOff:0 temp:127 mode:0 cP:1 uM:2 cTemp:11 acError:1
+[23:00:54.584][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 E7 E8 B7 7F 80 D7 E8
+[23:00:54.588][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 18 17 48 80 7F 28 17  mSrc:127 mDst:24 mType:1 write:0 login:0 unknown:0 onOff:0 temp:0 mode:4 cP:0 uM:7 cTemp:20 acError:0
+[23:00:54.898][D][status_led:049]: 'Status LED': Setting state ON
+[23:00:54.917][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): F7 80 E7 E8 B7 7F 80 D7
+[23:00:54.917][I][fujitsu.heatpump:204][FujiTask]: <-- 08 7F 18 17 48 80 7F 28  mSrc:8 mDst:127 mType:1 write:1 login:1 unknown:0 onOff:1 temp:72 mode:3 cP:1 uM:8 cTemp:63 acError:0
+[23:00:55.035][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E8 F7 80 E7 E8 B7 7F 80
+[23:00:55.043][I][fujitsu.heatpump:204][FujiTask]: <-- 17 08 7F 18 17 48 80 7F  mSrc:23 mDst:8 mType:3 write:1 login:0 unknown:0 onOff:0 temp:23 mode:4 cP:0 uM:4 cTemp:0 acError:0
+[23:00:55.228][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): D7 E8 F7 80 E7 E8 B7 7F
+[23:00:55.235][I][fujitsu.heatpump:204][FujiTask]: <-- 28 17 08 7F 18 17 48 80  mSrc:40 mDst:23 mType:0 write:1 login:0 unknown:0 onOff:1 temp:24 mode:7 cP:0 uM:1 cTemp:36 acError:0
+[23:00:55.288][D][status_led:049]: 'Status LED': Setting state OFF
+[23:00:55.446][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 D7 E8 F7 80 E7 E8 B7
+[23:00:55.450][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 28 17 08 7F 18 17 48  mSrc:127 mDst:40 mType:1 write:0 login:1 unknown:0 onOff:0 temp:127 mode:4 cP:1 uM:1 cTemp:11 acError:0
+[23:00:55.718][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 7F 80 D7 E8 F7 80 E7 E8
+[23:00:55.718][I][fujitsu.heatpump:204][FujiTask]: <-- 80 7F 28 17 08 7F 18 17  mSrc:128 mDst:127 mType:2 write:1 login:1 unknown:0 onOff:1 temp:8 mode:3 cP:0 uM:7 cTemp:12 acError:0
+[23:00:55.922][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): B7 7F 80 D7 E8 F7 80 E7
+[23:00:55.927][I][fujitsu.heatpump:204][FujiTask]: <-- 48 80 7F 28 17 08 7F 18  mSrc:72 mDst:0 mType:3 write:1 login:0 unknown:1 onOff:0 temp:23 mode:4 cP:1 uM:0 cTemp:63 acError:0
+[23:00:56.127][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E8 B7 7F 80 D7 E8 F7 80
+[23:00:56.127][I][fujitsu.heatpump:204][FujiTask]: <-- 17 48 80 7F 28 17 08 7F  mSrc:23 mDst:72 mType:0 write:0 login:0 unknown:0 onOff:1 temp:40 mode:7 cP:0 uM:1 cTemp:4 acError:0
+[23:00:56.536][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E7 E8 B7 7F 80 D7 E8 F7
+[23:00:56.562][I][fujitsu.heatpump:204][FujiTask]: <-- 18 17 48 80 7F 28 17 08  mSrc:24 mDst:23 mType:0 write:1 login:0 unknown:0 onOff:0 temp:127 mode:0 cP:1 uM:2 cTemp:11 acError:1
+[23:00:56.562][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 E7 E8 B7 7F 80 D7 E8
+[23:00:56.562][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 18 17 48 80 7F 28 17  mSrc:127 mDst:24 mType:1 write:0 login:0 unknown:0 onOff:0 temp:0 mode:4 cP:0 uM:7 cTemp:20 acError:0
+[23:00:56.946][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): F7 80 E7 E8 B7 7F 80 D7
+[23:00:56.974][I][fujitsu.heatpump:204][FujiTask]: <-- 08 7F 18 17 48 80 7F 28  mSrc:8 mDst:127 mType:1 write:1 login:1 unknown:0 onOff:1 temp:72 mode:3 cP:1 uM:8 cTemp:63 acError:0
+[23:00:56.974][D][status_led:049]: 'Status LED': Setting state ON
+[23:00:57.010][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E8 F7 80 E7 E8 B7 7F 80
+[23:00:57.018][I][fujitsu.heatpump:204][FujiTask]: <-- 17 08 7F 18 17 48 80 7F  mSrc:23 mDst:8 mType:3 write:1 login:0 unknown:0 onOff:0 temp:23 mode:4 cP:0 uM:4 cTemp:0 acError:0
+[23:00:57.356][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): D7 E8 F7 80 E7 E8 B7 7F
+[23:00:57.356][I][fujitsu.heatpump:204][FujiTask]: <-- 28 17 08 7F 18 17 48 80  mSrc:40 mDst:23 mType:0 write:1 login:0 unknown:0 onOff:1 temp:24 mode:7 cP:0 uM:1 cTemp:36 acError:0
+[23:00:57.356][D][status_led:049]: 'Status LED': Setting state OFF
+[23:00:57.414][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 D7 E8 F7 80 E7 E8 B7
+[23:00:57.420][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 28 17 08 7F 18 17 48  mSrc:127 mDst:40 mType:1 write:0 login:1 unknown:0 onOff:0 temp:127 mode:4 cP:1 uM:1 cTemp:11 acError:0
+[23:00:57.767][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 7F 80 D7 E8 F7 80 E7 E8
+[23:00:57.767][I][fujitsu.heatpump:204][FujiTask]: <-- 80 7F 28 17 08 7F 18 17  mSrc:128 mDst:127 mType:2 write:1 login:1 unknown:0 onOff:1 temp:8 mode:3 cP:0 uM:7 cTemp:12 acError:0
+[23:00:57.858][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): B7 7F 80 D7 E8 F7 80 E7
+[23:00:57.862][I][fujitsu.heatpump:204][FujiTask]: <-- 48 80 7F 28 17 08 7F 18  mSrc:72 mDst:0 mType:3 write:1 login:0 unknown:1 onOff:0 temp:23 mode:4 cP:1 uM:0 cTemp:63 acError:0
+[23:00:58.175][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E8 B7 7F 80 D7 E8 F7 80
+[23:00:58.175][I][fujitsu.heatpump:204][FujiTask]: <-- 17 48 80 7F 28 17 08 7F  mSrc:23 mDst:72 mType:0 write:0 login:0 unknown:0 onOff:1 temp:40 mode:7 cP:0 uM:1 cTemp:4 acError:0
+[23:00:58.307][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E7 E8 B7 7F 80 D7 E8 F7
+[23:00:58.314][I][fujitsu.heatpump:204][FujiTask]: <-- 18 17 48 80 7F 28 17 08  mSrc:24 mDst:23 mType:0 write:1 login:0 unknown:0 onOff:0 temp:127 mode:0 cP:1 uM:2 cTemp:11 acError:1
+[23:00:58.586][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 E7 E8 B7 7F 80 D7 E8
+[23:00:58.586][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 18 17 48 80 7F 28 17  mSrc:127 mDst:24 mType:1 write:0 login:0 unknown:0 onOff:0 temp:0 mode:4 cP:0 uM:7 cTemp:20 acError:0
+[23:00:58.748][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): F7 80 E7 E8 B7 7F 80 D7
+[23:00:58.751][I][fujitsu.heatpump:204][FujiTask]: <-- 08 7F 18 17 48 80 7F 28  mSrc:8 mDst:127 mType:1 write:1 login:1 unknown:0 onOff:1 temp:72 mode:3 cP:1 uM:8 cTemp:63 acError:0
+[23:00:58.825][D][status_led:049]: 'Status LED': Setting state ON
+[23:00:58.995][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E8 F7 80 E7 E8 B7 7F 80
+[23:00:58.998][I][fujitsu.heatpump:204][FujiTask]: <-- 17 08 7F 18 17 48 80 7F  mSrc:23 mDst:8 mType:3 write:1 login:0 unknown:0 onOff:0 temp:23 mode:4 cP:0 uM:4 cTemp:0 acError:0
+[23:00:59.199][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): D7 E8 F7 80 E7 E8 B7 7F
+[23:00:59.207][I][fujitsu.heatpump:204][FujiTask]: <-- 28 17 08 7F 18 17 48 80  mSrc:40 mDst:23 mType:0 write:1 login:0 unknown:0 onOff:1 temp:24 mode:7 cP:0 uM:1 cTemp:36 acError:0
+[23:00:59.404][D][status_led:049]: 'Status LED': Setting state OFF
+[23:00:59.408][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 D7 E8 F7 80 E7 E8 B7
+[23:00:59.408][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 28 17 08 7F 18 17 48  mSrc:127 mDst:40 mType:1 write:0 login:1 unknown:0 onOff:0 temp:127 mode:4 cP:1 uM:1 cTemp:11 acError:0
+[23:00:59.609][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 7F 80 D7 E8 F7 80 E7 E8
+[23:00:59.611][I][fujitsu.heatpump:204][FujiTask]: <-- 80 7F 28 17 08 7F 18 17  mSrc:128 mDst:127 mType:2 write:1 login:1 unknown:0 onOff:1 temp:8 mode:3 cP:0 uM:7 cTemp:12 acError:0
+[23:01:00.020][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): B7 7F 80 D7 E8 F7 80 E7
+[23:01:00.049][I][fujitsu.heatpump:204][FujiTask]: <-- 48 80 7F 28 17 08 7F 18  mSrc:72 mDst:0 mType:3 write:1 login:0 unknown:1 onOff:0 temp:23 mode:4 cP:1 uM:0 cTemp:63 acError:0
+[23:01:00.053][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E8 B7 7F 80 D7 E8 F7 80
+[23:01:00.055][I][fujitsu.heatpump:204][FujiTask]: <-- 17 48 80 7F 28 17 08 7F  mSrc:23 mDst:72 mType:0 write:0 login:0 unknown:0 onOff:1 temp:40 mode:7 cP:0 uM:1 cTemp:4 acError:0
+[23:01:00.272][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E7 E8 B7 7F 80 D7 E8 F7
+[23:01:00.275][I][fujitsu.heatpump:204][FujiTask]: <-- 18 17 48 80 7F 28 17 08  mSrc:24 mDst:23 mType:0 write:1 login:0 unknown:0 onOff:0 temp:127 mode:0 cP:1 uM:2 cTemp:11 acError:1
+[23:01:00.633][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 E7 E8 B7 7F 80 D7 E8
+[23:01:00.633][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 18 17 48 80 7F 28 17  mSrc:127 mDst:24 mType:1 write:0 login:0 unknown:0 onOff:0 temp:0 mode:4 cP:0 uM:7 cTemp:20 acError:0
+[23:01:00.722][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): F7 80 E7 E8 B7 7F 80 D7
+[23:01:00.728][I][fujitsu.heatpump:204][FujiTask]: <-- 08 7F 18 17 48 80 7F 28  mSrc:8 mDst:127 mType:1 write:1 login:1 unknown:0 onOff:1 temp:72 mode:3 cP:1 uM:8 cTemp:63 acError:0
+[23:01:00.835][D][status_led:049]: 'Status LED': Setting state ON
+[23:01:00.947][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E8 F7 80 E7 E8 B7 7F 80
+[23:01:00.953][I][fujitsu.heatpump:204][FujiTask]: <-- 17 08 7F 18 17 48 80 7F  mSrc:23 mDst:8 mType:3 write:1 login:0 unknown:0 onOff:0 temp:23 mode:4 cP:0 uM:4 cTemp:0 acError:0
+[23:01:00.996][LABEL] T19
+[23:01:01.247][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): D7 E8 F7 80 E7 E8 B7 7F
+[23:01:01.250][I][fujitsu.heatpump:204][FujiTask]: <-- 28 17 08 7F 18 17 48 80  mSrc:40 mDst:23 mType:0 write:1 login:0 unknown:0 onOff:1 temp:24 mode:7 cP:0 uM:1 cTemp:36 acError:0
+[23:01:01.336][D][status_led:049]: 'Status LED': Setting state OFF
+[23:01:01.347][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 D7 E8 F7 80 E7 E8 B7
+[23:01:01.351][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 28 17 08 7F 18 17 48  mSrc:127 mDst:40 mType:1 write:0 login:1 unknown:0 onOff:0 temp:127 mode:4 cP:1 uM:1 cTemp:11 acError:0
+[23:01:01.657][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 7F 80 D7 E8 F7 80 E7 E8
+[23:01:01.657][I][fujitsu.heatpump:204][FujiTask]: <-- 80 7F 28 17 08 7F 18 17  mSrc:128 mDst:127 mType:2 write:1 login:1 unknown:0 onOff:1 temp:8 mode:3 cP:0 uM:7 cTemp:12 acError:0
+[23:01:01.797][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): B7 7F 80 D7 E8 F7 80 E7
+[23:01:01.803][I][fujitsu.heatpump:204][FujiTask]: <-- 48 80 7F 28 17 08 7F 18  mSrc:72 mDst:0 mType:3 write:1 login:0 unknown:1 onOff:0 temp:23 mode:4 cP:1 uM:0 cTemp:63 acError:0
+[23:01:02.028][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E8 B7 7F 80 D7 E8 F7 80
+[23:01:02.028][I][fujitsu.heatpump:204][FujiTask]: <-- 17 48 80 7F 28 17 08 7F  mSrc:23 mDst:72 mType:0 write:0 login:0 unknown:0 onOff:1 temp:40 mode:7 cP:0 uM:1 cTemp:4 acError:0
+[23:01:02.271][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E7 E8 B7 7F 80 D7 E8 F7
+[23:01:02.274][I][fujitsu.heatpump:204][FujiTask]: <-- 18 17 48 80 7F 28 17 08  mSrc:24 mDst:23 mType:0 write:1 login:0 unknown:0 onOff:0 temp:127 mode:0 cP:1 uM:2 cTemp:11 acError:1
+[23:01:02.476][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 E7 E8 B7 7F 80 D7 E8
+[23:01:02.476][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 18 17 48 80 7F 28 17  mSrc:127 mDst:24 mType:1 write:0 login:0 unknown:0 onOff:0 temp:0 mode:4 cP:0 uM:7 cTemp:20 acError:0
+[23:01:02.885][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): F7 80 E7 E8 B7 7F 80 D7
+[23:01:02.911][I][fujitsu.heatpump:204][FujiTask]: <-- 08 7F 18 17 48 80 7F 28  mSrc:8 mDst:127 mType:1 write:1 login:1 unknown:0 onOff:1 temp:72 mode:3 cP:1 uM:8 cTemp:63 acError:0
+[23:01:02.911][D][status_led:049]: 'Status LED': Setting state ON
+[23:01:02.911][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E8 F7 80 E7 E8 B7 7F 80
+[23:01:02.915][I][fujitsu.heatpump:204][FujiTask]: <-- 17 08 7F 18 17 48 80 7F  mSrc:23 mDst:8 mType:3 write:1 login:0 unknown:0 onOff:0 temp:23 mode:4 cP:0 uM:4 cTemp:0 acError:0
+[23:01:03.098][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): D7 E8 F7 80 E7 E8 B7 7F
+[23:01:03.104][I][fujitsu.heatpump:204][FujiTask]: <-- 28 17 08 7F 18 17 48 80  mSrc:40 mDst:23 mType:0 write:1 login:0 unknown:0 onOff:1 temp:24 mode:7 cP:0 uM:1 cTemp:36 acError:0
+[23:01:03.322][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 D7 E8 F7 80 E7 E8 B7
+[23:01:03.328][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 28 17 08 7F 18 17 48  mSrc:127 mDst:40 mType:1 write:0 login:1 unknown:0 onOff:0 temp:127 mode:4 cP:1 uM:1 cTemp:11 acError:0
+[23:01:03.351][D][status_led:049]: 'Status LED': Setting state OFF
+[23:01:03.548][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 7F 80 D7 E8 F7 80 E7 E8
+[23:01:03.549][I][fujitsu.heatpump:204][FujiTask]: <-- 80 7F 28 17 08 7F 18 17  mSrc:128 mDst:127 mType:2 write:1 login:1 unknown:0 onOff:1 temp:8 mode:3 cP:0 uM:7 cTemp:12 acError:0
+[23:01:03.910][I][fujitsu.heatpump:242][FujiTask]: RX raw (2/8, before XOR): B7 7F
+[23:01:03.992][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 DD FC 62 FD A0 81 80
+[23:01:03.997][D][fujitsu.heatpump:049][FujiTask]: Unmapped controller state byte: 0x9D
+[23:01:03.998][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 22 03 9D 02 5F 7E 7F  mSrc:127 mDst:34 mType:0 write:0 login:1 unknown:0 onOff:1 temp:2 mode:6 cP:0 uM:5 cTemp:63 acError:1
+[23:01:04.319][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): ED FC 62 FD A0 81 80 D7
+[23:01:04.345][D][fujitsu.heatpump:049][FujiTask]: Unmapped controller state byte: 0x9D
+[23:01:04.345][I][fujitsu.heatpump:204][FujiTask]: <-- 12 03 9D 02 5F 7E 7F 28  mSrc:18 mDst:3 mType:1 write:1 login:0 unknown:0 onOff:0 temp:95 mode:1 cP:1 uM:7 cTemp:63 acError:0
+[23:01:04.422][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E8 F5 80 ED FC 62 FD A0
+[23:01:04.428][I][fujitsu.heatpump:204][FujiTask]: <-- 17 0A 7F 12 03 9D 02 5F  mSrc:23 mDst:10 mType:3 write:1 login:0 unknown:0 onOff:0 temp:3 mode:1 cP:0 uM:9 cTemp:1 acError:0
+[23:01:04.934][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 81 80 DD EC 62 FD A0 81
+[23:01:04.935][D][fujitsu.heatpump:049][FujiTask]: Unmapped controller state byte: 0x9D
+[23:01:04.935][I][fujitsu.heatpump:204][FujiTask]: <-- 7E 7F 22 13 9D 02 5F 7E  mSrc:126 mDst:127 mType:2 write:0 login:1 unknown:0 onOff:1 temp:29 mode:1 cP:1 uM:0 cTemp:47 acError:0
+[23:01:04.962][D][status_led:049]: 'Status LED': Setting state ON
+[23:01:05.013][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 ED EC 62 FD A0 81 80
+[23:01:05.019][D][fujitsu.heatpump:049][FujiTask]: Unmapped controller state byte: 0x9D
+[23:01:05.019][D][fujitsu.heatpump:049][FujiTask]: Unmapped controller state byte: 0x9D
+[23:01:05.022][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 12 13 9D 02 5F 7E 7F  mSrc:127 mDst:18 mType:1 write:0 login:0 unknown:0 onOff:1 temp:2 mode:6 cP:0 uM:5 cTemp:63 acError:1
+[23:01:05.205][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): D7 E8 F5 80 ED EC 62 FD
+[23:01:05.209][I][fujitsu.heatpump:204][FujiTask]: <-- 28 17 0A 7F 12 13 9D 02  mSrc:40 mDst:23 mType:0 write:1 login:0 unknown:0 onOff:1 temp:18 mode:7 cP:1 uM:1 cTemp:14 acError:0
+[23:01:05.361][D][status_led:049]: 'Status LED': Setting state OFF
+[23:01:05.436][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): A0 81 80 D7 E8 F7 80 E7
+[23:01:05.443][D][fujitsu.heatpump:049][FujiTask]: Unmapped controller state byte: 0x9D
+[23:01:05.443][I][fujitsu.heatpump:204][FujiTask]: <-- 5F 7E 7F 28 17 08 7F 18  mSrc:95 mDst:126 mType:3 write:1 login:1 unknown:0 onOff:0 temp:23 mode:4 cP:1 uM:0 cTemp:63 acError:0
+[23:01:05.753][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E8 B7 7F 80 D7 E8 F7 80
+[23:01:05.766][I][fujitsu.heatpump:204][FujiTask]: <-- 17 48 80 7F 28 17 08 7F  mSrc:23 mDst:72 mType:0 write:0 login:0 unknown:0 onOff:1 temp:40 mode:7 cP:0 uM:1 cTemp:4 acError:0
+[23:01:05.873][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E7 E8 B7 7F 80 D7 E8 F7
+[23:01:05.883][I][fujitsu.heatpump:204][FujiTask]: <-- 18 17 48 80 7F 28 17 08  mSrc:24 mDst:23 mType:0 write:1 login:0 unknown:0 onOff:0 temp:127 mode:0 cP:1 uM:2 cTemp:11 acError:1
+[23:01:06.163][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 E7 E8 B7 7F 80 D7 E8
+[23:01:06.191][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 18 17 48 80 7F 28 17  mSrc:127 mDst:24 mType:1 write:0 login:0 unknown:0 onOff:0 temp:0 mode:4 cP:0 uM:7 cTemp:20 acError:0
+[23:01:06.367][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): F7 80 E7 E8 B7 7F 80 D7
+[23:01:06.395][I][fujitsu.heatpump:204][FujiTask]: <-- 08 7F 18 17 48 80 7F 28  mSrc:8 mDst:127 mType:1 write:1 login:1 unknown:0 onOff:1 temp:72 mode:3 cP:1 uM:8 cTemp:63 acError:0
+[23:01:06.573][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E8 F7 80 E7 E8 B7 7F 80
+[23:01:06.577][I][fujitsu.heatpump:204][FujiTask]: <-- 17 08 7F 18 17 48 80 7F  mSrc:23 mDst:8 mType:3 write:1 login:0 unknown:0 onOff:0 temp:23 mode:4 cP:0 uM:4 cTemp:0 acError:0
+[23:01:06.726][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): D7 E8 F7 80 E7 E8 B7 7F
+[23:01:06.730][I][fujitsu.heatpump:204][FujiTask]: <-- 28 17 08 7F 18 17 48 80  mSrc:40 mDst:23 mType:0 write:1 login:0 unknown:0 onOff:1 temp:24 mode:7 cP:0 uM:1 cTemp:36 acError:0
+[23:01:06.981][D][status_led:049]: 'Status LED': Setting state ON
+[23:01:06.986][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 D7 E8 F7 80 E7 E8 B7
+[23:01:06.986][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 28 17 08 7F 18 17 48  mSrc:127 mDst:40 mType:1 write:0 login:1 unknown:0 onOff:0 temp:127 mode:4 cP:1 uM:1 cTemp:11 acError:0
+[23:01:07.165][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 7F 80 D7 E8 F7 80 E7 E8
+[23:01:07.166][I][fujitsu.heatpump:204][FujiTask]: <-- 80 7F 28 17 08 7F 18 17  mSrc:128 mDst:127 mType:2 write:1 login:1 unknown:0 onOff:1 temp:8 mode:3 cP:0 uM:7 cTemp:12 acError:0
+[23:01:07.391][D][status_led:049]: 'Status LED': Setting state OFF
+[23:01:07.395][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): B7 7F 80 D7 E8 F7 80 E7
+[23:01:07.395][I][fujitsu.heatpump:204][FujiTask]: <-- 48 80 7F 28 17 08 7F 18  mSrc:72 mDst:0 mType:3 write:1 login:0 unknown:1 onOff:0 temp:23 mode:4 cP:1 uM:0 cTemp:63 acError:0
+[23:01:07.803][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E8 B7 7F 80 D7 E8 F7 80
+[23:01:07.827][I][fujitsu.heatpump:204][FujiTask]: <-- 17 48 80 7F 28 17 08 7F  mSrc:23 mDst:72 mType:0 write:0 login:0 unknown:0 onOff:1 temp:40 mode:7 cP:0 uM:1 cTemp:4 acError:0
+[23:01:07.838][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E7 E8 B7 7F 80 D7 E8 F7
+[23:01:07.842][I][fujitsu.heatpump:204][FujiTask]: <-- 18 17 48 80 7F 28 17 08  mSrc:24 mDst:23 mType:0 write:1 login:0 unknown:0 onOff:0 temp:127 mode:0 cP:1 uM:2 cTemp:11 acError:1
+[23:01:08.212][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 E7 E8 B7 7F 80 D7 E8
+[23:01:08.216][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 18 17 48 80 7F 28 17  mSrc:127 mDst:24 mType:1 write:0 login:0 unknown:0 onOff:0 temp:0 mode:4 cP:0 uM:7 cTemp:20 acError:0
+[23:01:08.217][D][main:430]: Status - WiFi: -42 dBm, Uptime: 0.5 hrs, Heap: 215648 bytes
+[23:01:08.289][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): F7 80 E7 E8 B7 7F 80 D7
+[23:01:08.291][I][fujitsu.heatpump:204][FujiTask]: <-- 08 7F 18 17 48 80 7F 28  mSrc:8 mDst:127 mType:1 write:1 login:1 unknown:0 onOff:1 temp:72 mode:3 cP:1 uM:8 cTemp:63 acError:0
+[23:01:08.620][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E8 F7 80 E7 E8 B7 7F 80
+[23:01:08.624][I][fujitsu.heatpump:204][FujiTask]: <-- 17 08 7F 18 17 48 80 7F  mSrc:23 mDst:8 mType:3 write:1 login:0 unknown:0 onOff:0 temp:23 mode:4 cP:0 uM:4 cTemp:0 acError:0
+[23:01:08.699][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): D7 E8 F7 80 E7 E8 B7 7F
+[23:01:08.699][I][fujitsu.heatpump:204][FujiTask]: <-- 28 17 08 7F 18 17 48 80  mSrc:40 mDst:23 mType:0 write:1 login:0 unknown:0 onOff:1 temp:24 mode:7 cP:0 uM:1 cTemp:36 acError:0
+[23:01:08.883][D][status_led:049]: 'Status LED': Setting state ON
+[23:01:08.914][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 D7 E8 F7 80 E7 E8 B7
+[23:01:08.921][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 28 17 08 7F 18 17 48  mSrc:127 mDst:40 mType:1 write:0 login:1 unknown:0 onOff:0 temp:127 mode:4 cP:1 uM:1 cTemp:11 acError:0
+[23:01:09.140][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 7F 80 D7 E8 F7 80 E7 E8
+[23:01:09.144][I][fujitsu.heatpump:204][FujiTask]: <-- 80 7F 28 17 08 7F 18 17  mSrc:128 mDst:127 mType:2 write:1 login:1 unknown:0 onOff:1 temp:8 mode:3 cP:0 uM:7 cTemp:12 acError:0
+[23:01:09.439][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): B7 7F 80 D7 E8 F7 80 E7
+[23:01:09.439][I][fujitsu.heatpump:204][FujiTask]: <-- 48 80 7F 28 17 08 7F 18  mSrc:72 mDst:0 mType:3 write:1 login:0 unknown:1 onOff:0 temp:23 mode:4 cP:1 uM:0 cTemp:63 acError:0
+[23:01:09.440][D][status_led:049]: 'Status LED': Setting state OFF
+[23:01:09.592][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E8 B7 7F 80 D7 E8 F7 80
+[23:01:09.597][I][fujitsu.heatpump:204][FujiTask]: <-- 17 48 80 7F 28 17 08 7F  mSrc:23 mDst:72 mType:0 write:0 login:0 unknown:0 onOff:1 temp:40 mode:7 cP:0 uM:1 cTemp:4 acError:0
+[23:01:09.849][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E7 E8 B7 7F 80 D7 E8 F7
+[23:01:09.849][I][fujitsu.heatpump:204][FujiTask]: <-- 18 17 48 80 7F 28 17 08  mSrc:24 mDst:23 mType:0 write:1 login:0 unknown:0 onOff:0 temp:127 mode:0 cP:1 uM:2 cTemp:11 acError:1
+[23:01:10.035][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 E7 E8 B7 7F 80 D7 E8
+[23:01:10.041][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 18 17 48 80 7F 28 17  mSrc:127 mDst:24 mType:1 write:0 login:0 unknown:0 onOff:0 temp:0 mode:4 cP:0 uM:7 cTemp:20 acError:0
+[23:01:10.260][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): F7 80 E7 E8 B7 7F 80 D7
+[23:01:10.260][I][fujitsu.heatpump:204][FujiTask]: <-- 08 7F 18 17 48 80 7F 28  mSrc:8 mDst:127 mType:1 write:1 login:1 unknown:0 onOff:1 temp:72 mode:3 cP:1 uM:8 cTemp:63 acError:0
+[23:01:10.410][LABEL] T20
+[23:01:10.480][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E8 F7 80 E7 E8 B7 7F 80
+[23:01:10.495][I][fujitsu.heatpump:204][FujiTask]: <-- 17 08 7F 18 17 48 80 7F  mSrc:23 mDst:8 mType:3 write:1 login:0 unknown:0 onOff:0 temp:23 mode:4 cP:0 uM:4 cTemp:0 acError:0
+[23:01:10.873][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): D7 E8 F7 80 E7 E8 B7 7F
+[23:01:10.873][I][fujitsu.heatpump:204][FujiTask]: <-- 28 17 08 7F 18 17 48 80  mSrc:40 mDst:23 mType:0 write:1 login:0 unknown:0 onOff:1 temp:24 mode:7 cP:0 uM:1 cTemp:36 acError:0
+[23:01:10.901][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 D7 E8 F7 80 E7 E8 B7
+[23:01:10.901][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 28 17 08 7F 18 17 48  mSrc:127 mDst:40 mType:1 write:0 login:1 unknown:0 onOff:0 temp:127 mode:4 cP:1 uM:1 cTemp:11 acError:0
+[23:01:10.913][D][status_led:049]: 'Status LED': Setting state ON
+[23:01:11.282][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 7F 80 D7 E8 F7 80 E7 E8
+[23:01:11.286][I][fujitsu.heatpump:204][FujiTask]: <-- 80 7F 28 17 08 7F 18 17  mSrc:128 mDst:127 mType:2 write:1 login:1 unknown:0 onOff:1 temp:8 mode:3 cP:0 uM:7 cTemp:12 acError:0
+[23:01:11.316][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): B7 7F 80 D7 E8 F7 80 E7
+[23:01:11.321][I][fujitsu.heatpump:204][FujiTask]: <-- 48 80 7F 28 17 08 7F 18  mSrc:72 mDst:0 mType:3 write:1 login:0 unknown:1 onOff:0 temp:23 mode:4 cP:1 uM:0 cTemp:63 acError:0
+[23:01:11.429][D][status_led:049]: 'Status LED': Setting state OFF
+[23:01:11.537][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E8 B7 7F 80 D7 E8 F7 80
+[23:01:11.541][I][fujitsu.heatpump:204][FujiTask]: <-- 17 48 80 7F 28 17 08 7F  mSrc:23 mDst:72 mType:0 write:0 login:0 unknown:0 onOff:1 temp:40 mode:7 cP:0 uM:1 cTemp:4 acError:0
+[23:01:11.757][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E7 E8 B7 7F 80 D7 E8 F7
+[23:01:11.761][I][fujitsu.heatpump:204][FujiTask]: <-- 18 17 48 80 7F 28 17 08  mSrc:24 mDst:23 mType:0 write:1 login:0 unknown:0 onOff:0 temp:127 mode:0 cP:1 uM:2 cTemp:11 acError:1
+[23:01:11.982][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 E7 E8 B7 7F 80 D7 E8
+[23:01:11.986][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 18 17 48 80 7F 28 17  mSrc:127 mDst:24 mType:1 write:0 login:0 unknown:0 onOff:0 temp:0 mode:4 cP:0 uM:7 cTemp:20 acError:0
+[23:01:12.307][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): F7 80 E7 E8 B7 7F 80 D7
+[23:01:12.307][I][fujitsu.heatpump:204][FujiTask]: <-- 08 7F 18 17 48 80 7F 28  mSrc:8 mDst:127 mType:1 write:1 login:1 unknown:0 onOff:1 temp:72 mode:3 cP:1 uM:8 cTemp:63 acError:0
+[23:01:12.512][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E8 F7 80 E7 E8 B7 7F 80
+[23:01:12.535][I][fujitsu.heatpump:204][FujiTask]: <-- 17 08 7F 18 17 48 80 7F  mSrc:23 mDst:8 mType:3 write:1 login:0 unknown:0 onOff:0 temp:23 mode:4 cP:0 uM:4 cTemp:0 acError:0
+[23:01:12.611][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): D7 E8 F7 80 E7 E8 B7 7F
+[23:01:12.616][I][fujitsu.heatpump:204][FujiTask]: <-- 28 17 08 7F 18 17 48 80  mSrc:40 mDst:23 mType:0 write:1 login:0 unknown:0 onOff:1 temp:24 mode:7 cP:0 uM:1 cTemp:36 acError:0
+[23:01:12.921][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 D7 E8 F7 80 E7 E8 B7
+[23:01:12.944][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 28 17 08 7F 18 17 48  mSrc:127 mDst:40 mType:1 write:0 login:1 unknown:0 onOff:0 temp:127 mode:4 cP:1 uM:1 cTemp:11 acError:0
+[23:01:12.944][D][status_led:049]: 'Status LED': Setting state ON
+[23:01:13.056][I][fujitsu.heatpump:242][FujiTask]: RX raw (1/8, before XOR): 7F
+[23:01:13.323][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 DD FC 5A FD A0 81 80
+[23:01:13.360][D][fujitsu.heatpump:049][FujiTask]: Unmapped controller state byte: 0xA5
+[23:01:13.360][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 22 03 A5 02 5F 7E 7F  mSrc:127 mDst:34 mType:0 write:0 login:1 unknown:0 onOff:1 temp:2 mode:2 cP:0 uM:5 cTemp:63 acError:1
+[23:01:13.447][D][status_led:049]: 'Status LED': Setting state OFF
+[23:01:13.499][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): ED FC 5A FD A0 81 80 D7
+[23:01:13.505][D][fujitsu.heatpump:049][FujiTask]: Unmapped controller state byte: 0xA5
+[23:01:13.505][I][fujitsu.heatpump:204][FujiTask]: <-- 12 03 A5 02 5F 7E 7F 28  mSrc:18 mDst:3 mType:2 write:0 login:0 unknown:0 onOff:0 temp:95 mode:1 cP:1 uM:7 cTemp:63 acError:0
+[23:01:13.740][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E8 F5 80 ED FC 5A FD A0
+[23:01:13.767][I][fujitsu.heatpump:204][FujiTask]: <-- 17 0A 7F 12 03 A5 02 5F  mSrc:23 mDst:10 mType:3 write:1 login:0 unknown:0 onOff:0 temp:3 mode:1 cP:0 uM:10 cTemp:1 acError:0
+[23:01:14.016][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 81 80 DD EC 5A FD A0 81
+[23:01:14.020][D][fujitsu.heatpump:049][FujiTask]: Unmapped controller state byte: 0xA5
+[23:01:14.020][I][fujitsu.heatpump:204][FujiTask]: <-- 7E 7F 22 13 A5 02 5F 7E  mSrc:126 mDst:127 mType:2 write:0 login:1 unknown:0 onOff:1 temp:37 mode:1 cP:1 uM:0 cTemp:47 acError:0
+[23:01:14.358][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 ED EC 5A FD A0 81 80
+[23:01:14.358][D][fujitsu.heatpump:049][FujiTask]: Unmapped controller state byte: 0xA5
+[23:01:14.358][D][fujitsu.heatpump:049][FujiTask]: Unmapped controller state byte: 0xA5
+[23:01:14.358][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 12 13 A5 02 5F 7E 7F  mSrc:127 mDst:18 mType:1 write:0 login:0 unknown:0 onOff:1 temp:2 mode:2 cP:0 uM:5 cTemp:63 acError:1
+[23:01:14.467][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): D7 E8 F5 80 ED EC 5A FD
+[23:01:14.470][I][fujitsu.heatpump:204][FujiTask]: <-- 28 17 0A 7F 12 13 A5 02  mSrc:40 mDst:23 mType:0 write:1 login:0 unknown:0 onOff:1 temp:18 mode:7 cP:1 uM:1 cTemp:18 acError:0
+[23:01:14.765][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): A0 81 80 D7 E8 F7 80 E7
+[23:01:14.766][D][fujitsu.heatpump:049][FujiTask]: Unmapped controller state byte: 0xA5
+[23:01:14.793][I][fujitsu.heatpump:204][FujiTask]: <-- 5F 7E 7F 28 17 08 7F 18  mSrc:95 mDst:126 mType:3 write:1 login:1 unknown:0 onOff:0 temp:23 mode:4 cP:1 uM:0 cTemp:63 acError:0
+[23:01:14.923][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E8 B7 7F 80 D7 E8 F7 80
+[23:01:14.928][I][fujitsu.heatpump:204][FujiTask]: <-- 17 48 80 7F 28 17 08 7F  mSrc:23 mDst:72 mType:0 write:0 login:0 unknown:0 onOff:1 temp:40 mode:7 cP:0 uM:1 cTemp:4 acError:0
+[23:01:14.955][D][status_led:049]: 'Status LED': Setting state ON
+[23:01:15.174][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E7 E8 B7 7F 80 D7 E8 F7
+[23:01:15.178][I][fujitsu.heatpump:204][FujiTask]: <-- 18 17 48 80 7F 28 17 08  mSrc:24 mDst:23 mType:0 write:1 login:0 unknown:0 onOff:0 temp:127 mode:0 cP:1 uM:2 cTemp:11 acError:1
+[23:01:15.379][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 E7 E8 B7 7F 80 D7 E8
+[23:01:15.379][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 18 17 48 80 7F 28 17  mSrc:127 mDst:24 mType:1 write:0 login:0 unknown:0 onOff:0 temp:0 mode:4 cP:0 uM:7 cTemp:20 acError:0
+[23:01:15.460][D][status_led:049]: 'Status LED': Setting state OFF
+[23:01:15.580][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): F7 80 E7 E8 B7 7F 80 D7
+[23:01:15.589][I][fujitsu.heatpump:204][FujiTask]: <-- 08 7F 18 17 48 80 7F 28  mSrc:8 mDst:127 mType:1 write:1 login:1 unknown:0 onOff:1 temp:72 mode:3 cP:1 uM:8 cTemp:63 acError:0
+[23:01:15.805][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E8 F7 80 E7 E8 B7 7F 80
+[23:01:15.818][I][fujitsu.heatpump:204][FujiTask]: <-- 17 08 7F 18 17 48 80 7F  mSrc:23 mDst:8 mType:3 write:1 login:0 unknown:0 onOff:0 temp:23 mode:4 cP:0 uM:4 cTemp:0 acError:0
+[23:01:15.993][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): D7 E8 F7 80 E7 E8 B7 7F
+[23:01:15.999][I][fujitsu.heatpump:204][FujiTask]: <-- 28 17 08 7F 18 17 48 80  mSrc:40 mDst:23 mType:0 write:1 login:0 unknown:0 onOff:1 temp:24 mode:7 cP:0 uM:1 cTemp:36 acError:0
+[23:01:16.402][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 D7 E8 F7 80 E7 E8 B7
+[23:01:16.429][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 28 17 08 7F 18 17 48  mSrc:127 mDst:40 mType:1 write:0 login:1 unknown:0 onOff:0 temp:127 mode:4 cP:1 uM:1 cTemp:11 acError:0
+[23:01:16.442][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 7F 80 D7 E8 F7 80 E7 E8
+[23:01:16.445][I][fujitsu.heatpump:204][FujiTask]: <-- 80 7F 28 17 08 7F 18 17  mSrc:128 mDst:127 mType:2 write:1 login:1 unknown:0 onOff:1 temp:8 mode:3 cP:0 uM:7 cTemp:12 acError:0
+[23:01:16.812][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): B7 7F 80 D7 E8 F7 80 E7
+[23:01:16.816][I][fujitsu.heatpump:204][FujiTask]: <-- 48 80 7F 28 17 08 7F 18  mSrc:72 mDst:0 mType:3 write:1 login:0 unknown:1 onOff:0 temp:23 mode:4 cP:1 uM:0 cTemp:63 acError:0
+[23:01:16.892][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E8 B7 7F 80 D7 E8 F7 80
+[23:01:16.895][I][fujitsu.heatpump:204][FujiTask]: <-- 17 48 80 7F 28 17 08 7F  mSrc:23 mDst:72 mType:0 write:0 login:0 unknown:0 onOff:1 temp:40 mode:7 cP:0 uM:1 cTemp:4 acError:0
+[23:01:16.968][D][status_led:049]: 'Status LED': Setting state ON
+[23:01:17.222][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E7 E8 B7 7F 80 D7 E8 F7
+[23:01:17.225][I][fujitsu.heatpump:204][FujiTask]: <-- 18 17 48 80 7F 28 17 08  mSrc:24 mDst:23 mType:0 write:1 login:0 unknown:0 onOff:0 temp:127 mode:0 cP:1 uM:2 cTemp:11 acError:1
+[23:01:17.336][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 E7 E8 B7 7F 80 D7 E8
+[23:01:17.338][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 18 17 48 80 7F 28 17  mSrc:127 mDst:24 mType:1 write:0 login:0 unknown:0 onOff:0 temp:0 mode:4 cP:0 uM:7 cTemp:20 acError:0
+[23:01:17.631][D][status_led:049]: 'Status LED': Setting state OFF
+[23:01:17.658][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): F7 80 E7 E8 B7 7F 80 D7
+[23:01:17.658][I][fujitsu.heatpump:204][FujiTask]: <-- 08 7F 18 17 48 80 7F 28  mSrc:8 mDst:127 mType:1 write:1 login:1 unknown:0 onOff:1 temp:72 mode:3 cP:1 uM:8 cTemp:63 acError:0
+[23:01:17.790][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E8 F7 80 E7 E8 B7 7F 80
+[23:01:17.799][I][fujitsu.heatpump:204][FujiTask]: <-- 17 08 7F 18 17 48 80 7F  mSrc:23 mDst:8 mType:3 write:1 login:0 unknown:0 onOff:0 temp:23 mode:4 cP:0 uM:4 cTemp:0 acError:0
+[23:01:18.042][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): D7 E8 F7 80 E7 E8 B7 7F
+[23:01:18.068][I][fujitsu.heatpump:204][FujiTask]: <-- 28 17 08 7F 18 17 48 80  mSrc:40 mDst:23 mType:0 write:1 login:0 unknown:0 onOff:1 temp:24 mode:7 cP:0 uM:1 cTemp:36 acError:0
+[23:01:18.246][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 D7 E8 F7 80 E7 E8 B7
+[23:01:18.276][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 28 17 08 7F 18 17 48  mSrc:127 mDst:40 mType:1 write:0 login:1 unknown:0 onOff:0 temp:127 mode:4 cP:1 uM:1 cTemp:11 acError:0
+[23:01:18.415][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 7F 80 D7 E8 F7 80 E7 E8
+[23:01:18.418][I][fujitsu.heatpump:204][FujiTask]: <-- 80 7F 28 17 08 7F 18 17  mSrc:128 mDst:127 mType:2 write:1 login:1 unknown:0 onOff:1 temp:8 mode:3 cP:0 uM:7 cTemp:12 acError:0
+[23:01:18.639][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): B7 7F 80 D7 E8 F7 80 E7
+[23:01:18.645][I][fujitsu.heatpump:204][FujiTask]: <-- 48 80 7F 28 17 08 7F 18  mSrc:72 mDst:0 mType:3 write:1 login:0 unknown:1 onOff:0 temp:23 mode:4 cP:1 uM:0 cTemp:63 acError:0
+[23:01:19.065][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E8 B7 7F 80 DD FC 52 FD
+[23:01:19.065][I][fujitsu.heatpump:204][FujiTask]: <-- 17 48 80 7F 22 03 AD 02  mSrc:23 mDst:72 mType:0 write:0 login:0 unknown:0 onOff:1 temp:34 mode:7 cP:1 uM:0 cTemp:22 acError:0
+[23:01:19.065][D][status_led:049]: 'Status LED': Setting state ON
+[23:01:19.093][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): A0 81 80 ED FC 52 FD A0
+[23:01:19.093][D][fujitsu.heatpump:049][FujiTask]: Unmapped controller state byte: 0xAD
+[23:01:19.093][I][fujitsu.heatpump:204][FujiTask]: <-- 5F 7E 7F 12 03 AD 02 5F  mSrc:95 mDst:126 mType:3 write:1 login:1 unknown:0 onOff:0 temp:3 mode:1 cP:0 uM:10 cTemp:1 acError:0
+[23:01:19.299][LABEL] T21
+[23:01:19.475][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 81 80 D7 E8 F5 80 ED FC
+[23:01:19.502][D][fujitsu.heatpump:049][FujiTask]: Unmapped controller state byte: 0xAD
+[23:01:19.502][I][fujitsu.heatpump:204][FujiTask]: <-- 7E 7F 28 17 0A 7F 12 03  mSrc:126 mDst:127 mType:2 write:1 login:1 unknown:0 onOff:1 temp:10 mode:3 cP:0 uM:7 cTemp:9 acError:0
+[23:01:19.502][D][status_led:049]: 'Status LED': Setting state OFF
+[23:01:19.550][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 52 FD A0 81 80 D7 E8 F7
+[23:01:19.555][D][fujitsu.heatpump:049][FujiTask]: Unmapped controller state byte: 0xAD
+[23:01:19.560][I][fujitsu.heatpump:204][FujiTask]: <-- AD 02 5F 7E 7F 28 17 08  mSrc:173 mDst:2 mType:1 write:1 login:0 unknown:0 onOff:0 temp:127 mode:7 cP:1 uM:2 cTemp:11 acError:0
+[23:01:19.775][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 E7 E8 B7 7F 80 D7 E8
+[23:01:19.777][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 18 17 48 80 7F 28 17  mSrc:127 mDst:24 mType:1 write:0 login:0 unknown:0 onOff:0 temp:0 mode:4 cP:0 uM:7 cTemp:20 acError:0
+[23:01:20.089][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): F7 80 E7 E8 B7 7F 80 D7
+[23:01:20.106][I][fujitsu.heatpump:204][FujiTask]: <-- 08 7F 18 17 48 80 7F 28  mSrc:8 mDst:127 mType:1 write:1 login:1 unknown:0 onOff:1 temp:72 mode:3 cP:1 uM:8 cTemp:63 acError:0
+[23:01:20.228][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E8 F7 80 E7 E8 B7 7F 80
+[23:01:20.230][I][fujitsu.heatpump:204][FujiTask]: <-- 17 08 7F 18 17 48 80 7F  mSrc:23 mDst:8 mType:3 write:1 login:0 unknown:0 onOff:0 temp:23 mode:4 cP:0 uM:4 cTemp:0 acError:0
+[23:01:20.413][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): D7 E8 F7 80 E7 E8 B7 7F
+[23:01:20.428][I][fujitsu.heatpump:204][FujiTask]: <-- 28 17 08 7F 18 17 48 80  mSrc:40 mDst:23 mType:0 write:1 login:0 unknown:0 onOff:1 temp:24 mode:7 cP:0 uM:1 cTemp:36 acError:0
+[23:01:20.704][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 D7 E8 F7 80 E7 E8 B7
+[23:01:20.704][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 28 17 08 7F 18 17 48  mSrc:127 mDst:40 mType:1 write:0 login:1 unknown:0 onOff:0 temp:127 mode:4 cP:1 uM:1 cTemp:11 acError:0
+[23:01:20.838][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 7F 80 D7 E8 F7 80 E7 E8
+[23:01:20.842][I][fujitsu.heatpump:204][FujiTask]: <-- 80 7F 28 17 08 7F 18 17  mSrc:128 mDst:127 mType:2 write:1 login:1 unknown:0 onOff:1 temp:8 mode:3 cP:0 uM:7 cTemp:12 acError:0
+[23:01:21.113][D][status_led:049]: 'Status LED': Setting state ON
+[23:01:21.113][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): B7 7F 80 D7 E8 F7 80 E7
+[23:01:21.142][I][fujitsu.heatpump:204][FujiTask]: <-- 48 80 7F 28 17 08 7F 18  mSrc:72 mDst:0 mType:3 write:1 login:0 unknown:1 onOff:0 temp:23 mode:4 cP:1 uM:0 cTemp:63 acError:0
+[23:01:21.283][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E8 B7 7F 80 D7 E8 F7 80
+[23:01:21.287][I][fujitsu.heatpump:204][FujiTask]: <-- 17 48 80 7F 28 17 08 7F  mSrc:23 mDst:72 mType:0 write:0 login:0 unknown:0 onOff:1 temp:40 mode:7 cP:0 uM:1 cTemp:4 acError:0
+[23:01:21.523][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E7 E8 B7 7F 80 D7 E8 F7
+[23:01:21.527][I][fujitsu.heatpump:204][FujiTask]: <-- 18 17 48 80 7F 28 17 08  mSrc:24 mDst:23 mType:0 write:1 login:0 unknown:0 onOff:0 temp:127 mode:0 cP:1 uM:2 cTemp:11 acError:1
+[23:01:21.527][D][status_led:049]: 'Status LED': Setting state OFF
+[23:01:21.731][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 E7 E8 B7 7F 80 D7 E8
+[23:01:21.736][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 18 17 48 80 7F 28 17  mSrc:127 mDst:24 mType:1 write:0 login:0 unknown:0 onOff:0 temp:0 mode:4 cP:0 uM:7 cTemp:20 acError:0
+[23:01:22.137][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): F7 80 E7 E8 B7 7F 80 D7
+[23:01:22.164][I][fujitsu.heatpump:204][FujiTask]: <-- 08 7F 18 17 48 80 7F 28  mSrc:8 mDst:127 mType:1 write:1 login:1 unknown:0 onOff:1 temp:72 mode:3 cP:1 uM:8 cTemp:63 acError:0
+[23:01:22.185][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E8 F7 80 E7 E8 B7 7F 80
+[23:01:22.189][I][fujitsu.heatpump:204][FujiTask]: <-- 17 08 7F 18 17 48 80 7F  mSrc:23 mDst:8 mType:3 write:1 login:0 unknown:0 onOff:0 temp:23 mode:4 cP:0 uM:4 cTemp:0 acError:0
+[23:01:22.373][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): D7 E8 F7 80 E7 E8 B7 7F
+[23:01:22.377][I][fujitsu.heatpump:204][FujiTask]: <-- 28 17 08 7F 18 17 48 80  mSrc:40 mDst:23 mType:0 write:1 login:0 unknown:0 onOff:1 temp:24 mode:7 cP:0 uM:1 cTemp:36 acError:0
+[23:01:22.595][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 D7 E8 F7 80 E7 E8 B7
+[23:01:22.599][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 28 17 08 7F 18 17 48  mSrc:127 mDst:40 mType:1 write:0 login:1 unknown:0 onOff:0 temp:127 mode:4 cP:1 uM:1 cTemp:11 acError:0
+[23:01:22.956][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 7F 80 D7 E8 F7 80 E7 E8
+[23:01:22.960][I][fujitsu.heatpump:204][FujiTask]: <-- 80 7F 28 17 08 7F 18 17  mSrc:128 mDst:127 mType:2 write:1 login:1 unknown:0 onOff:1 temp:8 mode:3 cP:0 uM:7 cTemp:12 acError:0
+[23:01:23.038][D][status_led:049]: 'Status LED': Setting state ON
+[23:01:23.044][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): B7 7F 80 D7 E8 F7 80 E7
+[23:01:23.048][I][fujitsu.heatpump:204][FujiTask]: <-- 48 80 7F 28 17 08 7F 18  mSrc:72 mDst:0 mType:3 write:1 login:0 unknown:1 onOff:0 temp:23 mode:4 cP:1 uM:0 cTemp:63 acError:0
+[23:01:23.257][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E8 B7 7F 80 D7 E8 F7 80
+[23:01:23.263][I][fujitsu.heatpump:204][FujiTask]: <-- 17 48 80 7F 28 17 08 7F  mSrc:23 mDst:72 mType:0 write:0 login:0 unknown:0 onOff:1 temp:40 mode:7 cP:0 uM:1 cTemp:4 acError:0
+[23:01:23.571][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E7 E8 B7 7F 80 D7 E8 F7
+[23:01:23.588][I][fujitsu.heatpump:204][FujiTask]: <-- 18 17 48 80 7F 28 17 08  mSrc:24 mDst:23 mType:0 write:1 login:0 unknown:0 onOff:0 temp:127 mode:0 cP:1 uM:2 cTemp:11 acError:1
+[23:01:23.588][D][status_led:049]: 'Status LED': Setting state OFF
+[23:01:23.707][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 E7 E8 B7 7F 80 D7 E8
+[23:01:23.709][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 18 17 48 80 7F 28 17  mSrc:127 mDst:24 mType:1 write:0 login:0 unknown:0 onOff:0 temp:0 mode:4 cP:0 uM:7 cTemp:20 acError:0
+[23:01:23.931][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): F7 80 E7 E8 B7 7F 80 D7
+[23:01:23.943][I][fujitsu.heatpump:204][FujiTask]: <-- 08 7F 18 17 48 80 7F 28  mSrc:8 mDst:127 mType:1 write:1 login:1 unknown:0 onOff:1 temp:72 mode:3 cP:1 uM:8 cTemp:63 acError:0
+[23:01:24.185][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E8 F7 80 E7 E8 B7 7F 80
+[23:01:24.185][I][fujitsu.heatpump:204][FujiTask]: <-- 17 08 7F 18 17 48 80 7F  mSrc:23 mDst:8 mType:3 write:1 login:0 unknown:0 onOff:0 temp:23 mode:4 cP:0 uM:4 cTemp:0 acError:0
+[23:01:24.390][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): D7 E8 F7 80 E7 E8 B7 7F
+[23:01:24.394][I][fujitsu.heatpump:204][FujiTask]: <-- 28 17 08 7F 18 17 48 80  mSrc:40 mDst:23 mType:0 write:1 login:0 unknown:0 onOff:1 temp:24 mode:7 cP:0 uM:1 cTemp:36 acError:0
+[23:01:24.564][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 D7 E8 F7 80 E7 E8 B7
+[23:01:24.566][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 28 17 08 7F 18 17 48  mSrc:127 mDst:40 mType:1 write:0 login:1 unknown:0 onOff:0 temp:127 mode:4 cP:1 uM:1 cTemp:11 acError:0
+[23:01:24.737][LABEL] T22
+[23:01:24.790][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 7F 80 D7 E8 F7 80 E7 E8
+[23:01:24.793][I][fujitsu.heatpump:204][FujiTask]: <-- 80 7F 28 17 08 7F 18 17  mSrc:128 mDst:127 mType:2 write:1 login:1 unknown:0 onOff:1 temp:8 mode:3 cP:0 uM:7 cTemp:12 acError:0
+[23:01:25.209][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): B7 7F 80 D7 E8 F7 80 E7
+[23:01:25.209][I][fujitsu.heatpump:204][FujiTask]: <-- 48 80 7F 28 17 08 7F 18  mSrc:72 mDst:0 mType:3 write:1 login:0 unknown:1 onOff:0 temp:23 mode:4 cP:1 uM:0 cTemp:63 acError:0
+[23:01:25.237][D][status_led:049]: 'Status LED': Setting state ON
+[23:01:25.250][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E8 B7 7F 80 D7 E8 F7 80
+[23:01:25.254][I][fujitsu.heatpump:204][FujiTask]: <-- 17 48 80 7F 28 17 08 7F  mSrc:23 mDst:72 mType:0 write:0 login:0 unknown:0 onOff:1 temp:40 mode:7 cP:0 uM:1 cTemp:4 acError:0
+[23:01:25.462][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E7 E8 B7 7F 80 D7 E8 F7
+[23:01:25.468][I][fujitsu.heatpump:204][FujiTask]: <-- 18 17 48 80 7F 28 17 08  mSrc:24 mDst:23 mType:0 write:1 login:0 unknown:0 onOff:0 temp:127 mode:0 cP:1 uM:2 cTemp:11 acError:1
+[23:01:25.556][D][status_led:049]: 'Status LED': Setting state OFF
+[23:01:25.823][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 E7 E8 B7 7F 80 D7 E8
+[23:01:25.823][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 18 17 48 80 7F 28 17  mSrc:127 mDst:24 mType:1 write:0 login:0 unknown:0 onOff:0 temp:0 mode:4 cP:0 uM:7 cTemp:20 acError:0
+[23:01:25.915][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): F7 80 E7 E8 B7 7F 80 D7
+[23:01:25.919][I][fujitsu.heatpump:204][FujiTask]: <-- 08 7F 18 17 48 80 7F 28  mSrc:8 mDst:127 mType:1 write:1 login:1 unknown:0 onOff:1 temp:72 mode:3 cP:1 uM:8 cTemp:63 acError:0
+[23:01:26.233][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E8 F7 80 E7 E8 B7 7F 80
+[23:01:26.233][I][fujitsu.heatpump:204][FujiTask]: <-- 17 08 7F 18 17 48 80 7F  mSrc:23 mDst:8 mType:3 write:1 login:0 unknown:0 onOff:0 temp:23 mode:4 cP:0 uM:4 cTemp:0 acError:0
+[23:01:26.329][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): D7 E8 F7 80 E7 E8 B7 7F
+[23:01:26.335][I][fujitsu.heatpump:204][FujiTask]: <-- 28 17 08 7F 18 17 48 80  mSrc:40 mDst:23 mType:0 write:1 login:0 unknown:0 onOff:1 temp:24 mode:7 cP:0 uM:1 cTemp:36 acError:0
+[23:01:26.653][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 D7 E8 F7 80 E7 E8 B7
+[23:01:26.653][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 28 17 08 7F 18 17 48  mSrc:127 mDst:40 mType:1 write:0 login:1 unknown:0 onOff:0 temp:127 mode:4 cP:1 uM:1 cTemp:11 acError:0
+[23:01:26.771][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 7F 80 D7 E8 F7 80 E7 E8
+[23:01:26.775][I][fujitsu.heatpump:204][FujiTask]: <-- 80 7F 28 17 08 7F 18 17  mSrc:128 mDst:127 mType:2 write:1 login:1 unknown:0 onOff:1 temp:8 mode:3 cP:0 uM:7 cTemp:12 acError:0
+[23:01:26.987][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): B7 7F 80 D7 E8 F7 80 E7
+[23:01:26.991][I][fujitsu.heatpump:204][FujiTask]: <-- 48 80 7F 28 17 08 7F 18  mSrc:72 mDst:0 mType:3 write:1 login:0 unknown:1 onOff:0 temp:23 mode:4 cP:1 uM:0 cTemp:63 acError:0
+[23:01:27.065][D][status_led:049]: 'Status LED': Setting state ON
+[23:01:27.257][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E8 B7 7F 80 D7 E8 F7 80
+[23:01:27.285][I][fujitsu.heatpump:204][FujiTask]: <-- 17 48 80 7F 28 17 08 7F  mSrc:23 mDst:72 mType:0 write:0 login:0 unknown:0 onOff:1 temp:40 mode:7 cP:0 uM:1 cTemp:4 acError:0
+[23:01:27.462][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E7 E8 B7 7F 80 D7 E8 F7
+[23:01:27.469][I][fujitsu.heatpump:204][FujiTask]: <-- 18 17 48 80 7F 28 17 08  mSrc:24 mDst:23 mType:0 write:1 login:0 unknown:0 onOff:0 temp:127 mode:0 cP:1 uM:2 cTemp:11 acError:1
+[23:01:27.573][D][status_led:049]: 'Status LED': Setting state OFF
+[23:01:27.643][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 E7 E8 B7 7F 80 D7 E8
+[23:01:27.647][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 18 17 48 80 7F 28 17  mSrc:127 mDst:24 mType:1 write:0 login:0 unknown:0 onOff:0 temp:0 mode:4 cP:0 uM:7 cTemp:20 acError:0
+[23:01:28.077][I][fujitsu.heatpump:242][FujiTask]: RX raw (6/8, before XOR): F7 80 E7 E8 B7 7F
+[23:01:28.187][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 DD FC 4A FD A0 81 80
+[23:01:28.191][D][fujitsu.heatpump:049][FujiTask]: Unmapped controller state byte: 0xB5
+[23:01:28.195][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 22 03 B5 02 5F 7E 7F  mSrc:127 mDst:34 mType:0 write:0 login:1 unknown:0 onOff:1 temp:2 mode:2 cP:0 uM:5 cTemp:63 acError:1
+[23:01:28.486][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): ED FC 4A FD A0 81 80 D7
+[23:01:28.486][D][fujitsu.heatpump:049][FujiTask]: Unmapped controller state byte: 0xB5
+[23:01:28.513][I][fujitsu.heatpump:204][FujiTask]: <-- 12 03 B5 02 5F 7E 7F 28  mSrc:18 mDst:3 mType:3 write:0 login:0 unknown:0 onOff:0 temp:95 mode:1 cP:1 uM:7 cTemp:63 acError:0
+[23:01:28.613][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E8 F5 80 ED FC 4A FD A0
+[23:01:28.617][I][fujitsu.heatpump:204][FujiTask]: <-- 17 0A 7F 12 03 B5 02 5F  mSrc:23 mDst:10 mType:3 write:1 login:0 unknown:0 onOff:0 temp:3 mode:1 cP:0 uM:11 cTemp:1 acError:0
+[23:01:28.941][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 81 80 DD EC 4A FD A0 81
+[23:01:28.947][D][fujitsu.heatpump:049][FujiTask]: Unmapped controller state byte: 0xB5
+[23:01:28.954][I][fujitsu.heatpump:204][FujiTask]: <-- 7E 7F 22 13 B5 02 5F 7E  mSrc:126 mDst:127 mType:2 write:0 login:1 unknown:0 onOff:1 temp:53 mode:1 cP:1 uM:0 cTemp:47 acError:0
+[23:01:29.100][D][status_led:049]: 'Status LED': Setting state ON
+[23:01:29.206][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 ED EC 4A FD A0 81 80
+[23:01:29.209][D][fujitsu.heatpump:049][FujiTask]: Unmapped controller state byte: 0xB5
+[23:01:29.212][D][fujitsu.heatpump:049][FujiTask]: Unmapped controller state byte: 0xB5
+[23:01:29.216][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 12 13 B5 02 5F 7E 7F  mSrc:127 mDst:18 mType:1 write:0 login:0 unknown:0 onOff:1 temp:2 mode:2 cP:0 uM:5 cTemp:63 acError:1
+[23:01:29.510][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): D7 E8 F5 80 ED EC 4A FD
+[23:01:29.515][I][fujitsu.heatpump:204][FujiTask]: <-- 28 17 0A 7F 12 13 B5 02  mSrc:40 mDst:23 mType:0 write:1 login:0 unknown:0 onOff:1 temp:18 mode:7 cP:1 uM:1 cTemp:26 acError:0
+[23:01:29.597][D][status_led:049]: 'Status LED': Setting state OFF
+[23:01:29.625][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): A0 81 80 D7 E8 F7 80 E7
+[23:01:29.625][D][fujitsu.heatpump:049][FujiTask]: Unmapped controller state byte: 0xB5
+[23:01:29.629][I][fujitsu.heatpump:204][FujiTask]: <-- 5F 7E 7F 28 17 08 7F 18  mSrc:95 mDst:126 mType:3 write:1 login:1 unknown:0 onOff:0 temp:23 mode:4 cP:1 uM:0 cTemp:63 acError:0
+[23:01:29.919][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E8 B7 7F 80 D7 E8 F7 80
+[23:01:29.947][I][fujitsu.heatpump:204][FujiTask]: <-- 17 48 80 7F 28 17 08 7F  mSrc:23 mDst:72 mType:0 write:0 login:0 unknown:0 onOff:1 temp:40 mode:7 cP:0 uM:1 cTemp:4 acError:0
+[23:01:30.067][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E7 E8 B7 7F 80 D7 E8 F7
+[23:01:30.071][I][fujitsu.heatpump:204][FujiTask]: <-- 18 17 48 80 7F 28 17 08  mSrc:24 mDst:23 mType:0 write:1 login:0 unknown:0 onOff:0 temp:127 mode:0 cP:1 uM:2 cTemp:11 acError:1
+[23:01:30.292][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 E7 E8 B7 7F 80 D7 E8
+[23:01:30.295][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 18 17 48 80 7F 28 17  mSrc:127 mDst:24 mType:1 write:0 login:0 unknown:0 onOff:0 temp:0 mode:4 cP:0 uM:7 cTemp:20 acError:0
+[23:01:30.518][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): F7 80 E7 E8 B7 7F 80 D7
+[23:01:30.521][I][fujitsu.heatpump:204][FujiTask]: <-- 08 7F 18 17 48 80 7F 28  mSrc:8 mDst:127 mType:1 write:1 login:1 unknown:0 onOff:1 temp:72 mode:3 cP:1 uM:8 cTemp:63 acError:0
+[23:01:30.944][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E8 F7 80 E7 E8 B7 7F 80
+[23:01:30.944][I][fujitsu.heatpump:204][FujiTask]: <-- 17 08 7F 18 17 48 80 7F  mSrc:23 mDst:8 mType:3 write:1 login:0 unknown:0 onOff:0 temp:23 mode:4 cP:0 uM:4 cTemp:0 acError:0
+[23:01:30.944][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): D7 E8 F7 80 E7 E8 B7 7F
+[23:01:30.948][I][fujitsu.heatpump:204][FujiTask]: <-- 28 17 08 7F 18 17 48 80  mSrc:40 mDst:23 mType:0 write:1 login:0 unknown:0 onOff:1 temp:24 mode:7 cP:0 uM:1 cTemp:36 acError:0
+[23:01:31.106][D][status_led:049]: 'Status LED': Setting state ON
+[23:01:31.149][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 D7 E8 F7 80 E7 E8 B7
+[23:01:31.154][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 28 17 08 7F 18 17 48  mSrc:127 mDst:40 mType:1 write:0 login:1 unknown:0 onOff:0 temp:127 mode:4 cP:1 uM:1 cTemp:11 acError:0
+[23:01:31.559][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 7F 80 D7 E8 F7 80 E7 E8
+[23:01:31.585][I][fujitsu.heatpump:204][FujiTask]: <-- 80 7F 28 17 08 7F 18 17  mSrc:128 mDst:127 mType:2 write:1 login:1 unknown:0 onOff:1 temp:8 mode:3 cP:0 uM:7 cTemp:12 acError:0
+[23:01:31.601][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): B7 7F 80 D7 E8 F7 80 E7
+[23:01:31.606][I][fujitsu.heatpump:204][FujiTask]: <-- 48 80 7F 28 17 08 7F 18  mSrc:72 mDst:0 mType:3 write:1 login:0 unknown:1 onOff:0 temp:23 mode:4 cP:1 uM:0 cTemp:63 acError:0
+[23:01:31.629][D][status_led:049]: 'Status LED': Setting state OFF
+[23:01:31.968][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E8 B7 7F 80 D7 E8 F7 80
+[23:01:31.971][I][fujitsu.heatpump:204][FujiTask]: <-- 17 48 80 7F 28 17 08 7F  mSrc:23 mDst:72 mType:0 write:0 login:0 unknown:0 onOff:1 temp:40 mode:7 cP:0 uM:1 cTemp:4 acError:0
+[23:01:32.048][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E7 E8 B7 7F 80 D7 E8 F7
+[23:01:32.052][I][fujitsu.heatpump:204][FujiTask]: <-- 18 17 48 80 7F 28 17 08  mSrc:24 mDst:23 mType:0 write:1 login:0 unknown:0 onOff:0 temp:127 mode:0 cP:1 uM:2 cTemp:11 acError:1
+[23:01:32.378][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 E7 E8 B7 7F 80 D7 E8
+[23:01:32.381][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 18 17 48 80 7F 28 17  mSrc:127 mDst:24 mType:1 write:0 login:0 unknown:0 onOff:0 temp:0 mode:4 cP:0 uM:7 cTemp:20 acError:0
+[23:01:32.505][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): F7 80 E7 E8 B7 7F 80 D7
+[23:01:32.509][I][fujitsu.heatpump:204][FujiTask]: <-- 08 7F 18 17 48 80 7F 28  mSrc:8 mDst:127 mType:1 write:1 login:1 unknown:0 onOff:1 temp:72 mode:3 cP:1 uM:8 cTemp:63 acError:0
+[23:01:32.725][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E8 F7 80 E7 E8 B7 7F 80
+[23:01:32.729][I][fujitsu.heatpump:204][FujiTask]: <-- 17 08 7F 18 17 48 80 7F  mSrc:23 mDst:8 mType:3 write:1 login:0 unknown:0 onOff:0 temp:23 mode:4 cP:0 uM:4 cTemp:0 acError:0
+[23:01:32.992][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): D7 E8 F7 80 E7 E8 B7 7F
+[23:01:33.019][I][fujitsu.heatpump:204][FujiTask]: <-- 28 17 08 7F 18 17 48 80  mSrc:40 mDst:23 mType:0 write:1 login:0 unknown:0 onOff:1 temp:24 mode:7 cP:0 uM:1 cTemp:36 acError:0
+[23:01:33.125][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 D7 E8 F7 80 E7 E8 B7
+[23:01:33.131][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 28 17 08 7F 18 17 48  mSrc:127 mDst:40 mType:1 write:0 login:1 unknown:0 onOff:0 temp:127 mode:4 cP:1 uM:1 cTemp:11 acError:0
+[23:01:33.151][D][status_led:049]: 'Status LED': Setting state ON
+[23:01:33.401][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 7F 80 D7 E8 F7 80 E7 E8
+[23:01:33.429][I][fujitsu.heatpump:204][FujiTask]: <-- 80 7F 28 17 08 7F 18 17  mSrc:128 mDst:127 mType:2 write:1 login:1 unknown:0 onOff:1 temp:8 mode:3 cP:0 uM:7 cTemp:12 acError:0
+[23:01:33.606][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): B7 7F 80 D7 E8 F7 80 E7
+[23:01:33.606][I][fujitsu.heatpump:204][FujiTask]: <-- 48 80 7F 28 17 08 7F 18  mSrc:72 mDst:0 mType:3 write:1 login:0 unknown:1 onOff:0 temp:23 mode:4 cP:1 uM:0 cTemp:63 acError:0
+[23:01:33.659][LABEL] T23
+[23:01:33.661][D][status_led:049]: 'Status LED': Setting state OFF
+[23:01:33.800][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E8 B7 7F 80 D7 E8 F7 80
+[23:01:33.804][I][fujitsu.heatpump:204][FujiTask]: <-- 17 48 80 7F 28 17 08 7F  mSrc:23 mDst:72 mType:0 write:0 login:0 unknown:0 onOff:1 temp:40 mode:7 cP:0 uM:1 cTemp:4 acError:0
+[23:01:34.221][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E7 E8 B7 7F 80 D7 E8 F7
+[23:01:34.253][I][fujitsu.heatpump:204][FujiTask]: <-- 18 17 48 80 7F 28 17 08  mSrc:24 mDst:23 mType:0 write:1 login:0 unknown:0 onOff:0 temp:127 mode:0 cP:1 uM:2 cTemp:11 acError:1
+[23:01:34.254][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 E7 E8 B7 7F 80 D7 E8
+[23:01:34.256][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 18 17 48 80 7F 28 17  mSrc:127 mDst:24 mType:1 write:0 login:0 unknown:0 onOff:0 temp:0 mode:4 cP:0 uM:7 cTemp:20 acError:0
+[23:01:34.632][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): F7 80 E7 E8 B7 7F 80 D7
+[23:01:34.658][I][fujitsu.heatpump:204][FujiTask]: <-- 08 7F 18 17 48 80 7F 28  mSrc:8 mDst:127 mType:1 write:1 login:1 unknown:0 onOff:1 temp:72 mode:3 cP:1 uM:8 cTemp:63 acError:0
+[23:01:34.699][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E8 F7 80 E7 E8 B7 7F 80
+[23:01:34.705][I][fujitsu.heatpump:204][FujiTask]: <-- 17 08 7F 18 17 48 80 7F  mSrc:23 mDst:8 mType:3 write:1 login:0 unknown:0 onOff:0 temp:23 mode:4 cP:0 uM:4 cTemp:0 acError:0
+[23:01:34.885][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): D7 E8 F7 80 E7 E8 B7 7F
+[23:01:34.891][I][fujitsu.heatpump:204][FujiTask]: <-- 28 17 08 7F 18 17 48 80  mSrc:40 mDst:23 mType:0 write:1 login:0 unknown:0 onOff:1 temp:24 mode:7 cP:0 uM:1 cTemp:36 acError:0
+[23:01:35.107][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 D7 E8 F7 80 E7 E8 B7
+[23:01:35.110][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 28 17 08 7F 18 17 48  mSrc:127 mDst:40 mType:1 write:0 login:1 unknown:0 onOff:0 temp:127 mode:4 cP:1 uM:1 cTemp:11 acError:0
+[23:01:35.168][D][status_led:049]: 'Status LED': Setting state ON
+[23:01:35.401][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 7F 80 D7 E8 F7 80 E7 E8
+[23:01:35.440][I][fujitsu.heatpump:204][FujiTask]: <-- 80 7F 28 17 08 7F 18 17  mSrc:128 mDst:127 mType:2 write:1 login:1 unknown:0 onOff:1 temp:8 mode:3 cP:0 uM:7 cTemp:12 acError:0
+[23:01:35.558][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): B7 7F 80 D7 E8 F7 80 E7
+[23:01:35.560][I][fujitsu.heatpump:204][FujiTask]: <-- 48 80 7F 28 17 08 7F 18  mSrc:72 mDst:0 mType:3 write:1 login:0 unknown:1 onOff:0 temp:23 mode:4 cP:1 uM:0 cTemp:63 acError:0
+[23:01:35.671][D][status_led:049]: 'Status LED': Setting state OFF
+[23:01:35.827][I][fujitsu.heatpump:242][FujiTask]: RX raw (3/8, before XOR): E8 B7 7F
+[23:01:36.064][D][fujitsu.climate:403]: State updated - mode=2 target=23 current=nan fan=2 preset=-1
+[23:01:36.064][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 DD FC 42 FD A0 81 80
+[23:01:36.068][D][fujitsu.heatpump:067][FujiTask]: Observed controller ON state: value=0xBD mode=3 fan_valid=1 fan=0 temp_valid=1 temp=23
+[23:01:36.068][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 22 03 BD 02 5F 7E 7F  mSrc:127 mDst:34 mType:0 write:0 login:1 unknown:0 onOff:1 temp:2 mode:6 cP:0 uM:5 cTemp:63 acError:1
+[23:01:36.474][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): ED FC 42 FD A0 81 80 D7
+[23:01:36.474][I][fujitsu.heatpump:204][FujiTask]: <-- 12 03 BD 02 5F 7E 7F 28  mSrc:18 mDst:3 mType:3 write:1 login:0 unknown:0 onOff:0 temp:95 mode:1 cP:1 uM:7 cTemp:63 acError:0
+[23:01:36.501][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E8 F5 80 ED FC 42 FD A0
+[23:01:36.501][I][fujitsu.heatpump:204][FujiTask]: <-- 17 0A 7F 12 03 BD 02 5F  mSrc:23 mDst:10 mType:3 write:1 login:0 unknown:0 onOff:0 temp:3 mode:1 cP:0 uM:11 cTemp:1 acError:0
+[23:01:36.883][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 81 80 DD EC 42 FD A0 81
+[23:01:36.883][I][fujitsu.heatpump:204][FujiTask]: <-- 7E 7F 22 13 BD 02 5F 7E  mSrc:126 mDst:127 mType:2 write:0 login:1 unknown:0 onOff:1 temp:61 mode:1 cP:1 uM:0 cTemp:47 acError:0
+[23:01:37.050][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 ED EC 42 FD A0 81 80
+[23:01:37.054][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 12 13 BD 02 5F 7E 7F  mSrc:127 mDst:18 mType:1 write:0 login:0 unknown:0 onOff:1 temp:2 mode:6 cP:0 uM:5 cTemp:63 acError:1
+[23:01:37.174][D][status_led:049]: 'Status LED': Setting state ON
+[23:01:37.237][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): D7 E8 F5 80 ED EC 42 FD
+[23:01:37.242][I][fujitsu.heatpump:204][FujiTask]: <-- 28 17 0A 7F 12 13 BD 02  mSrc:40 mDst:23 mType:0 write:1 login:0 unknown:0 onOff:1 temp:18 mode:7 cP:1 uM:1 cTemp:30 acError:0
+[23:01:37.497][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): A0 81 80 D7 E8 F7 80 E7
+[23:01:37.501][I][fujitsu.heatpump:204][FujiTask]: <-- 5F 7E 7F 28 17 08 7F 18  mSrc:95 mDst:126 mType:3 write:1 login:1 unknown:0 onOff:0 temp:23 mode:4 cP:1 uM:0 cTemp:63 acError:0
+[23:01:37.677][D][status_led:049]: 'Status LED': Setting state OFF
+[23:01:37.696][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E8 B7 7F 80 D7 E8 F7 80
+[23:01:37.701][I][fujitsu.heatpump:204][FujiTask]: <-- 17 48 80 7F 28 17 08 7F  mSrc:23 mDst:72 mType:0 write:0 login:0 unknown:0 onOff:1 temp:40 mode:7 cP:0 uM:1 cTemp:4 acError:0
+[23:01:38.112][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E7 E8 B7 7F 80 D7 E8 F7
+[23:01:38.112][I][fujitsu.heatpump:204][FujiTask]: <-- 18 17 48 80 7F 28 17 08  mSrc:24 mDst:23 mType:0 write:1 login:0 unknown:0 onOff:0 temp:127 mode:0 cP:1 uM:2 cTemp:11 acError:1
+[23:01:38.139][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 E7 E8 B7 7F 80 D7 E8
+[23:01:38.139][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 18 17 48 80 7F 28 17  mSrc:127 mDst:24 mType:1 write:0 login:0 unknown:0 onOff:0 temp:0 mode:4 cP:0 uM:7 cTemp:20 acError:0
+[23:01:38.521][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): F7 80 E7 E8 B7 7F 80 D7
+[23:01:38.521][I][fujitsu.heatpump:204][FujiTask]: <-- 08 7F 18 17 48 80 7F 28  mSrc:8 mDst:127 mType:1 write:1 login:1 unknown:0 onOff:1 temp:72 mode:3 cP:1 uM:8 cTemp:63 acError:0
+[23:01:38.587][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E8 F7 80 E7 E8 B7 7F 80
+[23:01:38.594][I][fujitsu.heatpump:204][FujiTask]: <-- 17 08 7F 18 17 48 80 7F  mSrc:23 mDst:8 mType:3 write:1 login:0 unknown:0 onOff:0 temp:23 mode:4 cP:0 uM:4 cTemp:0 acError:0
+[23:01:38.933][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): D7 E8 F7 80 E7 E8 B7 7F
+[23:01:38.933][I][fujitsu.heatpump:204][FujiTask]: <-- 28 17 08 7F 18 17 48 80  mSrc:40 mDst:23 mType:0 write:1 login:0 unknown:0 onOff:1 temp:24 mode:7 cP:0 uM:1 cTemp:36 acError:0
+[23:01:38.998][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 D7 E8 F7 80 E7 E8 B7
+[23:01:39.002][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 28 17 08 7F 18 17 48  mSrc:127 mDst:40 mType:1 write:0 login:1 unknown:0 onOff:0 temp:127 mode:4 cP:1 uM:1 cTemp:11 acError:0
+[23:01:39.189][D][status_led:049]: 'Status LED': Setting state ON
+[23:01:39.223][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 7F 80 D7 E8 F7 80 E7 E8
+[23:01:39.228][I][fujitsu.heatpump:204][FujiTask]: <-- 80 7F 28 17 08 7F 18 17  mSrc:128 mDst:127 mType:2 write:1 login:1 unknown:0 onOff:1 temp:8 mode:3 cP:0 uM:7 cTemp:12 acError:0
+[23:01:39.448][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): B7 7F 80 D7 E8 F7 80 E7
+[23:01:39.451][I][fujitsu.heatpump:204][FujiTask]: <-- 48 80 7F 28 17 08 7F 18  mSrc:72 mDst:0 mType:3 write:1 login:0 unknown:1 onOff:0 temp:23 mode:4 cP:1 uM:0 cTemp:63 acError:0
+[23:01:39.507][LABEL] T24
+[23:01:39.674][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E8 B7 7F 80 D7 E8 F7 80
+[23:01:39.679][I][fujitsu.heatpump:204][FujiTask]: <-- 17 48 80 7F 28 17 08 7F  mSrc:23 mDst:72 mType:0 write:0 login:0 unknown:0 onOff:1 temp:40 mode:7 cP:0 uM:1 cTemp:4 acError:0
+[23:01:39.702][D][status_led:049]: 'Status LED': Setting state OFF
+[23:01:39.955][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E7 E8 B7 7F 80 D7 E8 F7
+[23:01:39.955][I][fujitsu.heatpump:204][FujiTask]: <-- 18 17 48 80 7F 28 17 08  mSrc:24 mDst:23 mType:0 write:1 login:0 unknown:0 onOff:0 temp:127 mode:0 cP:1 uM:2 cTemp:11 acError:1
+[23:01:40.213][I][fujitsu.heatpump:242][FujiTask]: RX raw (5/8, before XOR): 80 E7 E8 B7 7F
+[23:01:40.570][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 DD FC 3A FD A0 81 80
+[23:01:40.570][D][fujitsu.heatpump:049][FujiTask]: Unmapped controller state byte: 0xC5
+[23:01:40.570][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 22 03 C5 02 5F 7E 7F  mSrc:127 mDst:34 mType:0 write:0 login:1 unknown:0 onOff:1 temp:2 mode:2 cP:0 uM:5 cTemp:63 acError:1
+[23:01:40.653][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): ED FC 3A FD A0 81 80 D7
+[23:01:40.659][D][fujitsu.heatpump:049][FujiTask]: Unmapped controller state byte: 0xC5
+[23:01:40.662][I][fujitsu.heatpump:204][FujiTask]: <-- 12 03 C5 02 5F 7E 7F 28  mSrc:18 mDst:3 mType:0 write:0 login:0 unknown:0 onOff:0 temp:95 mode:1 cP:1 uM:7 cTemp:63 acError:0
+[23:01:40.979][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E8 F5 80 ED FC 3A FD A0
+[23:01:40.983][I][fujitsu.heatpump:204][FujiTask]: <-- 17 0A 7F 12 03 C5 02 5F  mSrc:23 mDst:10 mType:3 write:1 login:0 unknown:0 onOff:0 temp:3 mode:1 cP:0 uM:12 cTemp:1 acError:0
+[23:01:41.171][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 81 80 DD EC 3A FD A0 81
+[23:01:41.173][D][fujitsu.heatpump:049][FujiTask]: Unmapped controller state byte: 0xC5
+[23:01:41.173][I][fujitsu.heatpump:204][FujiTask]: <-- 7E 7F 22 13 C5 02 5F 7E  mSrc:126 mDst:127 mType:2 write:0 login:1 unknown:0 onOff:1 temp:69 mode:1 cP:1 uM:0 cTemp:47 acError:0
+[23:01:41.217][D][status_led:049]: 'Status LED': Setting state ON
+[23:01:41.593][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 ED EC 3A FD A0 81 80
+[23:01:41.593][D][fujitsu.heatpump:049][FujiTask]: Unmapped controller state byte: 0xC5
+[23:01:41.593][D][fujitsu.heatpump:049][FujiTask]: Unmapped controller state byte: 0xC5
+[23:01:41.622][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 12 13 C5 02 5F 7E 7F  mSrc:127 mDst:18 mType:1 write:0 login:0 unknown:0 onOff:1 temp:2 mode:2 cP:0 uM:5 cTemp:63 acError:1
+[23:01:41.623][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): D7 E8 F5 80 ED EC 3A FD
+[23:01:41.628][I][fujitsu.heatpump:204][FujiTask]: <-- 28 17 0A 7F 12 13 C5 02  mSrc:40 mDst:23 mType:0 write:1 login:0 unknown:0 onOff:1 temp:18 mode:7 cP:1 uM:1 cTemp:34 acError:0
+[23:01:41.733][D][status_led:049]: 'Status LED': Setting state OFF
+[23:01:42.005][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): A0 81 80 D7 E8 F7 80 E7
+[23:01:42.008][D][fujitsu.heatpump:049][FujiTask]: Unmapped controller state byte: 0xC5
+[23:01:42.008][I][fujitsu.heatpump:204][FujiTask]: <-- 5F 7E 7F 28 17 08 7F 18  mSrc:95 mDst:126 mType:3 write:1 login:1 unknown:0 onOff:0 temp:23 mode:4 cP:1 uM:0 cTemp:63 acError:0
+[23:01:42.078][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E8 B7 7F 80 D7 E8 F7 80
+[23:01:42.083][I][fujitsu.heatpump:204][FujiTask]: <-- 17 48 80 7F 28 17 08 7F  mSrc:23 mDst:72 mType:0 write:0 login:0 unknown:0 onOff:1 temp:40 mode:7 cP:0 uM:1 cTemp:4 acError:0
+[23:01:42.297][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E7 E8 B7 7F 80 D7 E8 F7
+[23:01:42.303][I][fujitsu.heatpump:204][FujiTask]: <-- 18 17 48 80 7F 28 17 08  mSrc:24 mDst:23 mType:0 write:1 login:0 unknown:0 onOff:0 temp:127 mode:0 cP:1 uM:2 cTemp:11 acError:1
+[23:01:42.520][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 E7 E8 B7 7F 80 D7 E8
+[23:01:42.525][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 18 17 48 80 7F 28 17  mSrc:127 mDst:24 mType:1 write:0 login:0 unknown:0 onOff:0 temp:0 mode:4 cP:0 uM:7 cTemp:20 acError:0
+[23:01:42.822][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): F7 80 E7 E8 B7 7F 80 D7
+[23:01:42.851][I][fujitsu.heatpump:204][FujiTask]: <-- 08 7F 18 17 48 80 7F 28  mSrc:8 mDst:127 mType:1 write:1 login:1 unknown:0 onOff:1 temp:72 mode:3 cP:1 uM:8 cTemp:63 acError:0
+[23:01:43.027][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E8 F7 80 E7 E8 B7 7F 80
+[23:01:43.055][I][fujitsu.heatpump:204][FujiTask]: <-- 17 08 7F 18 17 48 80 7F  mSrc:23 mDst:8 mType:3 write:1 login:0 unknown:0 onOff:0 temp:23 mode:4 cP:0 uM:4 cTemp:0 acError:0
+[23:01:43.159][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): D7 E8 F7 80 E7 E8 B7 7F
+[23:01:43.165][I][fujitsu.heatpump:204][FujiTask]: <-- 28 17 08 7F 18 17 48 80  mSrc:40 mDst:23 mType:0 write:1 login:0 unknown:0 onOff:1 temp:24 mode:7 cP:0 uM:1 cTemp:36 acError:0
+[23:01:43.232][D][status_led:049]: 'Status LED': Setting state ON
+[23:01:43.436][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 D7 E8 F7 80 E7 E8 B7
+[23:01:43.464][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 28 17 08 7F 18 17 48  mSrc:127 mDst:40 mType:1 write:0 login:1 unknown:0 onOff:0 temp:127 mode:4 cP:1 uM:1 cTemp:11 acError:0
+[23:01:43.641][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 7F 80 D7 E8 F7 80 E7 E8
+[23:01:43.641][I][fujitsu.heatpump:204][FujiTask]: <-- 80 7F 28 17 08 7F 18 17  mSrc:128 mDst:127 mType:2 write:1 login:1 unknown:0 onOff:1 temp:8 mode:3 cP:0 uM:7 cTemp:12 acError:0
+[23:01:43.745][D][status_led:049]: 'Status LED': Setting state OFF
+[23:01:43.835][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): B7 7F 80 D7 E8 F7 80 E7
+[23:01:43.838][I][fujitsu.heatpump:204][FujiTask]: <-- 48 80 7F 28 17 08 7F 18  mSrc:72 mDst:0 mType:3 write:1 login:0 unknown:1 onOff:0 temp:23 mode:4 cP:1 uM:0 cTemp:63 acError:0
+[23:01:44.057][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E8 B7 7F 80 D7 E8 F7 80
+[23:01:44.061][I][fujitsu.heatpump:204][FujiTask]: <-- 17 48 80 7F 28 17 08 7F  mSrc:23 mDst:72 mType:0 write:0 login:0 unknown:0 onOff:1 temp:40 mode:7 cP:0 uM:1 cTemp:4 acError:0
+[23:01:44.178][LABEL] T25
+[23:01:44.460][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E7 E8 B7 7F 80 D7 E8 F7
+[23:01:44.489][I][fujitsu.heatpump:204][FujiTask]: <-- 18 17 48 80 7F 28 17 08  mSrc:24 mDst:23 mType:0 write:1 login:0 unknown:0 onOff:0 temp:127 mode:0 cP:1 uM:2 cTemp:11 acError:1
+[23:01:44.505][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 E7 E8 B7 7F 80 D7 E8
+[23:01:44.508][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 18 17 48 80 7F 28 17  mSrc:127 mDst:24 mType:1 write:0 login:0 unknown:0 onOff:0 temp:0 mode:4 cP:0 uM:7 cTemp:20 acError:0
+[23:01:44.870][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): F7 80 E7 E8 B7 7F 80 D7
+[23:01:44.874][I][fujitsu.heatpump:204][FujiTask]: <-- 08 7F 18 17 48 80 7F 28  mSrc:8 mDst:127 mType:1 write:1 login:1 unknown:0 onOff:1 temp:72 mode:3 cP:1 uM:8 cTemp:63 acError:0
+[23:01:44.955][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E8 F7 80 E7 E8 B7 7F 80
+[23:01:44.960][I][fujitsu.heatpump:204][FujiTask]: <-- 17 08 7F 18 17 48 80 7F  mSrc:23 mDst:8 mType:3 write:1 login:0 unknown:0 onOff:0 temp:23 mode:4 cP:0 uM:4 cTemp:0 acError:0
+[23:01:45.146][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): D7 E8 F7 80 E7 E8 B7 7F
+[23:01:45.150][I][fujitsu.heatpump:204][FujiTask]: <-- 28 17 08 7F 18 17 48 80  mSrc:40 mDst:23 mType:0 write:1 login:0 unknown:0 onOff:1 temp:24 mode:7 cP:0 uM:1 cTemp:36 acError:0
+[23:01:45.252][D][status_led:049]: 'Status LED': Setting state ON
+[23:01:45.365][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 D7 E8 F7 80 E7 E8 B7
+[23:01:45.382][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 28 17 08 7F 18 17 48  mSrc:127 mDst:40 mType:1 write:0 login:1 unknown:0 onOff:0 temp:127 mode:4 cP:1 uM:1 cTemp:11 acError:0
+[23:01:45.691][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 7F 80 D7 E8 F7 80 E7 E8
+[23:01:45.691][I][fujitsu.heatpump:204][FujiTask]: <-- 80 7F 28 17 08 7F 18 17  mSrc:128 mDst:127 mType:2 write:1 login:1 unknown:0 onOff:1 temp:8 mode:3 cP:0 uM:7 cTemp:12 acError:0
+[23:01:45.763][D][status_led:049]: 'Status LED': Setting state OFF
+[23:01:45.809][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): B7 7F 80 D7 E8 F7 80 E7
+[23:01:45.815][I][fujitsu.heatpump:204][FujiTask]: <-- 48 80 7F 28 17 08 7F 18  mSrc:72 mDst:0 mType:3 write:1 login:0 unknown:1 onOff:0 temp:23 mode:4 cP:1 uM:0 cTemp:63 acError:0
+[23:01:46.099][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E8 B7 7F 80 DD FC 32 FD
+[23:01:46.126][I][fujitsu.heatpump:204][FujiTask]: <-- 17 48 80 7F 22 03 CD 02  mSrc:23 mDst:72 mType:0 write:0 login:0 unknown:0 onOff:1 temp:34 mode:7 cP:1 uM:0 cTemp:38 acError:0
+[23:01:46.303][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): A0 81 80 ED FC 32 FD A0
+[23:01:46.304][D][fujitsu.heatpump:049][FujiTask]: Unmapped controller state byte: 0xCD
+[23:01:46.304][I][fujitsu.heatpump:204][FujiTask]: <-- 5F 7E 7F 12 03 CD 02 5F  mSrc:95 mDst:126 mType:3 write:1 login:1 unknown:0 onOff:0 temp:3 mode:1 cP:0 uM:12 cTemp:1 acError:0
+[23:01:46.483][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 81 80 D7 E8 F5 80 ED FC
+[23:01:46.489][D][fujitsu.heatpump:049][FujiTask]: Unmapped controller state byte: 0xCD
+[23:01:46.489][I][fujitsu.heatpump:204][FujiTask]: <-- 7E 7F 28 17 0A 7F 12 03  mSrc:126 mDst:127 mType:2 write:1 login:1 unknown:0 onOff:1 temp:10 mode:3 cP:0 uM:7 cTemp:9 acError:0
+[23:01:46.716][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 32 FD A0 81 80 D7 E8 F7
+[23:01:46.722][D][fujitsu.heatpump:049][FujiTask]: Unmapped controller state byte: 0xCD
+[23:01:46.725][I][fujitsu.heatpump:204][FujiTask]: <-- CD 02 5F 7E 7F 28 17 08  mSrc:205 mDst:2 mType:1 write:1 login:0 unknown:0 onOff:0 temp:127 mode:7 cP:1 uM:2 cTemp:11 acError:0
+[23:01:47.122][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 E7 E8 B7 7F 80 D7 E8
+[23:01:47.122][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 18 17 48 80 7F 28 17  mSrc:127 mDst:24 mType:1 write:0 login:0 unknown:0 onOff:0 temp:0 mode:4 cP:0 uM:7 cTemp:20 acError:0
+[23:01:47.170][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): F7 80 E7 E8 B7 7F 80 D7
+[23:01:47.173][I][fujitsu.heatpump:204][FujiTask]: <-- 08 7F 18 17 48 80 7F 28  mSrc:8 mDst:127 mType:1 write:1 login:1 unknown:0 onOff:1 temp:72 mode:3 cP:1 uM:8 cTemp:63 acError:0
+[23:01:47.278][D][status_led:049]: 'Status LED': Setting state ON
+[23:01:47.396][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E8 F7 80 E7 E8 B7 7F 80
+[23:01:47.402][I][fujitsu.heatpump:204][FujiTask]: <-- 17 08 7F 18 17 48 80 7F  mSrc:23 mDst:8 mType:3 write:1 login:0 unknown:0 onOff:0 temp:23 mode:4 cP:0 uM:4 cTemp:0 acError:0
+[23:01:47.737][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): D7 E8 F7 80 E7 E8 B7 7F
+[23:01:47.764][I][fujitsu.heatpump:204][FujiTask]: <-- 28 17 08 7F 18 17 48 80  mSrc:40 mDst:23 mType:0 write:1 login:0 unknown:0 onOff:1 temp:24 mode:7 cP:0 uM:1 cTemp:36 acError:0
+[23:01:47.787][D][status_led:049]: 'Status LED': Setting state OFF
+[23:01:47.802][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 D7 E8 F7 80 E7 E8 B7
+[23:01:47.807][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 28 17 08 7F 18 17 48  mSrc:127 mDst:40 mType:1 write:0 login:1 unknown:0 onOff:0 temp:127 mode:4 cP:1 uM:1 cTemp:11 acError:0
+[23:01:48.148][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 7F 80 D7 E8 F7 80 E7 E8
+[23:01:48.148][I][fujitsu.heatpump:204][FujiTask]: <-- 80 7F 28 17 08 7F 18 17  mSrc:128 mDst:127 mType:2 write:1 login:1 unknown:0 onOff:1 temp:8 mode:3 cP:0 uM:7 cTemp:12 acError:0
+[23:01:48.254][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): B7 7F 80 D7 E8 F7 80 E7
+[23:01:48.260][I][fujitsu.heatpump:204][FujiTask]: <-- 48 80 7F 28 17 08 7F 18  mSrc:72 mDst:0 mType:3 write:1 login:0 unknown:1 onOff:0 temp:23 mode:4 cP:1 uM:0 cTemp:63 acError:0
+[23:01:48.556][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E8 B7 7F 80 D7 E8 F7 80
+[23:01:48.557][I][fujitsu.heatpump:204][FujiTask]: <-- 17 48 80 7F 28 17 08 7F  mSrc:23 mDst:72 mType:0 write:0 login:0 unknown:0 onOff:1 temp:40 mode:7 cP:0 uM:1 cTemp:4 acError:0
+[23:01:48.700][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E7 E8 B7 7F 80 D7 E8 F7
+[23:01:48.704][I][fujitsu.heatpump:204][FujiTask]: <-- 18 17 48 80 7F 28 17 08  mSrc:24 mDst:23 mType:0 write:1 login:0 unknown:0 onOff:0 temp:127 mode:0 cP:1 uM:2 cTemp:11 acError:1
+[23:01:48.966][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 E7 E8 B7 7F 80 D7 E8
+[23:01:48.966][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 18 17 48 80 7F 28 17  mSrc:127 mDst:24 mType:1 write:0 login:0 unknown:0 onOff:0 temp:0 mode:4 cP:0 uM:7 cTemp:20 acError:0
+[23:01:49.170][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): F7 80 E7 E8 B7 7F 80 D7
+[23:01:49.174][I][fujitsu.heatpump:204][FujiTask]: <-- 08 7F 18 17 48 80 7F 28  mSrc:8 mDst:127 mType:1 write:1 login:1 unknown:0 onOff:1 temp:72 mode:3 cP:1 uM:8 cTemp:63 acError:0
+[23:01:49.376][D][status_led:049]: 'Status LED': Setting state ON
+[23:01:49.380][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E8 F7 80 E7 E8 B7 7F 80
+[23:01:49.385][I][fujitsu.heatpump:204][FujiTask]: <-- 17 08 7F 18 17 48 80 7F  mSrc:23 mDst:8 mType:3 write:1 login:0 unknown:0 onOff:0 temp:23 mode:4 cP:0 uM:4 cTemp:0 acError:0
+[23:01:49.580][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): D7 E8 F7 80 E7 E8 B7 7F
+[23:01:49.584][I][fujitsu.heatpump:204][FujiTask]: <-- 28 17 08 7F 18 17 48 80  mSrc:40 mDst:23 mType:0 write:1 login:0 unknown:0 onOff:1 temp:24 mode:7 cP:0 uM:1 cTemp:36 acError:0
+[23:01:49.786][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 D7 E8 F7 80 E7 E8 B7
+[23:01:49.790][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 28 17 08 7F 18 17 48  mSrc:127 mDst:40 mType:1 write:0 login:1 unknown:0 onOff:0 temp:127 mode:4 cP:1 uM:1 cTemp:11 acError:0
+[23:01:49.809][D][status_led:049]: 'Status LED': Setting state OFF
+[23:01:50.001][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 7F 80 D7 E8 F7 80 E7 E8
+[23:01:50.002][I][fujitsu.heatpump:204][FujiTask]: <-- 80 7F 28 17 08 7F 18 17  mSrc:128 mDst:127 mType:2 write:1 login:1 unknown:0 onOff:1 temp:8 mode:3 cP:0 uM:7 cTemp:12 acError:0
+[23:01:50.105][LABEL] T26
+[23:01:50.227][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): B7 7F 80 D7 E8 F7 80 E7
+[23:01:50.231][I][fujitsu.heatpump:204][FujiTask]: <-- 48 80 7F 28 17 08 7F 18  mSrc:72 mDst:0 mType:3 write:1 login:0 unknown:1 onOff:0 temp:23 mode:4 cP:1 uM:0 cTemp:63 acError:0
+[23:01:50.453][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E8 B7 7F 80 D7 E8 F7 80
+[23:01:50.455][I][fujitsu.heatpump:204][FujiTask]: <-- 17 48 80 7F 28 17 08 7F  mSrc:23 mDst:72 mType:0 write:0 login:0 unknown:0 onOff:1 temp:40 mode:7 cP:0 uM:1 cTemp:4 acError:0
+[23:01:50.809][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E7 E8 B7 7F 80 D7 E8 F7
+[23:01:50.814][I][fujitsu.heatpump:204][FujiTask]: <-- 18 17 48 80 7F 28 17 08  mSrc:24 mDst:23 mType:0 write:1 login:0 unknown:0 onOff:0 temp:127 mode:0 cP:1 uM:2 cTemp:11 acError:1
+[23:01:50.900][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 E7 E8 B7 7F 80 DD FC
+[23:01:50.904][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 18 17 48 80 7F 22 03  mSrc:127 mDst:24 mType:1 write:0 login:0 unknown:0 onOff:0 temp:0 mode:4 cP:0 uM:7 cTemp:17 acError:0
+[23:01:51.218][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 2A FD A0 81 80 ED FC 2A
+[23:01:51.228][D][fujitsu.heatpump:049][FujiTask]: Unmapped controller state byte: 0xD5
+[23:01:51.228][I][fujitsu.heatpump:204][FujiTask]: <-- D5 02 5F 7E 7F 12 03 D5  mSrc:213 mDst:2 mType:1 write:1 login:0 unknown:0 onOff:0 temp:127 mode:7 cP:1 uM:1 cTemp:1 acError:0
+[23:01:51.310][D][status_led:049]: 'Status LED': Setting state ON
+[23:01:51.356][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): FD A0 81 80 D7 E8 F5 80
+[23:01:51.362][D][fujitsu.heatpump:049][FujiTask]: Unmapped controller state byte: 0xD5
+[23:01:51.362][I][fujitsu.heatpump:204][FujiTask]: <-- 02 5F 7E 7F 28 17 0A 7F  mSrc:2 mDst:95 mType:3 write:1 login:0 unknown:0 onOff:1 temp:40 mode:7 cP:0 uM:1 cTemp:5 acError:0
+[23:01:51.628][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): ED FC 2A FD A0 81 80 D7
+[23:01:51.632][D][fujitsu.heatpump:049][FujiTask]: Unmapped controller state byte: 0xD5
+[23:01:51.633][I][fujitsu.heatpump:204][FujiTask]: <-- 12 03 D5 02 5F 7E 7F 28  mSrc:18 mDst:3 mType:1 write:0 login:0 unknown:0 onOff:0 temp:95 mode:1 cP:1 uM:7 cTemp:63 acError:0
+[23:01:51.833][D][status_led:049]: 'Status LED': Setting state OFF
+[23:01:51.836][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E8 F7 80 E7 E8 B7 7F 80
+[23:01:51.839][I][fujitsu.heatpump:204][FujiTask]: <-- 17 08 7F 18 17 48 80 7F  mSrc:23 mDst:8 mType:3 write:1 login:0 unknown:0 onOff:0 temp:23 mode:4 cP:0 uM:4 cTemp:0 acError:0
+[23:01:52.038][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): D7 E8 F7 80 E7 E8 B7 7F
+[23:01:52.044][I][fujitsu.heatpump:204][FujiTask]: <-- 28 17 08 7F 18 17 48 80  mSrc:40 mDst:23 mType:0 write:1 login:0 unknown:0 onOff:1 temp:24 mode:7 cP:0 uM:1 cTemp:36 acError:0
+[23:01:52.243][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 D7 E8 F7 80 E7 E8 B7
+[23:01:52.247][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 28 17 08 7F 18 17 48  mSrc:127 mDst:40 mType:1 write:0 login:1 unknown:0 onOff:0 temp:127 mode:4 cP:1 uM:1 cTemp:11 acError:0
+[23:01:52.438][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 7F 80 D7 E8 F7 80 E7 E8
+[23:01:52.443][I][fujitsu.heatpump:204][FujiTask]: <-- 80 7F 28 17 08 7F 18 17  mSrc:128 mDst:127 mType:2 write:1 login:1 unknown:0 onOff:1 temp:8 mode:3 cP:0 uM:7 cTemp:12 acError:0
+[23:01:52.691][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): B7 7F 80 D7 E8 F7 80 E7
+[23:01:52.697][I][fujitsu.heatpump:204][FujiTask]: <-- 48 80 7F 28 17 08 7F 18  mSrc:72 mDst:0 mType:3 write:1 login:0 unknown:1 onOff:0 temp:23 mode:4 cP:1 uM:0 cTemp:63 acError:0
+[23:01:52.885][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E8 B7 7F 80 D7 E8 F7 80
+[23:01:52.890][I][fujitsu.heatpump:204][FujiTask]: <-- 17 48 80 7F 28 17 08 7F  mSrc:23 mDst:72 mType:0 write:0 login:0 unknown:0 onOff:1 temp:40 mode:7 cP:0 uM:1 cTemp:4 acError:0
+[23:01:53.104][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E7 E8 B7 7F 80 D7 E8 F7
+[23:01:53.108][I][fujitsu.heatpump:204][FujiTask]: <-- 18 17 48 80 7F 28 17 08  mSrc:24 mDst:23 mType:0 write:1 login:0 unknown:0 onOff:0 temp:127 mode:0 cP:1 uM:2 cTemp:11 acError:1
+[23:01:53.472][D][status_led:049]: 'Status LED': Setting state ON
+[23:01:53.472][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 E7 E8 B7 7F 80 D7 E8
+[23:01:53.472][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 18 17 48 80 7F 28 17  mSrc:127 mDst:24 mType:1 write:0 login:0 unknown:0 onOff:0 temp:0 mode:4 cP:0 uM:7 cTemp:20 acError:0
+[23:01:53.549][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): F7 80 E7 E8 B7 7F 80 D7
+[23:01:53.552][I][fujitsu.heatpump:204][FujiTask]: <-- 08 7F 18 17 48 80 7F 28  mSrc:8 mDst:127 mType:1 write:1 login:1 unknown:0 onOff:1 temp:72 mode:3 cP:1 uM:8 cTemp:63 acError:0
+[23:01:53.881][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E8 F7 80 E7 E8 B7 7F 80
+[23:01:53.881][I][fujitsu.heatpump:204][FujiTask]: <-- 17 08 7F 18 17 48 80 7F  mSrc:23 mDst:8 mType:3 write:1 login:0 unknown:0 onOff:0 temp:23 mode:4 cP:0 uM:4 cTemp:0 acError:0
+[23:01:53.884][D][status_led:049]: 'Status LED': Setting state OFF
+[23:01:53.959][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): D7 E8 F7 80 E7 E8 B7 7F
+[23:01:53.961][I][fujitsu.heatpump:204][FujiTask]: <-- 28 17 08 7F 18 17 48 80  mSrc:40 mDst:23 mType:0 write:1 login:0 unknown:0 onOff:1 temp:24 mode:7 cP:0 uM:1 cTemp:36 acError:0
+[23:01:54.291][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 D7 E8 F7 80 E7 E8 B7
+[23:01:54.294][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 28 17 08 7F 18 17 48  mSrc:127 mDst:40 mType:1 write:0 login:1 unknown:0 onOff:0 temp:127 mode:4 cP:1 uM:1 cTemp:11 acError:0
+[23:01:54.398][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 7F 80 D7 E8 F7 80 E7 E8
+[23:01:54.401][I][fujitsu.heatpump:204][FujiTask]: <-- 80 7F 28 17 08 7F 18 17  mSrc:128 mDst:127 mType:2 write:1 login:1 unknown:0 onOff:1 temp:8 mode:3 cP:0 uM:7 cTemp:12 acError:0
+[23:01:54.620][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): B7 7F 80 D7 E8 F7 80 E7
+[23:01:54.625][I][fujitsu.heatpump:204][FujiTask]: <-- 48 80 7F 28 17 08 7F 18  mSrc:72 mDst:0 mType:3 write:1 login:0 unknown:1 onOff:0 temp:23 mode:4 cP:1 uM:0 cTemp:63 acError:0
+[23:01:54.905][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E8 B7 7F 80 D7 E8 F7 80
+[23:01:54.932][I][fujitsu.heatpump:204][FujiTask]: <-- 17 48 80 7F 28 17 08 7F  mSrc:23 mDst:72 mType:0 write:0 login:0 unknown:0 onOff:1 temp:40 mode:7 cP:0 uM:1 cTemp:4 acError:0
+[23:01:55.061][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E7 E8 B7 7F 80 D7 E8 F7
+[23:01:55.064][I][fujitsu.heatpump:204][FujiTask]: <-- 18 17 48 80 7F 28 17 08  mSrc:24 mDst:23 mType:0 write:1 login:0 unknown:0 onOff:0 temp:127 mode:0 cP:1 uM:2 cTemp:11 acError:1
+[23:01:55.311][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 E7 E8 B7 7F 80 D7 E8
+[23:01:55.315][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 18 17 48 80 7F 28 17  mSrc:127 mDst:24 mType:1 write:0 login:0 unknown:0 onOff:0 temp:0 mode:4 cP:0 uM:7 cTemp:20 acError:0
+[23:01:55.337][D][status_led:049]: 'Status LED': Setting state ON
+[23:01:55.519][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): F7 80 E7 E8 B7 7F 80 D7
+[23:01:55.527][I][fujitsu.heatpump:204][FujiTask]: <-- 08 7F 18 17 48 80 7F 28  mSrc:8 mDst:127 mType:1 write:1 login:1 unknown:0 onOff:1 temp:72 mode:3 cP:1 uM:8 cTemp:63 acError:0
+[23:01:55.929][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E8 F7 80 E7 E8 B7 7F 80
+[23:01:55.929][I][fujitsu.heatpump:204][FujiTask]: <-- 17 08 7F 18 17 48 80 7F  mSrc:23 mDst:8 mType:3 write:1 login:0 unknown:0 onOff:0 temp:23 mode:4 cP:0 uM:4 cTemp:0 acError:0
+[23:01:55.956][D][status_led:049]: 'Status LED': Setting state OFF
+[23:01:55.956][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): D7 E8 F7 80 E7 E8 B7 7F
+[23:01:55.956][I][fujitsu.heatpump:204][FujiTask]: <-- 28 17 08 7F 18 17 48 80  mSrc:40 mDst:23 mType:0 write:1 login:0 unknown:0 onOff:1 temp:24 mode:7 cP:0 uM:1 cTemp:36 acError:0
+[23:01:56.339][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 D7 E8 F7 80 E7 E8 B7
+[23:01:56.372][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 28 17 08 7F 18 17 48  mSrc:127 mDst:40 mType:1 write:0 login:1 unknown:0 onOff:0 temp:127 mode:4 cP:1 uM:1 cTemp:11 acError:0
+[23:01:56.372][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 7F 80 D7 E8 F7 80 E7 E8
+[23:01:56.373][I][fujitsu.heatpump:204][FujiTask]: <-- 80 7F 28 17 08 7F 18 17  mSrc:128 mDst:127 mType:2 write:1 login:1 unknown:0 onOff:1 temp:8 mode:3 cP:0 uM:7 cTemp:12 acError:0
+[23:01:56.751][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): B7 7F 80 D7 E8 F7 80 E7
+[23:01:56.777][I][fujitsu.heatpump:204][FujiTask]: <-- 48 80 7F 28 17 08 7F 18  mSrc:72 mDst:0 mType:3 write:1 login:0 unknown:1 onOff:0 temp:23 mode:4 cP:1 uM:0 cTemp:63 acError:0
+[23:01:56.797][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E8 B7 7F 80 D7 E8 F7 80
+[23:01:56.800][I][fujitsu.heatpump:204][FujiTask]: <-- 17 48 80 7F 28 17 08 7F  mSrc:23 mDst:72 mType:0 write:0 login:0 unknown:0 onOff:1 temp:40 mode:7 cP:0 uM:1 cTemp:4 acError:0
+[23:01:56.857][LABEL] T27
+[23:01:57.158][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E7 E8 B7 7F 80 D7 E8 F7
+[23:01:57.165][I][fujitsu.heatpump:204][FujiTask]: <-- 18 17 48 80 7F 28 17 08  mSrc:24 mDst:23 mType:0 write:1 login:0 unknown:0 onOff:0 temp:127 mode:0 cP:1 uM:2 cTemp:11 acError:1
+[23:01:57.239][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 E7 E8 B7 7F 80 D7 E8
+[23:01:57.244][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 18 17 48 80 7F 28 17  mSrc:127 mDst:24 mType:1 write:0 login:0 unknown:0 onOff:0 temp:0 mode:4 cP:0 uM:7 cTemp:20 acError:0
+[23:01:57.351][D][status_led:049]: 'Status LED': Setting state ON
+[23:01:57.463][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): F7 80 E7 E8 B7 7F 80 D7
+[23:01:57.467][I][fujitsu.heatpump:204][FujiTask]: <-- 08 7F 18 17 48 80 7F 28  mSrc:8 mDst:127 mType:1 write:1 login:1 unknown:0 onOff:1 temp:72 mode:3 cP:1 uM:8 cTemp:63 acError:0
+[23:01:57.772][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E8 F7 80 E7 E8 B7 7F 80
+[23:01:57.773][I][fujitsu.heatpump:204][FujiTask]: <-- 17 08 7F 18 17 48 80 7F  mSrc:23 mDst:8 mType:3 write:1 login:0 unknown:0 onOff:0 temp:23 mode:4 cP:0 uM:4 cTemp:0 acError:0
+[23:01:57.851][D][status_led:049]: 'Status LED': Setting state OFF
+[23:01:57.868][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): D7 E8 F7 80 E7 E8 B7 7F
+[23:01:57.874][I][fujitsu.heatpump:204][FujiTask]: <-- 28 17 08 7F 18 17 48 80  mSrc:40 mDst:23 mType:0 write:1 login:0 unknown:0 onOff:1 temp:24 mode:7 cP:0 uM:1 cTemp:36 acError:0
+[23:01:58.183][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 D7 E8 F7 80 E7 E8 B7
+[23:01:58.197][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 28 17 08 7F 18 17 48  mSrc:127 mDst:40 mType:1 write:0 login:1 unknown:0 onOff:0 temp:127 mode:4 cP:1 uM:1 cTemp:11 acError:0
+[23:01:58.311][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 7F 80 D7 E8 F7 80 E7 E8
+[23:01:58.315][I][fujitsu.heatpump:204][FujiTask]: <-- 80 7F 28 17 08 7F 18 17  mSrc:128 mDst:127 mType:2 write:1 login:1 unknown:0 onOff:1 temp:8 mode:3 cP:0 uM:7 cTemp:12 acError:0
+[23:01:58.529][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): B7 7F 80 D7 E8 F7 80 E7
+[23:01:58.533][I][fujitsu.heatpump:204][FujiTask]: <-- 48 80 7F 28 17 08 7F 18  mSrc:72 mDst:0 mType:3 write:1 login:0 unknown:1 onOff:0 temp:23 mode:4 cP:1 uM:0 cTemp:63 acError:0
+[23:01:58.796][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E8 B7 7F 80 D7 E8 F7 80
+[23:01:58.801][I][fujitsu.heatpump:204][FujiTask]: <-- 17 48 80 7F 28 17 08 7F  mSrc:23 mDst:72 mType:0 write:0 login:0 unknown:0 onOff:1 temp:40 mode:7 cP:0 uM:1 cTemp:4 acError:0
+[23:01:59.002][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E7 E8 B7 7F 80 D7 E8 F7
+[23:01:59.009][I][fujitsu.heatpump:204][FujiTask]: <-- 18 17 48 80 7F 28 17 08  mSrc:24 mDst:23 mType:0 write:1 login:0 unknown:0 onOff:0 temp:127 mode:0 cP:1 uM:2 cTemp:11 acError:1
+[23:01:59.318][I][fujitsu.heatpump:242][FujiTask]: RX raw (5/8, before XOR): 80 E7 E8 B7 7F
+[23:01:59.364][D][status_led:049]: 'Status LED': Setting state ON
+[23:01:59.496][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 DD FC 22 FD A0 81 80
+[23:01:59.500][D][fujitsu.heatpump:049][FujiTask]: Unmapped controller state byte: 0xDD
+[23:01:59.503][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 22 03 DD 02 5F 7E 7F  mSrc:127 mDst:34 mType:0 write:0 login:1 unknown:0 onOff:1 temp:2 mode:6 cP:0 uM:5 cTemp:63 acError:1
+[23:01:59.742][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): ED FC 22 FD A0 81 80 D7
+[23:01:59.746][D][fujitsu.heatpump:049][FujiTask]: Unmapped controller state byte: 0xDD
+[23:01:59.749][I][fujitsu.heatpump:204][FujiTask]: <-- 12 03 DD 02 5F 7E 7F 28  mSrc:18 mDst:3 mType:1 write:1 login:0 unknown:0 onOff:0 temp:95 mode:1 cP:1 uM:7 cTemp:63 acError:0
+[23:01:59.866][D][status_led:049]: 'Status LED': Setting state OFF
+[23:01:59.926][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E8 F5 80 ED FC 22 FD A0
+[23:01:59.931][I][fujitsu.heatpump:204][FujiTask]: <-- 17 0A 7F 12 03 DD 02 5F  mSrc:23 mDst:10 mType:3 write:1 login:0 unknown:0 onOff:0 temp:3 mode:1 cP:0 uM:13 cTemp:1 acError:0
+[23:02:00.257][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 81 80 DD EC 22 FD A0 81
+[23:02:00.262][D][fujitsu.heatpump:049][FujiTask]: Unmapped controller state byte: 0xDD
+[23:02:00.264][I][fujitsu.heatpump:204][FujiTask]: <-- 7E 7F 22 13 DD 02 5F 7E  mSrc:126 mDst:127 mType:2 write:0 login:1 unknown:0 onOff:1 temp:93 mode:1 cP:1 uM:0 cTemp:47 acError:0
+[23:02:00.645][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 ED EC 22 FD A0 81 80
+[23:02:00.650][D][fujitsu.heatpump:049][FujiTask]: Unmapped controller state byte: 0xDD
+[23:02:00.650][D][fujitsu.heatpump:049][FujiTask]: Unmapped controller state byte: 0xDD
+[23:02:00.650][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 12 13 DD 02 5F 7E 7F  mSrc:127 mDst:18 mType:1 write:0 login:0 unknown:0 onOff:1 temp:2 mode:6 cP:0 uM:5 cTemp:63 acError:1
+[23:02:00.703][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): D7 E8 F5 80 ED EC 22 FD
+[23:02:00.708][I][fujitsu.heatpump:204][FujiTask]: <-- 28 17 0A 7F 12 13 DD 02  mSrc:40 mDst:23 mType:0 write:1 login:0 unknown:0 onOff:1 temp:18 mode:7 cP:1 uM:1 cTemp:46 acError:0
+[23:02:01.049][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): A0 81 80 D7 E8 F7 80 E7
+[23:02:01.049][D][fujitsu.heatpump:049][FujiTask]: Unmapped controller state byte: 0xDD
+[23:02:01.049][I][fujitsu.heatpump:204][FujiTask]: <-- 5F 7E 7F 28 17 08 7F 18  mSrc:95 mDst:126 mType:3 write:1 login:1 unknown:0 onOff:0 temp:23 mode:4 cP:1 uM:0 cTemp:63 acError:0
+[23:02:01.156][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E8 B7 7F 80 D7 E8 F7 80
+[23:02:01.159][I][fujitsu.heatpump:204][FujiTask]: <-- 17 48 80 7F 28 17 08 7F  mSrc:23 mDst:72 mType:0 write:0 login:0 unknown:0 onOff:1 temp:40 mode:7 cP:0 uM:1 cTemp:4 acError:0
+[23:02:01.459][D][status_led:049]: 'Status LED': Setting state ON
+[23:02:01.459][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E7 E8 B7 7F 80 D7 E8 F7
+[23:02:01.485][I][fujitsu.heatpump:204][FujiTask]: <-- 18 17 48 80 7F 28 17 08  mSrc:24 mDst:23 mType:0 write:1 login:0 unknown:0 onOff:0 temp:127 mode:0 cP:1 uM:2 cTemp:11 acError:1
+[23:02:01.592][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 E7 E8 B7 7F 80 D7 E8
+[23:02:01.599][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 18 17 48 80 7F 28 17  mSrc:127 mDst:24 mType:1 write:0 login:0 unknown:0 onOff:0 temp:0 mode:4 cP:0 uM:7 cTemp:20 acError:0
+[23:02:01.868][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): F7 80 E7 E8 B7 7F 80 D7
+[23:02:01.896][I][fujitsu.heatpump:204][FujiTask]: <-- 08 7F 18 17 48 80 7F 28  mSrc:8 mDst:127 mType:1 write:1 login:1 unknown:0 onOff:1 temp:72 mode:3 cP:1 uM:8 cTemp:63 acError:0
+[23:02:01.896][D][status_led:049]: 'Status LED': Setting state OFF
+[23:02:02.074][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E8 F7 80 E7 E8 B7 7F 80
+[23:02:02.074][I][fujitsu.heatpump:204][FujiTask]: <-- 17 08 7F 18 17 48 80 7F  mSrc:23 mDst:8 mType:3 write:1 login:0 unknown:0 onOff:0 temp:23 mode:4 cP:0 uM:4 cTemp:0 acError:0
+[23:02:02.226][LABEL] T28
+[23:02:02.278][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): D7 E8 F7 80 E7 E8 B7 7F
+[23:02:02.306][I][fujitsu.heatpump:204][FujiTask]: <-- 28 17 08 7F 18 17 48 80  mSrc:40 mDst:23 mType:0 write:1 login:0 unknown:0 onOff:1 temp:24 mode:7 cP:0 uM:1 cTemp:36 acError:0
+[23:02:02.483][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 D7 E8 F7 80 E7 E8 B7
+[23:02:02.483][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 28 17 08 7F 18 17 48  mSrc:127 mDst:40 mType:1 write:0 login:1 unknown:0 onOff:0 temp:127 mode:4 cP:1 uM:1 cTemp:11 acError:0
+[23:02:02.688][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 7F 80 D7 E8 F7 80 E7 E8
+[23:02:02.692][I][fujitsu.heatpump:204][FujiTask]: <-- 80 7F 28 17 08 7F 18 17  mSrc:128 mDst:127 mType:2 write:1 login:1 unknown:0 onOff:1 temp:8 mode:3 cP:0 uM:7 cTemp:12 acError:0
+[23:02:03.098][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): B7 7F 80 D7 E8 F7 80 E7
+[23:02:03.098][I][fujitsu.heatpump:204][FujiTask]: <-- 48 80 7F 28 17 08 7F 18  mSrc:72 mDst:0 mType:3 write:1 login:0 unknown:1 onOff:0 temp:23 mode:4 cP:1 uM:0 cTemp:63 acError:0
+[23:02:03.130][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E8 B7 7F 80 D7 E8 F7 80
+[23:02:03.130][I][fujitsu.heatpump:204][FujiTask]: <-- 17 48 80 7F 28 17 08 7F  mSrc:23 mDst:72 mType:0 write:0 login:0 unknown:0 onOff:1 temp:40 mode:7 cP:0 uM:1 cTemp:4 acError:0
+[23:02:03.506][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E7 E8 B7 7F 80 D7 E8 F7
+[23:02:03.507][I][fujitsu.heatpump:204][FujiTask]: <-- 18 17 48 80 7F 28 17 08  mSrc:24 mDst:23 mType:0 write:1 login:0 unknown:0 onOff:0 temp:127 mode:0 cP:1 uM:2 cTemp:11 acError:1
+[23:02:03.535][D][status_led:049]: 'Status LED': Setting state ON
+[23:02:03.556][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 E7 E8 B7 7F 80 D7 E8
+[23:02:03.562][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 18 17 48 80 7F 28 17  mSrc:127 mDst:24 mType:1 write:0 login:0 unknown:0 onOff:0 temp:0 mode:4 cP:0 uM:7 cTemp:20 acError:0
+[23:02:03.916][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): F7 80 E7 E8 B7 7F 80 D7
+[23:02:03.920][I][fujitsu.heatpump:204][FujiTask]: <-- 08 7F 18 17 48 80 7F 28  mSrc:8 mDst:127 mType:1 write:1 login:1 unknown:0 onOff:1 temp:72 mode:3 cP:1 uM:8 cTemp:63 acError:0
+[23:02:03.920][D][status_led:049]: 'Status LED': Setting state OFF
+[23:02:03.999][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E8 F7 80 E7 E8 B7 7F 80
+[23:02:04.000][I][fujitsu.heatpump:204][FujiTask]: <-- 17 08 7F 18 17 48 80 7F  mSrc:23 mDst:8 mType:3 write:1 login:0 unknown:0 onOff:0 temp:23 mode:4 cP:0 uM:4 cTemp:0 acError:0
+[23:02:04.326][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): D7 E8 F7 80 E7 E8 B7 7F
+[23:02:04.330][I][fujitsu.heatpump:204][FujiTask]: <-- 28 17 08 7F 18 17 48 80  mSrc:40 mDst:23 mType:0 write:1 login:0 unknown:0 onOff:1 temp:24 mode:7 cP:0 uM:1 cTemp:36 acError:0
+[23:02:04.735][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 DD FC 1A FD A0 81 80
+[23:02:04.736][D][fujitsu.heatpump:049][FujiTask]: Unmapped controller state byte: 0xE5
+[23:02:04.739][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 22 03 E5 02 5F 7E 7F  mSrc:127 mDst:34 mType:0 write:0 login:1 unknown:0 onOff:1 temp:2 mode:2 cP:0 uM:5 cTemp:63 acError:1
+[23:02:04.823][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): ED FC 1A FD A0 81 80 D7
+[23:02:04.827][D][fujitsu.heatpump:049][FujiTask]: Unmapped controller state byte: 0xE5
+[23:02:04.828][I][fujitsu.heatpump:204][FujiTask]: <-- 12 03 E5 02 5F 7E 7F 28  mSrc:18 mDst:3 mType:2 write:0 login:0 unknown:0 onOff:0 temp:95 mode:1 cP:1 uM:7 cTemp:63 acError:0
+[23:02:05.145][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E8 F5 80 ED FC 1A FD A0
+[23:02:05.150][I][fujitsu.heatpump:204][FujiTask]: <-- 17 0A 7F 12 03 E5 02 5F  mSrc:23 mDst:10 mType:3 write:1 login:0 unknown:0 onOff:0 temp:3 mode:1 cP:0 uM:14 cTemp:1 acError:0
+[23:02:05.350][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 81 80 DD EC 1A FD A0 81
+[23:02:05.350][D][fujitsu.heatpump:049][FujiTask]: Unmapped controller state byte: 0xE5
+[23:02:05.354][I][fujitsu.heatpump:204][FujiTask]: <-- 7E 7F 22 13 E5 02 5F 7E  mSrc:126 mDst:127 mType:2 write:0 login:1 unknown:0 onOff:1 temp:101 mode:1 cP:1 uM:0 cTemp:47 acError:0
+[23:02:05.415][D][status_led:049]: 'Status LED': Setting state ON
+[23:02:05.759][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 ED EC 1A FD A0 81 80
+[23:02:05.759][D][fujitsu.heatpump:049][FujiTask]: Unmapped controller state byte: 0xE5
+[23:02:05.791][D][fujitsu.heatpump:049][FujiTask]: Unmapped controller state byte: 0xE5
+[23:02:05.791][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 12 13 E5 02 5F 7E 7F  mSrc:127 mDst:18 mType:1 write:0 login:0 unknown:0 onOff:1 temp:2 mode:2 cP:0 uM:5 cTemp:63 acError:1
+[23:02:05.791][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): D7 E8 F5 80 ED EC 1A FD
+[23:02:05.794][I][fujitsu.heatpump:204][FujiTask]: <-- 28 17 0A 7F 12 13 E5 02  mSrc:40 mDst:23 mType:0 write:1 login:0 unknown:0 onOff:1 temp:18 mode:7 cP:1 uM:1 cTemp:50 acError:0
+[23:02:05.920][D][status_led:049]: 'Status LED': Setting state OFF
+[23:02:06.023][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): A0 81 80 D7 E8 F7 80 E7
+[23:02:06.027][D][fujitsu.heatpump:049][FujiTask]: Unmapped controller state byte: 0xE5
+[23:02:06.029][I][fujitsu.heatpump:204][FujiTask]: <-- 5F 7E 7F 28 17 08 7F 18  mSrc:95 mDst:126 mType:3 write:1 login:1 unknown:0 onOff:0 temp:23 mode:4 cP:1 uM:0 cTemp:63 acError:0
+[23:02:06.282][LABEL] T29
+[23:02:06.375][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E8 B7 7F 80 D7 E8 F7 80
+[23:02:06.380][I][fujitsu.heatpump:204][FujiTask]: <-- 17 48 80 7F 28 17 08 7F  mSrc:23 mDst:72 mType:0 write:0 login:0 unknown:0 onOff:1 temp:40 mode:7 cP:0 uM:1 cTemp:4 acError:0
+[23:02:06.464][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E7 E8 B7 7F 80 D7 E8 F7
+[23:02:06.467][I][fujitsu.heatpump:204][FujiTask]: <-- 18 17 48 80 7F 28 17 08  mSrc:24 mDst:23 mType:0 write:1 login:0 unknown:0 onOff:0 temp:127 mode:0 cP:1 uM:2 cTemp:11 acError:1
+[23:02:06.784][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 E7 E8 B7 7F 80 D7 E8
+[23:02:06.794][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 18 17 48 80 7F 28 17  mSrc:127 mDst:24 mType:1 write:0 login:0 unknown:0 onOff:0 temp:0 mode:4 cP:0 uM:7 cTemp:20 acError:0
+[23:02:06.913][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): F7 80 E7 E8 B7 7F 80 D7
+[23:02:06.913][I][fujitsu.heatpump:204][FujiTask]: <-- 08 7F 18 17 48 80 7F 28  mSrc:8 mDst:127 mType:1 write:1 login:1 unknown:0 onOff:1 temp:72 mode:3 cP:1 uM:8 cTemp:63 acError:0
+[23:02:07.194][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E8 F7 80 E7 E8 B7 7F 80
+[23:02:07.222][I][fujitsu.heatpump:204][FujiTask]: <-- 17 08 7F 18 17 48 80 7F  mSrc:23 mDst:8 mType:3 write:1 login:0 unknown:0 onOff:0 temp:23 mode:4 cP:0 uM:4 cTemp:0 acError:0
+[23:02:07.323][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): D7 E8 F7 80 E7 E8 B7 7F
+[23:02:07.325][I][fujitsu.heatpump:204][FujiTask]: <-- 28 17 08 7F 18 17 48 80  mSrc:40 mDst:23 mType:0 write:1 login:0 unknown:0 onOff:1 temp:24 mode:7 cP:0 uM:1 cTemp:36 acError:0
+[23:02:07.435][D][status_led:049]: 'Status LED': Setting state ON
+[23:02:07.537][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 D7 E8 F7 80 E7 E8 B7
+[23:02:07.542][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 28 17 08 7F 18 17 48  mSrc:127 mDst:40 mType:1 write:0 login:1 unknown:0 onOff:0 temp:127 mode:4 cP:1 uM:1 cTemp:11 acError:0
+[23:02:07.808][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 7F 80 D7 E8 F7 80 E7 E8
+[23:02:07.835][I][fujitsu.heatpump:204][FujiTask]: <-- 80 7F 28 17 08 7F 18 17  mSrc:128 mDst:127 mType:2 write:1 login:1 unknown:0 onOff:1 temp:8 mode:3 cP:0 uM:7 cTemp:12 acError:0
+[23:02:07.946][D][status_led:049]: 'Status LED': Setting state OFF
+[23:02:07.983][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): B7 7F 80 D7 E8 F7 80 E7
+[23:02:07.987][I][fujitsu.heatpump:204][FujiTask]: <-- 48 80 7F 28 17 08 7F 18  mSrc:72 mDst:0 mType:3 write:1 login:0 unknown:1 onOff:0 temp:23 mode:4 cP:1 uM:0 cTemp:63 acError:0
+[23:02:08.217][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E8 B7 7F 80 D7 E8 F7 80
+[23:02:08.223][I][fujitsu.heatpump:204][FujiTask]: <-- 17 48 80 7F 28 17 08 7F  mSrc:23 mDst:72 mType:0 write:0 login:0 unknown:0 onOff:1 temp:40 mode:7 cP:0 uM:1 cTemp:4 acError:0
+[23:02:08.627][I][fujitsu.heatpump:242][FujiTask]: RX raw (4/8, before XOR): E7 E8 B7 7F
+[23:02:08.698][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 DD FC 12 FD A0 81 80
+[23:02:08.704][D][fujitsu.heatpump:049][FujiTask]: Unmapped controller state byte: 0xED
+[23:02:08.704][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 22 03 ED 02 5F 7E 7F  mSrc:127 mDst:34 mType:0 write:0 login:1 unknown:0 onOff:1 temp:2 mode:6 cP:0 uM:5 cTemp:63 acError:1
+[23:02:08.940][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): ED FC 12 FD A0 81 80 D7
+[23:02:08.942][D][fujitsu.heatpump:049][FujiTask]: Unmapped controller state byte: 0xED
+[23:02:08.946][I][fujitsu.heatpump:204][FujiTask]: <-- 12 03 ED 02 5F 7E 7F 28  mSrc:18 mDst:3 mType:2 write:1 login:0 unknown:0 onOff:0 temp:95 mode:1 cP:1 uM:7 cTemp:63 acError:0
+[23:02:09.242][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E8 F5 80 ED FC 12 FD A0
+[23:02:09.245][I][fujitsu.heatpump:204][FujiTask]: <-- 17 0A 7F 12 03 ED 02 5F  mSrc:23 mDst:10 mType:3 write:1 login:0 unknown:0 onOff:0 temp:3 mode:1 cP:0 uM:14 cTemp:1 acError:0
+[23:02:09.446][D][status_led:049]: 'Status LED': Setting state ON
+[23:02:09.460][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 81 80 DD EC 12 FD A0 81
+[23:02:09.463][D][fujitsu.heatpump:049][FujiTask]: Unmapped controller state byte: 0xED
+[23:02:09.464][I][fujitsu.heatpump:204][FujiTask]: <-- 7E 7F 22 13 ED 02 5F 7E  mSrc:126 mDst:127 mType:2 write:0 login:1 unknown:0 onOff:1 temp:109 mode:1 cP:1 uM:0 cTemp:47 acError:0
+[23:02:09.855][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 ED EC 12 FD A0 81 80
+[23:02:09.859][D][fujitsu.heatpump:049][FujiTask]: Unmapped controller state byte: 0xED
+[23:02:09.859][D][fujitsu.heatpump:049][FujiTask]: Unmapped controller state byte: 0xED
+[23:02:09.859][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 12 13 ED 02 5F 7E 7F  mSrc:127 mDst:18 mType:1 write:0 login:0 unknown:0 onOff:1 temp:2 mode:6 cP:0 uM:5 cTemp:63 acError:1
+[23:02:09.907][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): D7 E8 F5 80 ED EC 12 FD
+[23:02:09.911][I][fujitsu.heatpump:204][FujiTask]: <-- 28 17 0A 7F 12 13 ED 02  mSrc:40 mDst:23 mType:0 write:1 login:0 unknown:0 onOff:1 temp:18 mode:7 cP:1 uM:1 cTemp:54 acError:0
+[23:02:09.948][D][status_led:049]: 'Status LED': Setting state OFF
+[23:02:10.265][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): A0 81 80 D7 E8 F7 80 E7
+[23:02:10.265][D][fujitsu.heatpump:049][FujiTask]: Unmapped controller state byte: 0xED
+[23:02:10.269][I][fujitsu.heatpump:204][FujiTask]: <-- 5F 7E 7F 28 17 08 7F 18  mSrc:95 mDst:126 mType:3 write:1 login:1 unknown:0 onOff:0 temp:23 mode:4 cP:1 uM:0 cTemp:63 acError:0
+[23:02:10.367][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E8 B7 7F 80 D7 E8 F7 80
+[23:02:10.370][I][fujitsu.heatpump:204][FujiTask]: <-- 17 48 80 7F 28 17 08 7F  mSrc:23 mDst:72 mType:0 write:0 login:0 unknown:0 onOff:1 temp:40 mode:7 cP:0 uM:1 cTemp:4 acError:0
+[23:02:10.675][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E7 E8 B7 7F 80 D7 E8 F7
+[23:02:10.687][I][fujitsu.heatpump:204][FujiTask]: <-- 18 17 48 80 7F 28 17 08  mSrc:24 mDst:23 mType:0 write:1 login:0 unknown:0 onOff:0 temp:127 mode:0 cP:1 uM:2 cTemp:11 acError:1
+[23:02:10.810][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 E7 E8 B7 7F 80 D7 E8
+[23:02:10.814][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 18 17 48 80 7F 28 17  mSrc:127 mDst:24 mType:1 write:0 login:0 unknown:0 onOff:0 temp:0 mode:4 cP:0 uM:7 cTemp:20 acError:0
+[23:02:11.032][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): F7 80 E7 E8 B7 7F 80 D7
+[23:02:11.037][I][fujitsu.heatpump:204][FujiTask]: <-- 08 7F 18 17 48 80 7F 28  mSrc:8 mDst:127 mType:1 write:1 login:1 unknown:0 onOff:1 temp:72 mode:3 cP:1 uM:8 cTemp:63 acError:0
+[23:02:11.259][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E8 F7 80 E7 E8 B7 7F 80
+[23:02:11.265][I][fujitsu.heatpump:204][FujiTask]: <-- 17 08 7F 18 17 48 80 7F  mSrc:23 mDst:8 mType:3 write:1 login:0 unknown:0 onOff:0 temp:23 mode:4 cP:0 uM:4 cTemp:0 acError:0
+[23:02:11.494][D][status_led:049]: 'Status LED': Setting state ON
+[23:02:11.498][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): D7 E8 F7 80 E7 E8 B7 7F
+[23:02:11.498][I][fujitsu.heatpump:204][FujiTask]: <-- 28 17 08 7F 18 17 48 80  mSrc:40 mDst:23 mType:0 write:1 login:0 unknown:0 onOff:1 temp:24 mode:7 cP:0 uM:1 cTemp:36 acError:0
+[23:02:11.699][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 D7 E8 F7 80 E7 E8 B7
+[23:02:11.699][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 28 17 08 7F 18 17 48  mSrc:127 mDst:40 mType:1 write:0 login:1 unknown:0 onOff:0 temp:127 mode:4 cP:1 uM:1 cTemp:11 acError:0
+[23:02:11.882][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 7F 80 D7 E8 F7 80 E7 E8
+[23:02:11.888][I][fujitsu.heatpump:204][FujiTask]: <-- 80 7F 28 17 08 7F 18 17  mSrc:128 mDst:127 mType:2 write:1 login:1 unknown:0 onOff:1 temp:8 mode:3 cP:0 uM:7 cTemp:12 acError:0
+[23:02:11.961][D][status_led:049]: 'Status LED': Setting state OFF
+[23:02:12.318][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): B7 7F 80 D7 E8 F7 80 E7
+[23:02:12.341][I][fujitsu.heatpump:204][FujiTask]: <-- 48 80 7F 28 17 08 7F 18  mSrc:72 mDst:0 mType:3 write:1 login:0 unknown:1 onOff:0 temp:23 mode:4 cP:1 uM:0 cTemp:63 acError:0
+[23:02:12.341][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E8 B7 7F 80 D7 E8 F7 80
+[23:02:12.341][I][fujitsu.heatpump:204][FujiTask]: <-- 17 48 80 7F 28 17 08 7F  mSrc:23 mDst:72 mType:0 write:0 login:0 unknown:0 onOff:1 temp:40 mode:7 cP:0 uM:1 cTemp:4 acError:0
+[23:02:12.561][LABEL] T30
+[23:02:12.723][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E7 E8 B7 7F 80 D7 E8 F7
+[23:02:12.750][I][fujitsu.heatpump:204][FujiTask]: <-- 18 17 48 80 7F 28 17 08  mSrc:24 mDst:23 mType:0 write:1 login:0 unknown:0 onOff:0 temp:127 mode:0 cP:1 uM:2 cTemp:11 acError:1
+[23:02:12.772][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 E7 E8 B7 7F 80 D7 E8
+[23:02:12.775][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 18 17 48 80 7F 28 17  mSrc:127 mDst:24 mType:1 write:0 login:0 unknown:0 onOff:0 temp:0 mode:4 cP:0 uM:7 cTemp:20 acError:0
+[23:02:12.995][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): F7 80 E7 E8 B7 7F 80 D7
+[23:02:12.999][I][fujitsu.heatpump:204][FujiTask]: <-- 08 7F 18 17 48 80 7F 28  mSrc:8 mDst:127 mType:1 write:1 login:1 unknown:0 onOff:1 temp:72 mode:3 cP:1 uM:8 cTemp:63 acError:0
+[23:02:13.216][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E8 F7 80 E7 E8 B7 7F 80
+[23:02:13.220][I][fujitsu.heatpump:204][FujiTask]: <-- 17 08 7F 18 17 48 80 7F  mSrc:23 mDst:8 mType:3 write:1 login:0 unknown:0 onOff:0 temp:23 mode:4 cP:0 uM:4 cTemp:0 acError:0
+[23:02:13.543][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): D7 E8 F7 80 E7 E8 B7 7F
+[23:02:13.548][I][fujitsu.heatpump:204][FujiTask]: <-- 28 17 08 7F 18 17 48 80  mSrc:40 mDst:23 mType:0 write:1 login:0 unknown:0 onOff:1 temp:24 mode:7 cP:0 uM:1 cTemp:36 acError:0
+[23:02:13.548][D][status_led:049]: 'Status LED': Setting state ON
+[23:02:13.620][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 D7 E8 F7 80 E7 E8 B7
+[23:02:13.621][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 28 17 08 7F 18 17 48  mSrc:127 mDst:40 mType:1 write:0 login:1 unknown:0 onOff:0 temp:127 mode:4 cP:1 uM:1 cTemp:11 acError:0
+[23:02:13.951][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 7F 80 D7 E8 F7 80 E7 E8
+[23:02:13.955][I][fujitsu.heatpump:204][FujiTask]: <-- 80 7F 28 17 08 7F 18 17  mSrc:128 mDst:127 mType:2 write:1 login:1 unknown:0 onOff:1 temp:8 mode:3 cP:0 uM:7 cTemp:12 acError:0
+[23:02:13.988][D][status_led:049]: 'Status LED': Setting state OFF
+[23:02:14.077][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): B7 7F 80 D7 E8 F7 80 E7
+[23:02:14.080][I][fujitsu.heatpump:204][FujiTask]: <-- 48 80 7F 28 17 08 7F 18  mSrc:72 mDst:0 mType:3 write:1 login:0 unknown:1 onOff:0 temp:23 mode:4 cP:1 uM:0 cTemp:63 acError:0
+[23:02:14.361][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E8 B7 7F 80 D7 E8 F7 80
+[23:02:14.388][I][fujitsu.heatpump:204][FujiTask]: <-- 17 48 80 7F 28 17 08 7F  mSrc:23 mDst:72 mType:0 write:0 login:0 unknown:0 onOff:1 temp:40 mode:7 cP:0 uM:1 cTemp:4 acError:0
+[23:02:14.507][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E7 E8 B7 7F 80 D7 E8 F7
+[23:02:14.510][I][fujitsu.heatpump:204][FujiTask]: <-- 18 17 48 80 7F 28 17 08  mSrc:24 mDst:23 mType:0 write:1 login:0 unknown:0 onOff:0 temp:127 mode:0 cP:1 uM:2 cTemp:11 acError:1
+[23:02:14.771][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 E7 E8 B7 7F 80 D7 E8
+[23:02:14.775][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 18 17 48 80 7F 28 17  mSrc:127 mDst:24 mType:1 write:0 login:0 unknown:0 onOff:0 temp:0 mode:4 cP:0 uM:7 cTemp:20 acError:0
+[23:02:14.962][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): F7 80 E7 E8 B7 7F 80 D7
+[23:02:14.971][I][fujitsu.heatpump:204][FujiTask]: <-- 08 7F 18 17 48 80 7F 28  mSrc:8 mDst:127 mType:1 write:1 login:1 unknown:0 onOff:1 temp:72 mode:3 cP:1 uM:8 cTemp:63 acError:0
+[23:02:15.189][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E8 F7 80 E7 E8 B7 7F 80
+[23:02:15.192][I][fujitsu.heatpump:204][FujiTask]: <-- 17 08 7F 18 17 48 80 7F  mSrc:23 mDst:8 mType:3 write:1 login:0 unknown:0 onOff:0 temp:23 mode:4 cP:0 uM:4 cTemp:0 acError:0
+[23:02:15.386][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): D7 E8 F7 80 E7 E8 B7 7F
+[23:02:15.389][I][fujitsu.heatpump:204][FujiTask]: <-- 28 17 08 7F 18 17 48 80  mSrc:40 mDst:23 mType:0 write:1 login:0 unknown:0 onOff:1 temp:24 mode:7 cP:0 uM:1 cTemp:36 acError:0
+[23:02:15.499][D][status_led:049]: 'Status LED': Setting state ON
+[23:02:15.795][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 DD FC 0A FD A0 81 80
+[23:02:15.795][D][fujitsu.heatpump:049][FujiTask]: Unmapped controller state byte: 0xF5
+[23:02:15.799][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 22 03 F5 02 5F 7E 7F  mSrc:127 mDst:34 mType:0 write:0 login:1 unknown:0 onOff:1 temp:2 mode:2 cP:0 uM:5 cTemp:63 acError:1
+[23:02:16.205][D][status_led:049]: 'Status LED': Setting state OFF
+[23:02:16.205][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): ED FC 0A FD A0 81 80 D7
+[23:02:16.205][D][fujitsu.heatpump:049][FujiTask]: Unmapped controller state byte: 0xF5
+[23:02:16.232][I][fujitsu.heatpump:204][FujiTask]: <-- 12 03 F5 02 5F 7E 7F 28  mSrc:18 mDst:3 mType:3 write:0 login:0 unknown:0 onOff:0 temp:95 mode:1 cP:1 uM:7 cTemp:63 acError:0
+[23:02:16.232][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E8 F5 80 ED FC 0A FD A0
+[23:02:16.232][I][fujitsu.heatpump:204][FujiTask]: <-- 17 0A 7F 12 03 F5 02 5F  mSrc:23 mDst:10 mType:3 write:1 login:0 unknown:0 onOff:0 temp:3 mode:1 cP:0 uM:15 cTemp:1 acError:0
+[23:02:16.529][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 81 80 DD EC 0A FD A0 81
+[23:02:16.540][D][fujitsu.heatpump:049][FujiTask]: Unmapped controller state byte: 0xF5
+[23:02:16.540][I][fujitsu.heatpump:204][FujiTask]: <-- 7E 7F 22 13 F5 02 5F 7E  mSrc:126 mDst:127 mType:2 write:0 login:1 unknown:0 onOff:1 temp:117 mode:1 cP:1 uM:0 cTemp:47 acError:0
+[23:02:16.819][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 ED EC 0A FD A0 81 80
+[23:02:16.819][D][fujitsu.heatpump:049][FujiTask]: Unmapped controller state byte: 0xF5
+[23:02:16.823][D][fujitsu.heatpump:049][FujiTask]: Unmapped controller state byte: 0xF5
+[23:02:16.823][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 12 13 F5 02 5F 7E 7F  mSrc:127 mDst:18 mType:1 write:0 login:0 unknown:0 onOff:1 temp:2 mode:2 cP:0 uM:5 cTemp:63 acError:1
+[23:02:17.024][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): D7 E8 F5 80 ED EC 0A FD
+[23:02:17.024][I][fujitsu.heatpump:204][FujiTask]: <-- 28 17 0A 7F 12 13 F5 02  mSrc:40 mDst:23 mType:0 write:1 login:0 unknown:0 onOff:1 temp:18 mode:7 cP:1 uM:1 cTemp:58 acError:0
+[23:02:17.228][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): A0 81 80 D7 E8 F7 80 E7
+[23:02:17.234][D][fujitsu.heatpump:049][FujiTask]: Unmapped controller state byte: 0xF5
+[23:02:17.234][I][fujitsu.heatpump:204][FujiTask]: <-- 5F 7E 7F 28 17 08 7F 18  mSrc:95 mDst:126 mType:3 write:1 login:1 unknown:0 onOff:0 temp:23 mode:4 cP:1 uM:0 cTemp:63 acError:0
+[23:02:17.638][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E8 B7 7F 80 D7 E8 F7 80
+[23:02:17.664][I][fujitsu.heatpump:204][FujiTask]: <-- 17 48 80 7F 28 17 08 7F  mSrc:23 mDst:72 mType:0 write:0 login:0 unknown:0 onOff:1 temp:40 mode:7 cP:0 uM:1 cTemp:4 acError:0
+[23:02:17.664][D][status_led:049]: 'Status LED': Setting state ON
+[23:02:17.664][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E7 E8 B7 7F 80 D7 E8 F7
+[23:02:17.664][I][fujitsu.heatpump:204][FujiTask]: <-- 18 17 48 80 7F 28 17 08  mSrc:24 mDst:23 mType:0 write:1 login:0 unknown:0 onOff:0 temp:127 mode:0 cP:1 uM:2 cTemp:11 acError:1
+[23:02:18.050][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 E7 E8 B7 7F 80 D7 E8
+[23:02:18.078][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 18 17 48 80 7F 28 17  mSrc:127 mDst:24 mType:1 write:0 login:0 unknown:0 onOff:0 temp:0 mode:4 cP:0 uM:7 cTemp:20 acError:0
+[23:02:18.078][D][status_led:049]: 'Status LED': Setting state OFF
+[23:02:18.106][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): F7 80 E7 E8 B7 7F 80 D7
+[23:02:18.110][I][fujitsu.heatpump:204][FujiTask]: <-- 08 7F 18 17 48 80 7F 28  mSrc:8 mDst:127 mType:1 write:1 login:1 unknown:0 onOff:1 temp:72 mode:3 cP:1 uM:8 cTemp:63 acError:0
+[23:02:18.127][LABEL] T31
+[23:02:18.332][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E8 F7 80 E7 E8 B7 7F 80
+[23:02:18.338][I][fujitsu.heatpump:204][FujiTask]: <-- 17 08 7F 18 17 48 80 7F  mSrc:23 mDst:8 mType:3 write:1 login:0 unknown:0 onOff:0 temp:23 mode:4 cP:0 uM:4 cTemp:0 acError:0
+[23:02:18.603][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): D7 E8 F7 80 E7 E8 B7 7F
+[23:02:18.622][I][fujitsu.heatpump:204][FujiTask]: <-- 28 17 08 7F 18 17 48 80  mSrc:40 mDst:23 mType:0 write:1 login:0 unknown:0 onOff:1 temp:24 mode:7 cP:0 uM:1 cTemp:36 acError:0
+[23:02:18.729][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 D7 E8 F7 80 E7 E8 B7
+[23:02:18.733][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 28 17 08 7F 18 17 48  mSrc:127 mDst:40 mType:1 write:0 login:1 unknown:0 onOff:0 temp:127 mode:4 cP:1 uM:1 cTemp:11 acError:0
+[23:02:19.072][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 7F 80 D7 E8 F7 80 E7 E8
+[23:02:19.076][I][fujitsu.heatpump:204][FujiTask]: <-- 80 7F 28 17 08 7F 18 17  mSrc:128 mDst:127 mType:2 write:1 login:1 unknown:0 onOff:1 temp:8 mode:3 cP:0 uM:7 cTemp:12 acError:0
+[23:02:19.180][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): B7 7F 80 D7 E8 F7 80 E7
+[23:02:19.184][I][fujitsu.heatpump:204][FujiTask]: <-- 48 80 7F 28 17 08 7F 18  mSrc:72 mDst:0 mType:3 write:1 login:0 unknown:1 onOff:0 temp:23 mode:4 cP:1 uM:0 cTemp:63 acError:0
+[23:02:19.482][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E8 B7 7F 80 D7 E8 F7 80
+[23:02:19.509][I][fujitsu.heatpump:204][FujiTask]: <-- 17 48 80 7F 28 17 08 7F  mSrc:23 mDst:72 mType:0 write:0 login:0 unknown:0 onOff:1 temp:40 mode:7 cP:0 uM:1 cTemp:4 acError:0
+[23:02:19.530][D][status_led:049]: 'Status LED': Setting state ON
+[23:02:19.625][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E7 E8 B7 7F 80 D7 E8 F7
+[23:02:19.629][I][fujitsu.heatpump:204][FujiTask]: <-- 18 17 48 80 7F 28 17 08  mSrc:24 mDst:23 mType:0 write:1 login:0 unknown:0 onOff:0 temp:127 mode:0 cP:1 uM:2 cTemp:11 acError:1
+[23:02:19.891][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 E7 E8 B7 7F 80 D7 E8
+[23:02:19.918][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 18 17 48 80 7F 28 17  mSrc:127 mDst:24 mType:1 write:0 login:0 unknown:0 onOff:0 temp:0 mode:4 cP:0 uM:7 cTemp:20 acError:0
+[23:02:20.046][D][status_led:049]: 'Status LED': Setting state OFF
+[23:02:20.070][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): F7 80 E7 E8 B7 7F 80 D7
+[23:02:20.073][I][fujitsu.heatpump:204][FujiTask]: <-- 08 7F 18 17 48 80 7F 28  mSrc:8 mDst:127 mType:1 write:1 login:1 unknown:0 onOff:1 temp:72 mode:3 cP:1 uM:8 cTemp:63 acError:0
+[23:02:20.301][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E8 F7 80 E7 E8 B7 7F 80
+[23:02:20.305][I][fujitsu.heatpump:204][FujiTask]: <-- 17 08 7F 18 17 48 80 7F  mSrc:23 mDst:8 mType:3 write:1 login:0 unknown:0 onOff:0 temp:23 mode:4 cP:0 uM:4 cTemp:0 acError:0
+[23:02:20.476][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): D7 E8 F7 80 E7 E8 B7 7F
+[23:02:20.480][I][fujitsu.heatpump:204][FujiTask]: <-- 28 17 08 7F 18 17 48 80  mSrc:40 mDst:23 mType:0 write:1 login:0 unknown:0 onOff:1 temp:24 mode:7 cP:0 uM:1 cTemp:36 acError:0
+[23:02:20.710][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 D7 E8 F7 80 E7 E8 B7
+[23:02:20.715][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 28 17 08 7F 18 17 48  mSrc:127 mDst:40 mType:1 write:0 login:1 unknown:0 onOff:0 temp:127 mode:4 cP:1 uM:1 cTemp:11 acError:0
+[23:02:21.120][I][fujitsu.heatpump:242][FujiTask]: RX raw (1/8, before XOR): 7F
+[23:02:21.125][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 DD FC 0A FD A0 81 80
+[23:02:21.125][D][fujitsu.heatpump:049][FujiTask]: Unmapped controller state byte: 0xF5
+[23:02:21.125][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 22 03 F5 02 5F 7E 7F  mSrc:127 mDst:34 mType:0 write:0 login:1 unknown:0 onOff:1 temp:2 mode:2 cP:0 uM:5 cTemp:63 acError:1
+[23:02:21.529][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): ED FC 0A FD A0 81 80 D7
+[23:02:21.546][D][fujitsu.heatpump:049][FujiTask]: Unmapped controller state byte: 0xF5
+[23:02:21.546][I][fujitsu.heatpump:204][FujiTask]: <-- 12 03 F5 02 5F 7E 7F 28  mSrc:18 mDst:3 mType:3 write:0 login:0 unknown:0 onOff:0 temp:95 mode:1 cP:1 uM:7 cTemp:63 acError:0
+[23:02:21.546][D][status_led:049]: 'Status LED': Setting state ON
+[23:02:21.546][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E8 F5 80 ED FC 0A FD A0
+[23:02:21.555][I][fujitsu.heatpump:204][FujiTask]: <-- 17 0A 7F 12 03 F5 02 5F  mSrc:23 mDst:10 mType:3 write:1 login:0 unknown:0 onOff:0 temp:3 mode:1 cP:0 uM:15 cTemp:1 acError:0
+[23:02:21.939][D][fujitsu.climate:403]: State updated - mode=0 target=23 current=nan fan=2 preset=-1
+[23:02:21.939][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 81 80 DB FC 80 EB FC 80
+[23:02:21.939][D][fujitsu.heatpump:049][FujiTask]: Unmapped controller state byte: 0xF5
+[23:02:21.944][D][fujitsu.heatpump:103][FujiTask]: Observed controller OFF
+[23:02:21.944][I][fujitsu.heatpump:204][FujiTask]: <-- 7E 7F 24 03 7F 14 03 7F  mSrc:126 mDst:127 mType:2 write:0 login:1 unknown:0 onOff:1 temp:127 mode:1 cP:1 uM:1 cTemp:1 acError:0
+[23:02:22.056][D][status_led:049]: 'Status LED': Setting state OFF
+[23:02:22.085][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): D7 E8 F7 80 E7 EC B7 7F
+[23:02:22.094][I][fujitsu.heatpump:204][FujiTask]: <-- 28 17 08 7F 18 13 48 80  mSrc:40 mDst:23 mType:0 write:1 login:0 unknown:0 onOff:1 temp:24 mode:7 cP:0 uM:1 cTemp:36 acError:0
+[23:02:22.296][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 D7 EC F7 80 E7 EC B7
+[23:02:22.299][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 28 13 08 7F 18 13 48  mSrc:127 mDst:40 mType:1 write:0 login:1 unknown:0 onOff:0 temp:127 mode:4 cP:1 uM:1 cTemp:9 acError:0
+[23:02:22.514][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 7F 80 D7 EC F7 80 E7 EC
+[23:02:22.519][I][fujitsu.heatpump:204][FujiTask]: <-- 80 7F 28 13 08 7F 18 13  mSrc:128 mDst:127 mType:2 write:1 login:1 unknown:0 onOff:1 temp:8 mode:1 cP:0 uM:7 cTemp:12 acError:0
+[23:02:22.727][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): B7 7F 80 D7 EC F7 80 E7
+[23:02:22.733][I][fujitsu.heatpump:204][FujiTask]: <-- 48 80 7F 28 13 08 7F 18  mSrc:72 mDst:0 mType:3 write:1 login:0 unknown:1 onOff:0 temp:19 mode:4 cP:1 uM:0 cTemp:63 acError:0
+[23:02:22.963][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): EC B7 7F 80 D7 EC F7 80
+[23:02:22.967][I][fujitsu.heatpump:204][FujiTask]: <-- 13 48 80 7F 28 13 08 7F  mSrc:19 mDst:72 mType:0 write:0 login:0 unknown:0 onOff:1 temp:40 mode:7 cP:0 uM:1 cTemp:4 acError:0
+[23:02:23.373][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): E7 EC B7 7F 80 D7 EC F7
+[23:02:23.390][I][fujitsu.heatpump:204][FujiTask]: <-- 18 13 48 80 7F 28 13 08  mSrc:24 mDst:19 mType:0 write:1 login:0 unknown:0 onOff:0 temp:127 mode:0 cP:1 uM:2 cTemp:9 acError:1
+[23:02:23.391][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 E7 EC B7 7F 80 D7 EC
+[23:02:23.399][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 18 13 48 80 7F 28 13  mSrc:127 mDst:24 mType:1 write:0 login:0 unknown:0 onOff:0 temp:0 mode:4 cP:0 uM:7 cTemp:20 acError:0

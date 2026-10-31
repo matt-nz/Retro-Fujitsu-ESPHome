@@ -92,6 +92,12 @@ static void test_decode_table() {
   CHECK(decode_setting(0xBC, &s) && s.mode == kModeCool && s.fan == kFanLow && s.temperature == 23);
   CHECK(decode_setting(0x79, &s) && s.mode == kModeAuto && s.fan == kFanLow && s.temperature == 23);
   CHECK(decode_setting(0xC4, &s) && s.mode == kModeCool && !s.fan_valid && s.temperature == 24);
+  for (uint8_t temperature = 18; temperature <= 30; temperature++) {
+    const uint8_t value = static_cast<uint8_t>(0x95 + (temperature - 18) * 0x08);
+    CHECK(decode_setting(value, &s) && s.mode == kModeCool && s.fan_valid && s.fan == kFanAuto &&
+          s.temperature_valid && s.temperature == temperature);
+  }
+  CHECK(!decode_setting(0x94, &s) && !decode_setting(0xFD, &s));
   CHECK(decode_setting(0x52, &s) && s.mode == kModeHeat && !s.fan_valid && s.temperature == 18);
   CHECK(decode_setting(0x72, &s) && s.temperature == 19);
   CHECK(decode_setting(0x92, &s) && s.temperature == 20);
@@ -166,7 +172,8 @@ static size_t count_kind(const std::vector<Message> &msgs, Kind k, Direction d) 
 
 static void test_captures(const std::string &dir) {
   const char *files[] = {"auto-heat.log", "cold.log", "fan_changes.log",     "heat_20_22_18.log", "hot-fan-cold-auto.log",
-                         "on_off.log",    "raw.log",  "running_standby.log", "startup.log", "tx-enabled-new-build.log"};
+                         "on_off.log",    "raw.log",  "running_standby.log", "startup.log", "tx-enabled-new-build.log",
+                         "cold-test.log"};
   size_t total_unknown = 0, total_messages = 0;
 
   for (const char *name : files) {
@@ -251,6 +258,13 @@ static void test_captures(const std::string &dir) {
   CHECK((setting_values(tx_enabled) == std::vector<uint8_t>{0xF2, 0xD2, 0xB2, 0x92, 0x09, 0x0B, 0x03, 0x05}));
   CHECK(count_kind(tx_enabled, Kind::POWER_OFF, Direction::REMOTE_TO_UNIT) == 1);
   CHECK(count_kind(tx_enabled, Kind::POWER_OFF, Direction::UNIT_TO_REMOTE) == 1);
+
+  auto cold_test = parse(load_stream(dir + "/cold-test.log", &ok));
+  CHECK(ok);
+  CHECK((setting_values(cold_test) ==
+         std::vector<uint8_t>{0x95, 0x9D, 0xA5, 0xAD, 0xB5, 0xBD, 0xC5, 0xCD, 0xD5, 0xDD, 0xE5, 0xED, 0xF5}));
+  CHECK(count_kind(cold_test, Kind::POWER_OFF, Direction::REMOTE_TO_UNIT) == 1);
+  CHECK(count_kind(cold_test, Kind::POWER_OFF, Direction::UNIT_TO_REMOTE) == 1);
 }
 
 int main(int argc, char **argv) {

@@ -5,7 +5,7 @@
 //
 // After inverting every byte (XOR 0xFF) the bus carries variable-length messages that
 // each start with 0x7F -- NOT the 8-byte frames the vendored upstream engine assumes.
-// Shapes observed in all nine captures (see docs/protocol-investigation-status-2026-10-31.md):
+// Shapes observed across the captures (see docs/protocol-investigation-status-2026-10-31.md):
 //
 //   7F 28 1x 08|0A         status poll, remote -> unit   (1x: 13 = unit idle, 17 = running)
 //   7F 18 1x 48 80          status reply, unit -> remote
@@ -72,6 +72,11 @@ inline bool decode_setting(uint8_t value, Setting *out) {
     return true;
   };
 
+  // COOL with AUTO fan: the labeled 18-30 C sweep produced 0x95, 0x9D, ... 0xF5.
+  if (value >= 0x95 && value <= 0xF5 && ((value - 0x95) % 0x08) == 0) {
+    return with_fan(kModeCool, kFanAuto, true, static_cast<uint8_t>(18 + ((value - 0x95) / 0x08)));
+  }
+
   switch (value) {
     case 0x03: return with_fan(kModeFan, kFanHigh, false, 0);
     case 0x05: return with_fan(kModeFan, kFanMedium, false, 0);
@@ -86,7 +91,6 @@ inline bool decode_setting(uint8_t value, Setting *out) {
     case 0xB9: return with_fan(kModeCool, kFanHigh, true, 23);
     case 0xBA: return with_fan(kModeCool, kFanMedium, true, 23);
     case 0xBC: return with_fan(kModeCool, kFanLow, true, 23);
-    case 0xBD: return with_fan(kModeCool, kFanAuto, true, 23);
 
     case 0xE6: return with_fan(kModeHeat, kFanHigh, true, 23);
     case 0xEA: return with_fan(kModeHeat, kFanMedium, true, 23);

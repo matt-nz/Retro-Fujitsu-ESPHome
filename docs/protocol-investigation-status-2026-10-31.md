@@ -67,7 +67,7 @@ When providing these materials to another protocol analyst, ask them to:
 5. Do not recommend transmitting or changing addresses until the frame roles and
    reply timing are supported by evidence.
 
-Materials: this note, [`../protocol-matt.md`](../protocol-matt.md), all nine logs in
+Materials: this note, [`../protocol-matt.md`](../protocol-matt.md), the original nine logs in
 [`../captures/matt-captures/`](../captures/matt-captures/), the current
 `components/fujitsu_climate/FujiHeatPump.cpp`, and the included sniffer sketch.
 
@@ -145,7 +145,7 @@ The upstream engine only replies to an 8-byte read whose decoded destination is 
 that never occurs because the read chunks are not the protocol's frames.
 
 Joining the reads and splitting the inverted stream at each `0x7F` shows variable-length
-messages, not 8-byte frames (the original nine logs and the TX-enabled follow-up agree):
+messages, not 8-byte frames (the original nine logs and both later captures agree):
 
 | Message (inverted bytes) | Observed when |
 |---|---|
@@ -183,6 +183,29 @@ and fan changes; room temperature remains unavailable.
 Despite `Control enabled: YES -- LIVE`, this capture contains no `-->` replies and no
 8-byte decoded reads with destination `0x21`. It therefore provides no evidence of a
 secondary login or transmission. Do not infer a transmit frame from these captures.
+
+## Labeled COOL setpoint sweep (`cold-test.log`)
+
+This follow-up was captured with the passive parser firmware, with labels entered before
+the remote changes. In COOL with AUTO fan, the 18→30°C sweep produced these setting
+values in order:
+
+```
+18-30°C: 95 9D A5 AD B5 BD C5 CD D5 DD E5 ED F5
+```
+
+Each degree changes the byte by `+0x08`; `BD` at 23°C matches the already observed
+COOL/AUTO value. No 31°C setting change was made; the `T31` label is not evidence of a
+31°C remote setting or a 30°C maximum. The 28°C step follows the sequence (`E5`) and is
+consistent with the reported setpoint despite the operator's concern about that part
+of the test. This supports decoding the observed COOL/AUTO sequence from 18 through
+30°C. Other COOL fan settings remain mapped only at 23°C, and the isolated 24°C value
+`C4` still has unknown fan. Host replay tests now include this capture and verify the
+full sequence. The capture ends with an Off message, but it has no Off label, so
+operator intent for that final transition is not established.
+
+This capture adds passive state evidence only; it contains no outgoing `-->` reply and
+does not demonstrate secondary login.
 
 ### Firmware verification (build compiled 31 Oct 2026 21:40, with the passive parser)
 
@@ -275,8 +298,8 @@ Tips:
 
 ## Setting-value bit-field model (hypothesis, 31 Oct 2026)
 
-All 22 labeled (mode, setpoint, fan) values in the captures fit one model with no
-mismatches. Write the setpoint as `T` and the fan setting as a 3-bit code
+All previously labeled (mode, setpoint, fan) values, plus the 18-30°C COOL/AUTO sweep
+above, fit one model with no mismatches. Write the setpoint as `T` and the fan setting as a 3-bit code
 (`high` = 1, `medium` = 2, `low` = 4, `auto` = 5); then the setting byte is
 
 ```
