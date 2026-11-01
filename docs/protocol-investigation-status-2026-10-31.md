@@ -363,13 +363,19 @@ wiring as `start-up.sr`, one file per step, and decode each with
    FAN, AUTO, HEAT). Note whether the extra cells (ninth cell, stop-cell low pulse) ever change.
 3. **`03` vs `13`.** Make one single press, then a press-and-hold of the same button. Record which one
    produces the second round with `22 13`.
-4. **Remote disconnected.** Power up the unit with the wired remote unplugged (not the ESP32). Record
-   whether any polls appear, and whether the unit sends `7F 12 01` or anything else. This shows who
-   owns the poll cycle.
+4. ~~**Remote disconnected.**~~ Done by the operator: with the wired remote unplugged the unit puts
+   no traffic at all on RX. So the unit never speaks first; the remote owns the poll cycle and the unit
+   only replies (and echoes). Any transmitter would have to take the remote's role (poll and settings),
+   not join as a quiet second controller, and cannot be tested with the remote removed.
 5. **Idle soak.** Leave the unit running 10 minutes with no presses to see whether `08` becomes `0A`,
    a reply byte other than `48 80` appears, or the 1 s reply stall repeats.
-6. **Warm the remote** (hand or warm air for a minute) while the unit runs, to check that no byte
-   follows room temperature.
+6. **Room temperature (low priority).** Existing data already says the reply carries none: across all
+   ESP logs from 31 Oct (warm day, 13:22–21:53; 3,000 replies) and `start-up.sr` from 1 Nov (cooler
+   morning, 105 replies), the unit's reply is always `7F 18 13|17 48 80`; the only exception is the
+   stalled `7F 18 17` + `04` at 14.13 s. Polls vary only `08`/`0A`. So a temperature that differed
+   between the two days would have shown up as a changing byte and did not. Warming the remote
+   deliberately is only worth doing if the `04` or `0A` cases turn out to follow temperature (check
+   whether they recur in the idle soak).
 
 Decision after the session: if only the value byte and fixed cell patterns vary, the next step is a
 bench transmitter on a spare line checked against the remote's capture at microsecond level, before
