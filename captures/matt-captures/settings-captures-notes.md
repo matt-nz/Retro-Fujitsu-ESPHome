@@ -11,7 +11,8 @@ D1 at 1 MHz. Reproduce with `python3 tools/decode_logic_capture.py <file>.sr --s
 The first two bytes of a message (`7F`, then `22` from the remote or `12` from the unit) are ordinary
 11-cell UART-style bytes. From the third byte on, the fields sit at **fixed cell positions** counted
 from the message's first falling edge (cell width = the sender's bit time: 1980.8 µs remote, 2055.6 µs
-unit). Comparing all 149 setting packets in the five captures (50 from the remote, 99 from the unit),
+unit). Comparing all 149 setting packets in the four captures that contain them (50 from the remote, 99 from
+the unit; `idle.sr` has none),
 exactly these cells ever vary (line level inverted gives the bus bit; fields are least significant bit
 first):
 
@@ -70,7 +71,7 @@ bus while the unit is off (the same holds for earlier warm-day logs, see the sta
 `heat.sr` has one unit reply `7F 18 07 48 80` at 26.966 s (unit running), between replies `7F 18 17 …`
 at 26.719 and 27.214 s: byte 2 lost bit 4 (`17` → `07`) for one reply, about 2 s after the last setpoint
 step. With the stalled reply followed by `04` in `start-up.sr`, these are the only deviations from
-`48 80` / `13` / `17` in about 3,600 replies of the five captures, and both occur while the unit is
+`48 80` / `13` / `17` in about 1,550 replies across the five captures, and both occur while the unit is
 running. Cause unknown; worth watching for a running-state idle soak.
 
 ## Open items
