@@ -487,13 +487,15 @@ the ESP32 poll and send settings exactly as the captures show.
   driven, or another device pulling it low) abort, release the line and end the test. It refuses to run if a message from
   the wired remote was seen in the 1.5 s before pressing or during the silence check, which a connected remote would
   cause. Stray bytes from the unit itself do not block it. Correction to an earlier note: the "no traffic at all with the
-  remote disconnected" observation was made with the LIN transceiver unpowered (the bus's 12 V was not connected). With
-  the ESP32 and transceiver powered first, a single event about 5.2 s after unit power-up was seen, something like eight
-  zeros or `00`. The operator suspects a momentary low from the power coming up rather than a message; not yet
-  captured. Telling them apart on the analyser: a message is a clean low pulse that is a whole number of 1980.8/2055.6 µs
-  cells with sensible framing; a power glitch is irregular. Either way nothing else is sent, which fits the remote
-  being the master. Check before any live test that the transceiver is powered from the bus 12 V with the remote
-  removed; without it the read-back check aborts the first message.
+  remote disconnected" observation may have been made with the transceiver unpowered. The next run had the ESP32 and
+  transceiver powered from the bus 12 V, and showed a single event about 5.2 s after unit power-up, something like eight
+  zeros or `00`. Because the ESP32 is powered from the same 12 V, it boots when the unit powers up, so the event may be
+  the ESP32's own start-up (TXD floating or being reconfigured, passed to the bus by the transceiver) rather than the
+  unit. Not yet captured. To tell them apart, connect a second analyser channel to GPIO17 (the transceiver's TXD)
+  alongside the bus RX: if the low appears on GPIO17 first it is the ESP32; if only on the bus, it is the unit or the
+  transceiver. A message is a clean low pulse of a whole number of 1980.8/2055.6 µs cells; a glitch is irregular.
+  The firmware now drives GPIO17 high at the start of setup(); an external pull-up on the transceiver's TXD would cover
+  the earlier boot period. Either way nothing else is sent, which fits the remote being the master.
   The log lines to watch start with "AOT30 test" and "AOT30 emulator".
 - The earlier one-shot UART test buttons, the arm switch and the dry-run/enable switches were removed. After the test
   ends the ESP32 no longer polls, so reconnect the wired remote (it takes over) or the unit will sit without a master.

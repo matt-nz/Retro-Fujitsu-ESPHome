@@ -141,6 +141,12 @@ void FujitsuClimate::setup() {
   // component, which used to apply this via its own `mode: {pullup: true}` option.
   pinMode(this->rx_pin_, INPUT_PULLUP);
 
+  // Hold the transceiver's TXD recessive (high) from here on. A floating or reconfiguring TX pin can pull the
+  // bus low for a moment while the ESP32 starts, which looks like a stray byte from the unit on a capture.
+  // An external pull-up on the transceiver's TXD covers the time before this line runs.
+  pinMode(this->tx_pin_, OUTPUT);
+  digitalWrite(this->tx_pin_, HIGH);
+
   this->heat_pump.connect(&Serial2, /*secondary=*/true, this->rx_pin_, this->tx_pin_);
   this->heat_pump.debugPrint = this->debug_;
   if (this->debug_) {
