@@ -13,6 +13,11 @@ has been confirmed live against the real unit, gated behind the "Aircon Control 
 The transmit path is younger than decode — see [Protocol](#protocol) and
 [Project History & Phases](#project-history--phases) below before relying on it.
 
+> **Older ducted units (ART30RL indoor / AOT30L outdoor, 3-wire LIN wired remote):** these use a different bus protocol and
+> the wired remote is the bus master, so nothing below about being a secondary controller applies. The ESP32 can instead
+> **replace the wired remote** as a "Master Controller" that Home Assistant drives (experimental, remote fully disconnected).
+> See [docs/aot30-master-controller.md](docs/aot30-master-controller.md).
+
 ---
 
 ## Correction, 1 September 2026 — actual wired controller model, and the UTD-RS100 option

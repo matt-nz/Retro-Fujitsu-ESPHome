@@ -78,7 +78,7 @@ class FujitsuClimate : public climate::Climate, public Component {
 
   climate::ClimateTraits traits() override;
   void control(const climate::ClimateCall &call) override;
-  void control_aot30_(const climate::ClimateCall &call);
+  void control_master_(const climate::ClimateCall &call);
 
   // Unchanged from the 3B.22 fix -- this component's setup() (which starts the bus
   // task) must run before WiFi association, not after, on the shared 12V rail where
@@ -102,14 +102,16 @@ class FujitsuClimate : public climate::Climate, public Component {
   // retrofujitsu.yaml).
   void set_control_enabled(bool enabled);
   bool get_control_enabled() const { return control_enabled_; }
-  // Experimental: runs the wired-remote emulation test (HEAT 20). The wired remote must be disconnected.
-  void request_aot30_test();
-  void request_aot30_speed_ladder();
-  // Experimental: the ESP takes over the wired remote's role for good (continuous polling, climate commands
-  // become remote messages). The wired remote must be fully disconnected. See FujiHeatPump.h.
-  void set_aot30_emulator(bool enabled);
-  void set_aot30_setting_cell_percent(float percent) { this->heat_pump.aot30SetSettingCellPercent(static_cast<uint32_t>(percent)); }
-  bool aot30_emulator_active() const { return this->heat_pump.aot30ContinuousActive(); }
+  // Experimental master controller for the AOT30L/ART30RL bus: the ESP takes over the wired remote's role
+  // (continuous polling; climate commands become remote messages). The wired remote must be fully disconnected.
+  // See FujiHeatPump.h and docs/aot30-master-controller.md.
+  void set_master_controller(bool enabled);
+  bool master_controller_active() const { return this->heat_pump.aot30MasterActive(); }
+  std::string master_controller_status() const {
+    return FujiHeatPump::aot30MasterStateText(this->heat_pump.aot30MasterState());
+  }
+  // Run flag from the unit's replies: -1 unknown, 0 idle, 1 running.
+  int unit_run_state() const { return this->heat_pump.aot30UnitRunState(); }
 
   // Diagnostics (trimmed for this rebuild -- see the .cpp file's top-of-file comment
   // for which of the old exploratory diagnostics were retired and why).

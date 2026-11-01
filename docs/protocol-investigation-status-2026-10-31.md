@@ -629,3 +629,12 @@ unit shuts itself off, so no breaker is needed between runs. The cell time is re
 Only 100 % cell time was accepted; 80, 60, 50, 40, 30 and 25 % were all rejected, with no harm to the unit (it kept answering polls). The
 unit's receiver tolerates very little timing change, so speeding up a setting to fit the 30-58 ms gap next to a live remote is ruled out. Keeping
 the physical remote needs the bridge design; otherwise use the continuous emulator. See `captures/matt-captures/settings-captures-notes.md`.
+
+## Cleanup and current state (2026-11-02)
+
+The experiments above are finished, and the emulator is now the **Master Controller**: see
+[aot30-master-controller.md](aot30-master-controller.md) for the current design and the Home Assistant entities. Removed from the firmware and
+YAML: the one-shot **AOT30 Test** button, the **AOT30 Speed Ladder** button, the **AOT30 Setting Cell Time %** number and the echo check
+(results recorded above). Replaced by: the **Master Controller** switch, **Master Controller Status** text sensor and **Unit Running**
+binary sensor. Section names and log lines in the older sections above ("AOT30 test", "AOT30 emulator") refer to the earlier names;
+current log lines start with "AOT30 master". The ECO preset is now also shown in HA while the master controller runs.

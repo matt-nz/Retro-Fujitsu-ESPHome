@@ -32,7 +32,7 @@ static_assert(fuji_passive::kFanHigh == static_cast<byte>(FujiFanMode::FAN_HIGH)
 bool same_observed_state(const FujiObservedControllerState &a, const FujiObservedControllerState &b) {
   return a.valid == b.valid && a.on == b.on && a.mode_valid == b.mode_valid && a.mode == b.mode &&
          a.fan_valid == b.fan_valid && a.fan_mode == b.fan_mode && a.temperature_valid == b.temperature_valid &&
-         a.temperature == b.temperature;
+         a.temperature == b.temperature && a.eco_valid == b.eco_valid && a.eco == b.eco;
 }
 }  // namespace
 
@@ -55,11 +55,8 @@ void FujiHeatPump::inspectObservedControllerByte(byte value) {
 
   switch (message.kind) {
     case fuji_passive::Kind::SETTING: {
-      if (message.direction == fuji_passive::Direction::UNIT_TO_REMOTE) {
-        unitSettingEchoCount_++;
-      }
-      if (emuContinuous_.load()) {
-        return;  // the byte view aliases settings; the emulator publishes the state it commanded itself
+      if (emuEnabled_.load()) {
+        return;  // the byte view aliases settings; the master controller publishes the state it commanded itself
       }
       fuji_passive::Setting setting;
       if (!fuji_passive::decode_setting(message.value, &setting)) {
@@ -97,6 +94,7 @@ void FujiHeatPump::inspectObservedControllerByte(byte value) {
       if (message.direction == fuji_passive::Direction::UNIT_TO_REMOTE) {
         unitRunningKnown_ = true;
         unitRunning_ = message.running;
+        unitRunState_.store(message.running ? 1 : 0);
       }
       // A running -> idle change also means off; this covers a missed power-off message.
       // The idle -> running change is ignored because the setting message already set On.
@@ -254,75 +252,60 @@ void FujiHeatPump::sendPendingFrame() {
 }
 
 // ---------------------------------------------------------------------------------------------
-// AOT30L/ART30RL wired-remote emulation. EXPERIMENTAL; read the comment in FujiHeatPump.h first.
-// One button runs a fixed test: wait for a silent bus, poll for a while, send HEAT 20 as the wired
-// remote would, keep polling, then stop and release the bus.
+// AOT30L/ART30RL master controller. EXPERIMENTAL; read the comment in FujiHeatPump.h first.
+// Flow: start -> bus must be silent and idle high -> poll for a while -> run: poll continuously and send the
+// latest submitted target as the captured setting / off messages -> stop (the unit shuts down without polls).
 // ---------------------------------------------------------------------------------------------
 namespace {
-constexpr uint32_t kEmuTestCommand = 1;
-constexpr uint32_t kEmuStartCommand = 2;
-constexpr uint32_t kEmuStopCommand = 3;
-constexpr uint32_t kEmuLadderCommand = 4;
-// Speed ladder: setting cell time in percent of the real remote's, one setting per rung (HEAT, setpoint 20 + rung).
-constexpr uint32_t kEmuLadderPercent[] = {100, 80, 60, 50, 40, 30, 25};
-constexpr size_t kEmuLadderRungs = sizeof(kEmuLadderPercent) / sizeof(kEmuLadderPercent[0]);
-constexpr uint32_t kEmuLadderGapMs = 2000;
-// How long after a setting the unit's echo should have started (it comes about 190 ms after the start of the message).
-constexpr uint32_t kEmuEchoWaitMs = 450;
+constexpr uint32_t kCmdStart = 1;
+constexpr uint32_t kCmdStop = 2;
+// The bus must have been silent this long before starting; a connected remote polls every ~247 ms.
+constexpr uint32_t kQuietMs = 1500;
+// Polling time before the first command, so the unit sees a normal cycle first.
+constexpr uint32_t kLeadMs = 2000;
 // Our own transmission comes back on RX and takes up to this long to finish arriving. The unit never replies
 // sooner than 30 ms after the end of a message.
-constexpr uint32_t kEmuOwnEchoMs = 25;
-// Wired-remote messages heard while emulating before the emulator gives the bus back.
-constexpr uint32_t kEmuRemoteMessagesToStop = 2;
-// The bus must have been silent this long before the test starts; a connected remote polls every ~247 ms.
-constexpr uint32_t kEmuStartQuietMs = 1500;
-// Polling time before and after the setting, so the unit sees a normal cycle around it.
-constexpr uint32_t kEmuTestLeadMs = 2000;
-constexpr uint32_t kEmuTestTailMs = 10000;
+constexpr uint32_t kOwnEchoMs = 25;
+// Wired-remote messages heard while running before the master controller gives the bus back.
+constexpr uint32_t kRemoteMessagesToStop = 2;
 // Do not start a transmission within this long of the last received byte (the unit's reply is still coming).
-constexpr uint32_t kEmuQuietBeforeTxMs = 12;
+constexpr uint32_t kQuietBeforeTxMs = 12;
 // Abort a transmission after this many cells whose read-back differs from what was driven.
-constexpr uint32_t kEmuMaxMismatches = 3;
+constexpr uint32_t kMaxMismatches = 3;
 }  // namespace
 
-bool FujiHeatPump::aot30RunTest() {
-  if (emuEnabled_.exchange(true)) {
-    return false;  // a test is already running
+using MasterState = FujiHeatPump::MasterState;
+
+const char *FujiHeatPump::aot30MasterStateText(MasterState state) {
+  switch (state) {
+    case MasterState::OFF: return "Off";
+    case MasterState::CHECKING_BUS: return "Checking bus";
+    case MasterState::RUNNING: return "Running";
+    case MasterState::REFUSED_REMOTE_PRESENT: return "Refused: wired remote is on the bus";
+    case MasterState::REFUSED_BUS_LOW: return "Refused: bus held low";
+    case MasterState::STOPPED_REMOTE_PRESENT: return "Stopped: wired remote detected";
+    case MasterState::STOPPED_TX_FAILED: return "Stopped: bus fault while sending";
   }
-  emuCommand_.store(kEmuTestCommand);
-  return true;
+  return "Unknown";
 }
 
-bool FujiHeatPump::aot30RunSpeedLadder() {
+bool FujiHeatPump::aot30StartMaster() {
   if (emuEnabled_.exchange(true)) {
     return false;
   }
-  emuCommand_.store(kEmuLadderCommand);
+  emuState_.store(static_cast<uint8_t>(MasterState::CHECKING_BUS));
+  emuCommand_.store(kCmdStart);
   return true;
 }
 
-bool FujiHeatPump::aot30StartEmulator() {
-  if (emuEnabled_.exchange(true)) {
-    return false;
-  }
-  emuContinuous_.store(true);
-  emuCommand_.store(kEmuStartCommand);
-  return true;
-}
-
-void FujiHeatPump::aot30SetSettingCellPercent(uint32_t percent) {
-  // 100 is the real remote's timing; the test button and the emulator use whatever is set here for settings only.
-  emuSettingCellPercent_.store(percent < 20 ? 20 : (percent > 100 ? 100 : percent));
-}
-
-void FujiHeatPump::aot30StopEmulator() {
+void FujiHeatPump::aot30StopMaster() {
   if (emuEnabled_.load()) {
-    emuCommand_.store(kEmuStopCommand);
+    emuCommand_.store(kCmdStop);
   }
 }
 
 bool FujiHeatPump::aot30SubmitTarget(const fuji_aot30::Target &target) {
-  if (!aot30ContinuousActive()) {
+  if (!emuEnabled_.load()) {
     return false;
   }
   emuTargetWord_.store(target.pack());
@@ -347,6 +330,8 @@ void FujiHeatPump::emuPublishObserved(const fuji_aot30::Target &t) {
                                                                                : FujiFanMode::FAN_AUTO);
     state.temperature_valid = t.mode != fuji_aot30::Mode::FAN;
     state.temperature = t.temp;
+    state.eco_valid = true;
+    state.eco = t.eco;
   }
   if (!same_observed_state(state, observedControllerState)) {
     observedControllerState = state;
@@ -365,61 +350,32 @@ void FujiHeatPump::emuApplyTarget() {
       return;
     }
     if (!emuScheduler_.queue_setting(target.mode, target.fan, target.temp, target.eco)) {
-      ESP_LOGW(TAG, "AOT30 emulator: refused target mode=%u temp=%u", static_cast<unsigned>(target.mode),
+      ESP_LOGW(TAG, "AOT30 master: refused target mode=%u temp=%u", static_cast<unsigned>(target.mode),
                static_cast<unsigned>(target.temp));
       return;
     }
-    ESP_LOGW(TAG, "AOT30 emulator: sending mode=%u fan=%u temp=%u eco=%u", static_cast<unsigned>(target.mode),
+    ESP_LOGW(TAG, "AOT30 master: sending mode=%u fan=%u temp=%u eco=%u", static_cast<unsigned>(target.mode),
              static_cast<unsigned>(target.fan), static_cast<unsigned>(target.temp), static_cast<unsigned>(target.eco));
   } else {
     if (!emuApplied_.on && !(unitRunningKnown_ && unitRunning_)) {
       return;  // already off
     }
     emuScheduler_.queue_off();
-    ESP_LOGW(TAG, "AOT30 emulator: sending power-off");
+    ESP_LOGW(TAG, "AOT30 master: sending power-off");
   }
   emuApplied_ = target;
   emuPublishObserved(target);
 }
 
-// The one-shot test sends HEAT 20; the speed ladder sends HEAT 20, 21, 22, ... each at the next cell time.
-bool FujiHeatPump::emuQueueTestSetting() {
-  const uint8_t temp = static_cast<uint8_t>(20 + (emuLadder_ ? emuLadderIdx_ : 0));
-  if (emuLadder_) {
-    aot30SetSettingCellPercent(kEmuLadderPercent[emuLadderIdx_]);
-  }
-  if (!emuScheduler_.queue_setting(fuji_aot30::Mode::HEAT, fuji_aot30::Fan::FAN_AUTO, temp, false)) {
-    ESP_LOGE(TAG, "AOT30 test: could not queue HEAT %u", static_cast<unsigned>(temp));
-    return false;
-  }
-  if (emuLadder_) {
-    ESP_LOGW(TAG, "AOT30 speed ladder rung %u/%u: HEAT %u at %u%% cell time", static_cast<unsigned>(emuLadderIdx_ + 1),
-             static_cast<unsigned>(kEmuLadderRungs), static_cast<unsigned>(temp),
-             static_cast<unsigned>(emuSettingCellPercent_.load()));
-  } else {
-    ESP_LOGW(TAG, "AOT30 test: sending HEAT 20, fan auto, ECO off");
-  }
-  return true;
-}
-
-void FujiHeatPump::emuFinish(bool ok) {
-  if (emuLadder_) {
-    emuLadder_ = false;
-    emuSettingCellPercent_.store(100);
-  }
-  const bool continuous = emuContinuous_.load();
+void FujiHeatPump::emuFinish(uint8_t state) {
   emuScheduler_.stop();
   emuStage_ = EmuStage::IDLE;
-  emuContinuous_.store(false);
+  emuTargetDirty_.store(false);
+  emuState_.store(state);
   emuEnabled_.store(false);
-  if (continuous) {
-    emuTargetDirty_.store(false);
-    setObservedOff();  // the unit shuts down by itself once polling stops
-    ESP_LOGW(TAG, "AOT30 emulator %s; the bus is released. The unit stops without polling.",
-             ok ? "stopped" : "stopped on a problem");
-  } else if (ok) {
-    ESP_LOGW(TAG, "AOT30 test finished; the bus is released. Reconnect the wired remote (it takes over polling).");
-  }
+  setObservedOff();  // the unit shuts down by itself once polling stops
+  ESP_LOGW(TAG, "AOT30 master controller: %s. The bus is released; the unit stops without polling.",
+           aot30MasterStateText(static_cast<MasterState>(state)));
 }
 
 void FujiHeatPump::emuDrainRx() {
@@ -445,7 +401,7 @@ void FujiHeatPump::emuDrainRx() {
       break;
     }
     lastRxByteMs = millis();
-    if (emuContinuous_.load() && static_cast<int32_t>(lastRxByteMs - emuIgnoreRxUntilMs_) < 0) {
+    if (static_cast<int32_t>(lastRxByteMs - emuIgnoreRxUntilMs_) < 0) {
       continue;  // our own transmission, read back
     }
     chunk[chunk_len++] = static_cast<uint8_t>(value);
@@ -457,16 +413,16 @@ void FujiHeatPump::emuDrainRx() {
   flush_chunk();
 }
 
-bool FujiHeatPump::emuTransmit(const uint8_t *cells, size_t count, const char *what, uint32_t cell_tenths_us) {
-  const unsigned long duration_us = static_cast<unsigned long>(count * cell_tenths_us / 10);
+bool FujiHeatPump::emuTransmit(const uint8_t *cells, size_t count, const char *what) {
+  const unsigned long duration_us = static_cast<unsigned long>(count * fuji_aot30::kRemoteCellTenthsUs / 10);
   if (emuDryRun_.load()) {
-    ESP_LOGW(TAG, "AOT30 emulator DRY RUN would send %s (%u cells, %lu us)", what, static_cast<unsigned>(count),
+    ESP_LOGW(TAG, "AOT30 master DRY RUN would send %s (%u cells, %lu us)", what, static_cast<unsigned>(count),
              duration_us);
     return true;
   }
 #ifdef ESP32
   if (rxPin_ < 0 || txPin_ < 0) {
-    ESP_LOGE(TAG, "AOT30 emulator: TX/RX pins unknown");
+    ESP_LOGE(TAG, "AOT30 master: TX/RX pins unknown");
     return false;
   }
   const gpio_num_t tx = static_cast<gpio_num_t>(txPin_);
@@ -482,8 +438,8 @@ bool FujiHeatPump::emuTransmit(const uint8_t *cells, size_t count, const char *w
   int last_level = 1;
   const int64_t t0 = esp_timer_get_time();
   for (size_t i = 0; i < count; i++) {
-    const int64_t cell_start = t0 + static_cast<int64_t>(i * cell_tenths_us / 10);
-    const int64_t cell_mid = cell_start + (cell_tenths_us / 20);
+    const int64_t cell_start = t0 + static_cast<int64_t>(i * fuji_aot30::kRemoteCellTenthsUs / 10);
+    const int64_t cell_mid = cell_start + (fuji_aot30::kRemoteCellTenthsUs / 20);
     const int level = cells[i] ? 0 : 1;  // line level is the inverse of the bus bit
     while (esp_timer_get_time() < cell_start) {
     }
@@ -497,13 +453,13 @@ bool FujiHeatPump::emuTransmit(const uint8_t *cells, size_t count, const char *w
       if (first_bad < 0) {
         first_bad = static_cast<int>(i);
       }
-      if (++mismatches >= kEmuMaxMismatches) {
+      if (++mismatches >= kMaxMismatches) {
         break;
       }
     }
   }
-  if (mismatches < kEmuMaxMismatches) {
-    const int64_t end = t0 + static_cast<int64_t>(count * cell_tenths_us / 10);
+  if (mismatches < kMaxMismatches) {
+    const int64_t end = t0 + static_cast<int64_t>(count * fuji_aot30::kRemoteCellTenthsUs / 10);
     while (esp_timer_get_time() < end) {
     }
   }
@@ -512,54 +468,44 @@ bool FujiHeatPump::emuTransmit(const uint8_t *cells, size_t count, const char *w
   // Give the pin back to the UART.
   uart_set_pin(static_cast<uart_port_t>(2), txPin_, rxPin_, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE);
 
-  if (mismatches >= kEmuMaxMismatches) {
-    ESP_LOGE(TAG, "AOT30 emulator: %s aborted, %u read-back mismatches (first at cell %d); line released", what,
+  if (mismatches >= kMaxMismatches) {
+    ESP_LOGE(TAG, "AOT30 master: %s aborted, %u read-back mismatches (first at cell %d); line released", what,
              static_cast<unsigned>(mismatches), first_bad);
     return false;
   }
   if (first_bad >= 0) {
-    ESP_LOGW(TAG, "AOT30 emulator: %s sent with %u read-back mismatch (cell %d)", what,
+    ESP_LOGW(TAG, "AOT30 master: %s sent with %u read-back mismatch (cell %d)", what,
              static_cast<unsigned>(mismatches), first_bad);
   }
   return true;
 #else
   (void) cells;
-  ESP_LOGE(TAG, "AOT30 emulator needs an ESP32");
+  ESP_LOGE(TAG, "AOT30 master needs an ESP32");
   return false;
 #endif
 }
 
-void FujiHeatPump::aot30EmulatorPump() {
+void FujiHeatPump::aot30MasterPump() {
   emuDrainRx();
   uint32_t now = millis();
-  if (emuEchoCheckPending_ && static_cast<int32_t>(now - emuEchoCheckAtMs_) >= 0) {
-    emuEchoCheckPending_ = false;
-    ESP_LOGW(TAG, "AOT30 timing test: setting at %u%% cell time was %s by the unit (%u echo(es))",
-             static_cast<unsigned>(emuSettingCellPercent_.load()),
-             unitSettingEchoCount_ != emuEchoBaseline_ ? "ECHOED" : "NOT echoed",
-             static_cast<unsigned>(unitSettingEchoCount_ - emuEchoBaseline_));
-  }
+
   const uint32_t command = emuCommand_.exchange(0);
-  if (command == kEmuStopCommand && emuStage_ != EmuStage::IDLE) {
-    emuFinish(true);
+  if (command == kCmdStop) {
+    if (emuEnabled_.load()) {
+      emuFinish(static_cast<uint8_t>(MasterState::OFF));
+    }
     return;
   }
-  if (command == kEmuTestCommand || command == kEmuStartCommand || command == kEmuLadderCommand) {
-    emuLadder_ = command == kEmuLadderCommand;
-    emuLadderIdx_ = 0;
-    if (command != kEmuStartCommand) {
-      emuContinuous_.store(false);
-    }
+  if (command == kCmdStart) {
     emuApplied_ = fuji_aot30::Target();
     emuIgnoreRxUntilMs_ = now;
-    emuScheduler_.stop();
     unitRunningKnown_ = false;  // learn it from the unit's replies once polling starts
+    unitRunState_.store(-1);
+    emuScheduler_.stop();
     emuStage_ = EmuStage::WAIT_QUIET;
     emuStageStartMs_ = now;
-    ESP_LOGW(TAG, "AOT30 %s started%s: checking that the bus is silent for %u ms. The wired remote must be "
-                  "disconnected.",
-             emuContinuous_.load() ? "emulator" : "test", emuDryRun_.load() ? " (DRY RUN)" : "",
-             static_cast<unsigned>(kEmuStartQuietMs));
+    ESP_LOGW(TAG, "AOT30 master%s: checking that the bus is silent for %u ms. The wired remote must be disconnected.",
+             emuDryRun_.load() ? " (DRY RUN)" : "", static_cast<unsigned>(kQuietMs));
   }
 
   switch (emuStage_) {
@@ -567,27 +513,27 @@ void FujiHeatPump::aot30EmulatorPump() {
       return;
     case EmuStage::WAIT_QUIET: {
       // Only messages from the wired remote count: the unit is seen sending a stray byte by itself about 5 s after
-      // power-up with no remote connected, which must not block the test.
-      const bool traffic_before = lastRemoteMessageMs != 0 &&
-                                  static_cast<uint32_t>(emuStageStartMs_ - lastRemoteMessageMs) < kEmuStartQuietMs;
-      const bool traffic_since = lastRemoteMessageMs != 0 && static_cast<int32_t>(lastRemoteMessageMs - emuStageStartMs_) > 0;
+      // power-up with no remote connected, which must not block the start.
+      const bool traffic_before =
+          lastRemoteMessageMs != 0 && static_cast<uint32_t>(emuStageStartMs_ - lastRemoteMessageMs) < kQuietMs;
+      const bool traffic_since =
+          lastRemoteMessageMs != 0 && static_cast<int32_t>(lastRemoteMessageMs - emuStageStartMs_) > 0;
       if (traffic_before || traffic_since) {
-        ESP_LOGE(TAG, "AOT30 test refused: wired remote messages seen within %u ms of starting. Is the wired remote "
-                      "still connected? Disconnect it and press the button again.",
-                 static_cast<unsigned>(kEmuStartQuietMs));
-        emuFinish(false);
+        ESP_LOGE(TAG, "AOT30 master refused: wired remote messages seen within %u ms of starting. Fully disconnect "
+                      "the wired remote (all three wires) and start again.",
+                 static_cast<unsigned>(kQuietMs));
+        emuFinish(static_cast<uint8_t>(MasterState::REFUSED_REMOTE_PRESENT));
         return;
       }
-      if (now - emuStageStartMs_ >= kEmuStartQuietMs) {
+      if (now - emuStageStartMs_ >= kQuietMs) {
 #ifdef ESP32
-        // A bus that never idles high cannot carry a message. test.sr (2 Nov 2026) showed the RX pin held low for
-        // the whole run with the wired remote disconnected, so the first poll was aborted by the read-back check.
+        // A bus that never idles high cannot carry a message (test.sr: an unpowered remote left attached clamped the
+        // line low).
         if (!emuDryRun_.load() && rxPin_ >= 0 && gpio_get_level(static_cast<gpio_num_t>(rxPin_)) == 0) {
-          ESP_LOGE(TAG, "AOT30 test refused: the bus (GPIO%d) is held low with no traffic, so it does not idle high. "
-                        "The wired remote probably supplies the bus pull-up; measure the LIN wire with the remote "
-                        "disconnected.",
+          ESP_LOGE(TAG, "AOT30 master refused: the bus (GPIO%d) is held low with no traffic, so it does not idle high. "
+                        "Disconnect the wired remote completely (all three wires) and check the LIN wire reads 12 V.",
                    rxPin_);
-          emuFinish(false);
+          emuFinish(static_cast<uint8_t>(MasterState::REFUSED_BUS_LOW));
           return;
         }
 #endif
@@ -595,56 +541,26 @@ void FujiHeatPump::aot30EmulatorPump() {
         emuRemoteBaseline_ = remoteMessageCount_;
         emuStage_ = EmuStage::LEAD;
         emuStageStartMs_ = now;
-        ESP_LOGW(TAG, "AOT30 test: bus silent, polling started (first poll has the run flag off, then it follows the unit)");
+        ESP_LOGW(TAG, "AOT30 master: bus silent, polling started (first poll has the run flag off, then it follows "
+                      "the unit)");
       }
       return;
     }
     case EmuStage::LEAD:
-      if (now - emuStageStartMs_ >= kEmuTestLeadMs) {
-        if (emuContinuous_.load()) {
-          emuStage_ = EmuStage::RUN;
-          emuPublishObserved(emuApplied_);
-          ESP_LOGW(TAG, "AOT30 emulator: running, polling continuously. Waiting for a command.");
-          break;
-        }
-        if (!emuQueueTestSetting()) {
-          emuFinish(false);
-          return;
-        }
-        emuStage_ = EmuStage::SCRIPT;
-      }
-      break;
-    case EmuStage::SCRIPT:
-      if (!emuScheduler_.busy()) {
-        emuStage_ = EmuStage::TAIL;
-        emuStageStartMs_ = now;
-      }
-      break;
-    case EmuStage::TAIL:
-      if (emuLadder_ && emuLadderIdx_ + 1 < kEmuLadderRungs) {
-        if (now - emuStageStartMs_ >= kEmuLadderGapMs) {
-          emuLadderIdx_++;
-          if (!emuQueueTestSetting()) {
-            emuFinish(false);
-            return;
-          }
-          emuStage_ = EmuStage::SCRIPT;
-        }
-        break;
-      }
-      if (now - emuStageStartMs_ >= kEmuTestTailMs) {
-        emuFinish(true);
-        return;
+      if (now - emuStageStartMs_ >= kLeadMs) {
+        emuStage_ = EmuStage::RUN;
+        emuState_.store(static_cast<uint8_t>(MasterState::RUNNING));
+        emuPublishObserved(emuApplied_);
+        ESP_LOGW(TAG, "AOT30 master: running, polling continuously. Waiting for a command.");
       }
       break;
     case EmuStage::RUN:
       emuApplyTarget();
       break;
   }
-  if (emuContinuous_.load() && remoteMessageCount_ - emuRemoteBaseline_ >= kEmuRemoteMessagesToStop) {
-    ESP_LOGE(TAG, "AOT30 emulator: a wired remote is talking on the bus, giving it back. Fully disconnect the remote "
-                  "to use the emulator.");
-    emuFinish(false);
+  if (remoteMessageCount_ - emuRemoteBaseline_ >= kRemoteMessagesToStop) {
+    ESP_LOGE(TAG, "AOT30 master: a wired remote is talking on the bus, giving it back.");
+    emuFinish(static_cast<uint8_t>(MasterState::STOPPED_REMOTE_PRESENT));
     return;
   }
 
@@ -655,7 +571,7 @@ void FujiHeatPump::aot30EmulatorPump() {
   if (!emuScheduler_.due(now, &action)) {
     return;
   }
-  if (_serial->available() > 0 || (lastRxByteMs != 0 && now - lastRxByteMs < kEmuQuietBeforeTxMs)) {
+  if (_serial->available() > 0 || (lastRxByteMs != 0 && now - lastRxByteMs < kQuietBeforeTxMs)) {
     return;  // the unit is still talking, try again next time round
   }
 
@@ -670,8 +586,8 @@ void FujiHeatPump::aot30EmulatorPump() {
       break;
     case fuji_aot30::Action::Kind::SETTING:
       if (!fuji_aot30::build_setting(action.mode, action.fan, action.temp, action.eco, action.repeat, cells)) {
-        ESP_LOGE(TAG, "AOT30 emulator: invalid setting, stopping");
-        emuFinish(false);
+        ESP_LOGE(TAG, "AOT30 master: invalid setting, stopping");
+        emuFinish(static_cast<uint8_t>(MasterState::STOPPED_TX_FAILED));
         return;
       }
       count = fuji_aot30::kSettingCells;
@@ -687,24 +603,14 @@ void FujiHeatPump::aot30EmulatorPump() {
   }
 
   now = millis();
-  uint32_t cell_tenths_us = fuji_aot30::kRemoteCellTenthsUs;
-  if (action.kind == fuji_aot30::Action::Kind::SETTING) {
-    cell_tenths_us = cell_tenths_us * emuSettingCellPercent_.load() / 100;  // timing experiment, 100 = normal
-  }
-  if (!emuTransmit(cells, count, what, cell_tenths_us)) {
-    ESP_LOGE(TAG, "AOT30 test stopped. Reconnect the wired remote.");
-    emuFinish(false);
+  if (!emuTransmit(cells, count, what)) {
+    emuFinish(static_cast<uint8_t>(MasterState::STOPPED_TX_FAILED));
     return;
   }
   emuScheduler_.sent(now);
-  emuIgnoreRxUntilMs_ = millis() + kEmuOwnEchoMs;
+  emuIgnoreRxUntilMs_ = millis() + kOwnEchoMs;
   if (action.kind != fuji_aot30::Action::Kind::POLL) {
-    ESP_LOGW(TAG, "AOT30 emulator: sent %s", what);
-  }
-  if (action.kind == fuji_aot30::Action::Kind::SETTING) {
-    emuEchoBaseline_ = unitSettingEchoCount_;
-    emuEchoCheckAtMs_ = millis() + kEmuEchoWaitMs;
-    emuEchoCheckPending_ = true;
+    ESP_LOGW(TAG, "AOT30 master: sent %s", what);
   }
 }
 

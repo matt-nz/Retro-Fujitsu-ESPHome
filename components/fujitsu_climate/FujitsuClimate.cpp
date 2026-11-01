@@ -90,9 +90,9 @@ static void fujitsu_bus_task(void *pv) {
 
   for (;;) {
     bool frame_received = false;
-    if (climate->heat_pump.aot30EmulatorActive()) {
-      // Wired-remote emulation: non-blocking receive plus the scripted transmissions.
-      climate->heat_pump.aot30EmulatorPump();
+    if (climate->heat_pump.aot30MasterActive()) {
+      // Master controller: non-blocking receive plus the scripted transmissions.
+      climate->heat_pump.aot30MasterPump();
     } else {
       frame_received = climate->heat_pump.waitForFrame();
     }
@@ -379,9 +379,9 @@ void FujitsuClimate::update_climate_state_() {
     }
   }
 
-  if (!use_observed_state) {
-    climate::ClimatePreset new_preset =
-        local.economyMode ? climate::CLIMATE_PRESET_ECO : climate::CLIMATE_PRESET_NONE;
+  if (!use_observed_state || observed.eco_valid) {
+    const bool eco = use_observed_state ? observed.eco : local.economyMode != 0;
+    climate::ClimatePreset new_preset = eco ? climate::CLIMATE_PRESET_ECO : climate::CLIMATE_PRESET_NONE;
     if (new_preset != this->preset) {
       this->preset = new_preset;
       updated = true;
@@ -711,30 +711,18 @@ void FujitsuClimate::set_control_enabled(bool enabled) {
                                             : "disabled -- back to read-only monitoring");
 }
 
-void FujitsuClimate::request_aot30_test() {
-  if (!this->heat_pump.aot30RunTest()) {
-    ESP_LOGW(TAG, "AOT30 test already running; wait for it to finish");
-  }
-}
-
-void FujitsuClimate::request_aot30_speed_ladder() {
-  if (!this->heat_pump.aot30RunSpeedLadder()) {
-    ESP_LOGW(TAG, "AOT30 emulator or test already running; wait for it to finish");
-  }
-}
-
-void FujitsuClimate::set_aot30_emulator(bool enabled) {
+void FujitsuClimate::set_master_controller(bool enabled) {
   if (enabled) {
-    if (!this->heat_pump.aot30StartEmulator()) {
-      ESP_LOGW(TAG, "AOT30 emulator or test already running");
+    if (!this->heat_pump.aot30StartMaster()) {
+      ESP_LOGW(TAG, "AOT30 master controller is already running");
     }
   } else {
-    this->heat_pump.aot30StopEmulator();
+    this->heat_pump.aot30StopMaster();
   }
 }
 
-// Climate command while the emulator is the remote: fold the call into the last requested target.
-void FujitsuClimate::control_aot30_(const climate::ClimateCall &call) {
+// Climate command while the master controller is running: fold the call into the last requested target.
+void FujitsuClimate::control_master_(const climate::ClimateCall &call) {
   using fuji_aot30::Fan;
   using fuji_aot30::Mode;
   fuji_aot30::Target target = this->heat_pump.aot30LastTarget();
@@ -748,7 +736,7 @@ void FujitsuClimate::control_aot30_(const climate::ClimateCall &call) {
       case climate::CLIMATE_MODE_AUTO: target.on = true; target.mode = Mode::AUTO; break;
       case climate::CLIMATE_MODE_FAN_ONLY: target.on = true; target.mode = Mode::FAN; break;
       default:
-        ESP_LOGW(TAG, "AOT30 emulator: this unit has no such mode, ignoring the command");
+        ESP_LOGW(TAG, "AOT30 master: this unit has no such mode, ignoring the command");
         return;
     }
   }
@@ -773,7 +761,7 @@ void FujitsuClimate::control_aot30_(const climate::ClimateCall &call) {
     target.temp = target.temp < low ? low : 30;
   }
   if (!this->heat_pump.aot30SubmitTarget(target)) {
-    ESP_LOGW(TAG, "AOT30 emulator is not running, command ignored");
+    ESP_LOGW(TAG, "AOT30 master controller is not running, command ignored");
   }
 }
 
@@ -862,8 +850,8 @@ void FujitsuClimate::control(const climate::ClimateCall &call) {
   // starve update_climate_state_()'s own reads) -- so treat this as real hardening, not
   // a confirmed fix. Getting an actual USB-serial capture on the next crash is the only
   // way to know the true cause for certain.
-  if (this->heat_pump.aot30ContinuousActive()) {
-    this->control_aot30_(call);
+  if (this->heat_pump.aot30MasterActive()) {
+    this->control_master_(call);
     return;
   }
 

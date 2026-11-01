@@ -1,4 +1,4 @@
-// Exercises the remote-emulation code in FujiHeatPump.cpp on a desktop compiler with fake time, GPIO and UART.
+// Exercises the master-controller code in FujiHeatPump.cpp on a desktop compiler with fake time, GPIO and UART.
 //   g++ -std=c++17 -w -DESP32 -Itests/stubs -Icomponents/fujitsu_climate tests/aot30_emulator_host_test.cpp \
 //       components/fujitsu_climate/FujiHeatPump.cpp -o /tmp/aot30_emulator_host_test && /tmp/aot30_emulator_host_test
 // Nothing here touches hardware. The fake GPIO loops the driven level back to the RX pin, like the transceiver.
@@ -81,7 +81,7 @@ static size_t log_count(const char *needle) {
 static void advance(FujiHeatPump &hp, uint32_t ms) {
   for (uint32_t i = 0; i < ms; i++) {
     g_now_us += 1000;
-    hp.aot30EmulatorPump();
+    hp.aot30MasterPump();
   }
 }
 
@@ -98,66 +98,104 @@ static void reset(HardwareSerial &serial, FujiHeatPump &hp) {
 
 int main() {
   using namespace fuji_aot30;
+  using MS = FujiHeatPump::MasterState;
   static HardwareSerial serial;
   static FujiHeatPump hp;
   g_now_us = 10 * 1000 * 1000;
+  const uint8_t kRemotePoll[] = {0x80, 0xD7, 0xEC, 0xF7, 0x80};  // 7F 28 13 08 plus the next start byte
 
-  // 1. Dry run: the test starts after 1.5 s of silence, polls, sends HEAT 20, polls on, finishes by itself.
+  // 1. Dry run: starts after 1.5 s of silence, polls, then runs and waits for a command.
   reset(serial, hp);
-  hp.aot30EmulatorSetDryRun(true);
-  CHECK(!hp.aot30EmulatorActive());
-  CHECK(hp.aot30RunTest());
-  CHECK(!hp.aot30RunTest());  // already running
-  CHECK(hp.aot30EmulatorActive());
+  hp.aot30SetDryRun(true);
+  CHECK(!hp.aot30MasterActive() && hp.aot30MasterState() == MS::OFF);
+  CHECK(!hp.aot30SubmitTarget(Target()));  // not running yet
+  CHECK(hp.aot30StartMaster());
+  CHECK(!hp.aot30StartMaster());  // already running
+  CHECK(hp.aot30MasterActive() && hp.aot30MasterState() == MS::CHECKING_BUS);
   advance(hp, 1000);
   CHECK(!log_has("polling started"));
   advance(hp, 700);
   CHECK(log_has("polling started"));
+  CHECK(hp.aot30MasterState() == MS::CHECKING_BUS);
   advance(hp, 2000);
-  CHECK(log_has("sending HEAT 20, fan auto, ECO off"));
-  advance(hp, 2500);
+  CHECK(log_has("running, polling continuously"));
+  CHECK(hp.aot30MasterState() == MS::RUNNING);
+  CHECK(hp.getObservedControllerState().valid && !hp.getObservedControllerState().on);
+  CHECK(g_gpio_sets == 0 && g_matrix_calls == 0);  // dry run touches no pins
+  CHECK(log_count("DRY RUN would send poll") >= 8);
+
+  // 1b. A submitted target becomes the two-round setting (first round 397 ms after the last poll), then the off message.
+  // Polls continue and nothing is resent without a new target.
+  g_log.clear();
+  Target heat;
+  heat.on = true;
+  heat.mode = Mode::HEAT;
+  heat.temp = 20;
+  heat.eco = true;
+  CHECK(hp.aot30SubmitTarget(heat));
+  advance(hp, 100);
+  FujiObservedControllerState st = hp.getObservedControllerState();
+  CHECK(st.on && st.mode == static_cast<byte>(FujiMode::HEAT) && st.temperature == 20 && st.temperature_valid);
+  CHECK(st.eco_valid && st.eco && st.fan_valid && st.fan_mode == static_cast<byte>(FujiFanMode::FAN_AUTO));
+  advance(hp, 3000);
   CHECK(log_count("DRY RUN would send setting (round 1)") == 1);
   CHECK(log_count("DRY RUN would send setting (round 2)") == 1);
   CHECK(log_count("DRY RUN would send poll (pending)") == 2);
-  CHECK(hp.aot30EmulatorActive());
-  advance(hp, 12000);
-  CHECK(log_has("test finished"));
-  CHECK(!hp.aot30EmulatorActive());
-  CHECK(g_gpio_sets == 0 && g_matrix_calls == 0);
+  g_log.clear();
+  advance(hp, 5000);
+  CHECK(log_count("would send setting") == 0 && log_count("would send poll") >= 15);
+  CHECK(hp.aot30SubmitTarget(heat));  // same state again: nothing is sent
+  advance(hp, 1000);
+  CHECK(log_count("would send setting") == 0);
+  Target off = heat;
+  off.on = false;
+  CHECK(hp.aot30SubmitTarget(off));
+  advance(hp, 1500);
+  CHECK(log_count("DRY RUN would send power-off") == 1);
+  CHECK(!hp.getObservedControllerState().on);
+  CHECK(hp.aot30SubmitTarget(off));  // already off: nothing sent
+  advance(hp, 1500);
+  CHECK(log_count("would send power-off") == 1);
+  hp.aot30StopMaster();
+  advance(hp, 50);
+  CHECK(!hp.aot30MasterActive() && hp.aot30MasterState() == MS::OFF);
+  CHECK(log_has("Off. The bus is released"));
+  CHECK(!hp.aot30SubmitTarget(heat));
 
-  // 2. Refuses to start when the bus was busy just before or during the silence check.
+  // 2. Refuses to start when a wired remote was heard just before or during the silence check.
   reset(serial, hp);
-  hp.aot30EmulatorSetDryRun(true);
-  CHECK(hp.aot30RunTest());
-  // A real remote poll `7F 28 13 08` followed by the unit's next start byte, right after the button press.
-  for (uint8_t b : {0x80, 0xD7, 0xEC, 0xF7, 0x80}) serial.rx.push_back(b);
+  hp.aot30SetDryRun(true);
+  CHECK(hp.aot30StartMaster());
+  for (uint8_t b : kRemotePoll) serial.rx.push_back(b);
   advance(hp, 300);
   CHECK(log_has("wired remote messages seen"));
-  CHECK(!hp.aot30EmulatorActive());
+  CHECK(!hp.aot30MasterActive() && hp.aot30MasterState() == MS::REFUSED_REMOTE_PRESENT);
   advance(hp, 2000);  // the bus has now been quiet for longer than the check
-  CHECK(hp.aot30RunTest());  // can be started again
+  CHECK(hp.aot30StartMaster());
   advance(hp, 2000);
   CHECK(log_has("polling started"));
-  advance(hp, 20000);
-  CHECK(!hp.aot30EmulatorActive());
+  hp.aot30StopMaster();
+  advance(hp, 10);
+  CHECK(!hp.aot30MasterActive());
 
-  // 2b. Stray bytes from the unit itself (no remote) do not block the test.
+  // 2b. Stray bytes from the unit itself (no remote) do not block the start.
   reset(serial, hp);
-  hp.aot30EmulatorSetDryRun(true);
+  hp.aot30SetDryRun(true);
   serial.rx.push_back(0xFF);
   serial.rx.push_back(0xFF);
-  CHECK(hp.aot30RunTest());
+  CHECK(hp.aot30StartMaster());
   advance(hp, 100);
   serial.rx.push_back(0xFF);
   advance(hp, 1700);
   CHECK(log_has("polling started"));
   CHECK(!log_has("refused"));
-  advance(hp, 20000);
+  hp.aot30StopMaster();
+  advance(hp, 10);
 
   // 3. Live: pulse train equals the encoded message, pin handed back to the UART after each message.
   reset(serial, hp);
-  hp.aot30EmulatorSetDryRun(false);
-  CHECK(hp.aot30RunTest());
+  hp.aot30SetDryRun(false);
+  CHECK(hp.aot30StartMaster());
   advance(hp, 1600);
   CHECK(log_has("polling started"));
   g_edges.clear();
@@ -191,177 +229,86 @@ int main() {
     }
   }
   CHECK(timing_ok);
-  g_log.clear();
-  advance(hp, 17000);  // the rest of the test: lead polls, the two-round change, tail polls
-  CHECK(log_count("sent setting (round 1)") == 1);
-  CHECK(log_count("sent setting (round 2)") == 1);
-  CHECK(log_has("test finished"));
-  CHECK(!hp.aot30EmulatorActive());
-  CHECK(!g_edges.empty() && g_edges.back().level == 1);  // line released high
-  CHECK(g_tx_level == 1);
 
-  // 4. Read-back mismatch (no loopback, or another device pulling the line) aborts and releases.
-  reset(serial, hp);
-  hp.aot30EmulatorSetDryRun(false);
-  CHECK(hp.aot30RunTest());
-  advance(hp, 1600);
-  g_loopback = false;
-  g_log.clear();
-  advance(hp, 600);
-  CHECK(log_has("aborted"));
-  CHECK(!hp.aot30EmulatorActive());
-  CHECK(g_tx_level == 1);
-
-  // 4b. A bus held low (no idle-high pull-up, as in test.sr) is refused before anything is sent.
-  reset(serial, hp);
-  hp.aot30EmulatorSetDryRun(false);
-  g_rx_forced_low = true;
-  CHECK(hp.aot30RunTest());
-  advance(hp, 1700);
-  CHECK(log_has("held low with no traffic"));
-  CHECK(!hp.aot30EmulatorActive());
-  CHECK(g_gpio_sets == 0);
-
-  // 5. A finished or aborted test can be started again.
-  reset(serial, hp);
-  hp.aot30EmulatorSetDryRun(true);
-  CHECK(hp.aot30RunTest());
-  advance(hp, 1600);
-  CHECK(log_has("polling started"));
-  advance(hp, 20000);
-  CHECK(!hp.aot30EmulatorActive());
-
-  // 6. Continuous emulator: polls forever, turns a submitted target into scripted messages, publishes that state.
-  reset(serial, hp);
-  hp.aot30EmulatorSetDryRun(false);
-  CHECK(!hp.aot30SubmitTarget(Target()));  // not running yet
-  CHECK(hp.aot30StartEmulator());
-  CHECK(!hp.aot30StartEmulator());
-  CHECK(hp.aot30ContinuousActive());
-  advance(hp, 3700);
-  CHECK(log_has("running, polling continuously"));
-  CHECK(hp.getObservedControllerState().valid && !hp.getObservedControllerState().on);
-  // Our own poll comes back on RX; it must neither count as a wired remote nor reach the state decoder.
+  // 3b. Live, continuous: our own transmissions come back on RX; they must neither count as a wired remote nor
+  // reach the state decoder, over a whole change and power-off.
   size_t uart_calls = g_uart_set_pin_calls;
-  for (int i = 0; i < 20000; i++) {
+  g_log.clear();
+  advance(hp, 2000);
+  for (int i = 0; i < 16000; i++) {
     advance(hp, 1);
     if (static_cast<size_t>(g_uart_set_pin_calls) != uart_calls) {
       uart_calls = g_uart_set_pin_calls;
-      for (uint8_t b : {0x80, 0xD7, 0xEC, 0xF7, 0x80}) serial.rx.push_back(b);
+      for (uint8_t b : kRemotePoll) serial.rx.push_back(b);
     }
-    if (i == 2000) {
-      Target t;
-      t.on = true;
-      t.mode = Mode::HEAT;
-      t.temp = 20;
-      CHECK(hp.aot30SubmitTarget(t));
-    }
-    if (i == 12000) {
-      Target t = hp.aot30LastTarget();
-      t.on = false;
-      CHECK(hp.aot30SubmitTarget(t));
-    }
-    if (i == 2100) {
-      FujiObservedControllerState st = hp.getObservedControllerState();
-      CHECK(st.on && st.mode == static_cast<byte>(FujiMode::HEAT) && st.temperature == 20 && st.temperature_valid);
-    }
+    if (i == 1000) CHECK(hp.aot30SubmitTarget(heat));
+    if (i == 9000) CHECK(hp.aot30SubmitTarget(off));
   }
-  CHECK(hp.aot30ContinuousActive());
+  CHECK(hp.aot30MasterActive() && hp.aot30MasterState() == MS::RUNNING);
   CHECK(!log_has("giving it back"));
   CHECK(log_count("sent setting (round 1)") == 1);
   CHECK(log_count("sent setting (round 2)") == 1);
   CHECK(log_count("sent power-off") == 1);
   CHECK(!hp.getObservedControllerState().on);
-  // No target resubmitted: nothing more is sent, polling goes on (about 4 polls a second).
-  g_log.clear();
-  advance(hp, 5000);
-  CHECK(log_count("sent ") == 0);
-  CHECK(hp.aot30ContinuousActive());
-  // Submitting the state it is already in sends nothing.
-  Target off = hp.aot30LastTarget();
-  CHECK(hp.aot30SubmitTarget(off));
-  advance(hp, 500);
-  CHECK(log_count("sent ") == 0);
-  // Stop releases the bus.
-  hp.aot30StopEmulator();
+  hp.aot30StopMaster();
   advance(hp, 50);
-  CHECK(!hp.aot30ContinuousActive() && !hp.aot30EmulatorActive());
-  CHECK(log_has("emulator stopped"));
+  CHECK(!hp.aot30MasterActive());
+  CHECK(!g_edges.empty() && g_edges.back().level == 1 && g_tx_level == 1);  // line released high
+
+  // 4. Read-back mismatch (no loopback, or another device pulling the line) stops it and releases the line.
+  reset(serial, hp);
+  hp.aot30SetDryRun(false);
+  CHECK(hp.aot30StartMaster());
+  advance(hp, 1600);
+  g_loopback = false;
+  g_log.clear();
+  advance(hp, 600);
+  CHECK(log_has("aborted"));
+  CHECK(!hp.aot30MasterActive() && hp.aot30MasterState() == MS::STOPPED_TX_FAILED);
   CHECK(g_tx_level == 1);
 
-  // 6b. A wired remote showing up while emulating makes the emulator give the bus back.
+  // 4b. A bus held low (no idle-high, as in test.sr) is refused before anything is sent.
   reset(serial, hp);
-  hp.aot30EmulatorSetDryRun(true);
-  CHECK(hp.aot30StartEmulator());
+  hp.aot30SetDryRun(false);
+  g_rx_forced_low = true;
+  CHECK(hp.aot30StartMaster());
+  advance(hp, 1700);
+  CHECK(log_has("held low with no traffic"));
+  CHECK(!hp.aot30MasterActive() && hp.aot30MasterState() == MS::REFUSED_BUS_LOW);
+  CHECK(g_gpio_sets == 0);
+
+  // 5. A wired remote showing up while running makes the master controller give the bus back.
+  reset(serial, hp);
+  hp.aot30SetDryRun(true);
+  CHECK(hp.aot30StartMaster());
   advance(hp, 4000);
-  CHECK(hp.aot30ContinuousActive());
+  CHECK(hp.aot30MasterActive());
   for (int n = 0; n < 3; n++) {
-    for (uint8_t b : {0x80, 0xD7, 0xEC, 0xF7, 0x80}) serial.rx.push_back(b);
+    for (uint8_t b : kRemotePoll) serial.rx.push_back(b);
     advance(hp, 250);
   }
   CHECK(log_has("giving it back"));
-  CHECK(!hp.aot30EmulatorActive());
+  CHECK(!hp.aot30MasterActive() && hp.aot30MasterState() == MS::STOPPED_REMOTE_PRESENT);
 
-  // 6c. A remote already on the bus refuses the continuous start as well.
+  // 6. A stop before the bus task handled the start leaves it off, and the unit run flag follows the unit's replies.
   reset(serial, hp);
-  hp.aot30EmulatorSetDryRun(true);
-  CHECK(hp.aot30StartEmulator());
-  for (uint8_t b : {0x80, 0xD7, 0xEC, 0xF7, 0x80}) serial.rx.push_back(b);
-  advance(hp, 300);
-  CHECK(log_has("wired remote messages seen"));
-  CHECK(!hp.aot30EmulatorActive());
-
-  // 7. Setting cell-time experiment: shorter cells, and a report on whether the unit echoed.
-  reset(serial, hp);
-  hp.aot30EmulatorSetDryRun(false);
-  hp.aot30SetSettingCellPercent(50);
-  CHECK(hp.aot30RunTest());
+  hp.aot30SetDryRun(true);
+  CHECK(hp.aot30UnitRunState() == -1);
+  CHECK(hp.aot30StartMaster());
+  hp.aot30StopMaster();
+  advance(hp, 20);
+  CHECK(!hp.aot30MasterActive() && hp.aot30MasterState() == MS::OFF);
+  CHECK(std::string(FujiHeatPump::aot30MasterStateText(MS::REFUSED_BUS_LOW)).find("held low") != std::string::npos);
+  CHECK(hp.aot30StartMaster());
   advance(hp, 1600);
-  g_log.clear();
-  g_edges.clear();
-  advance(hp, 4500);
-  CHECK(log_has("setting at 50% cell time was NOT echoed"));
-  int half_width_pulses = 0;  // 990 us = half of 1980.8 us
-  for (size_t i = 1; i + 1 < g_edges.size(); i++) {
-    const int64_t w = g_edges[i + 1].t - g_edges[i].t;
-    if (w > 900 && w < 1100) half_width_pulses++;
-  }
-  CHECK(half_width_pulses >= 10);
-  advance(hp, 15000);
-  hp.aot30SetSettingCellPercent(100);
-  // The verdict is also logged at normal speed, so 100 % can be used as the control run.
-  CHECK(hp.aot30RunTest());
-  advance(hp, 1600);
-  g_log.clear();
-  advance(hp, 4500);
-  CHECK(log_has("setting at 100% cell time was NOT echoed"));
-  advance(hp, 15000);
-
-  // 8. Speed ladder: seven rungs in one run, one setting each, percent restored at the end.
-  reset(serial, hp);
-  hp.aot30EmulatorSetDryRun(true);
-  CHECK(hp.aot30RunSpeedLadder());
-  CHECK(!hp.aot30RunTest());
-  advance(hp, 1600);
-  advance(hp, 2000);
-  CHECK(log_has("rung 1/7: HEAT 20 at 100% cell time"));
-  advance(hp, 12000);
-  CHECK(log_has("rung 2/7: HEAT 21 at 80% cell time"));
-  CHECK(log_has("rung 4/7: HEAT 23 at 50% cell time"));
-  advance(hp, 14000);
-  CHECK(log_has("rung 7/7: HEAT 26 at 25% cell time"));
-  CHECK(log_count("DRY RUN would send setting (round 1)") == 7);
-  CHECK(log_count("DRY RUN would send setting (round 2)") == 7);
-  advance(hp, 12000);
-  CHECK(log_has("test finished"));
-  CHECK(!hp.aot30EmulatorActive());
-  CHECK(log_has("at 25% cell time was"));
-  // After the ladder the cell time is back to normal for the plain test.
-  g_log.clear();
-  CHECK(hp.aot30RunTest());
-  advance(hp, 4500);
-  CHECK(log_has("setting at 100% cell time"));
-  advance(hp, 15000);
+  for (uint8_t b : {0x80, 0xE7, 0xEC, 0xB7, 0x7F, 0x80}) serial.rx.push_back(b);  // unit reply 7F 18 13 48 80, idle
+  advance(hp, 100);
+  CHECK(hp.aot30UnitRunState() == 0);
+  for (uint8_t b : {0x80, 0xE7, 0xE8, 0xB7, 0x7F, 0x80}) serial.rx.push_back(b);  // same with the run flag 17
+  advance(hp, 100);
+  CHECK(hp.aot30UnitRunState() == 1);
+  hp.aot30StopMaster();
+  advance(hp, 10);
 
   std::printf(failures ? "%d FAILURES\n" : "ALL PASSED\n", failures);
   return failures ? 1 : 0;
