@@ -55,6 +55,9 @@ void FujiHeatPump::inspectObservedControllerByte(byte value) {
 
   switch (message.kind) {
     case fuji_passive::Kind::SETTING: {
+      if (message.direction == fuji_passive::Direction::UNIT_TO_REMOTE) {
+        unitSettingEchoCount_++;
+      }
       if (emuContinuous_.load()) {
         return;  // the byte view aliases settings; the emulator publishes the state it commanded itself
       }
@@ -259,6 +262,8 @@ namespace {
 constexpr uint32_t kEmuTestCommand = 1;
 constexpr uint32_t kEmuStartCommand = 2;
 constexpr uint32_t kEmuStopCommand = 3;
+// How long after a setting the unit's echo should have started (it comes about 190 ms after the start of the message).
+constexpr uint32_t kEmuEchoWaitMs = 450;
 // Our own transmission comes back on RX and takes up to this long to finish arriving. The unit never replies
 // sooner than 30 ms after the end of a message.
 constexpr uint32_t kEmuOwnEchoMs = 25;
@@ -290,6 +295,11 @@ bool FujiHeatPump::aot30StartEmulator() {
   emuContinuous_.store(true);
   emuCommand_.store(kEmuStartCommand);
   return true;
+}
+
+void FujiHeatPump::aot30SetSettingCellPercent(uint32_t percent) {
+  // 100 is the real remote's timing; the test button and the emulator use whatever is set here for settings only.
+  emuSettingCellPercent_.store(percent < 20 ? 20 : (percent > 100 ? 100 : percent));
 }
 
 void FujiHeatPump::aot30StopEmulator() {
@@ -410,8 +420,8 @@ void FujiHeatPump::emuDrainRx() {
   flush_chunk();
 }
 
-bool FujiHeatPump::emuTransmit(const uint8_t *cells, size_t count, const char *what) {
-  const unsigned long duration_us = static_cast<unsigned long>(count * fuji_aot30::kRemoteCellTenthsUs / 10);
+bool FujiHeatPump::emuTransmit(const uint8_t *cells, size_t count, const char *what, uint32_t cell_tenths_us) {
+  const unsigned long duration_us = static_cast<unsigned long>(count * cell_tenths_us / 10);
   if (emuDryRun_.load()) {
     ESP_LOGW(TAG, "AOT30 emulator DRY RUN would send %s (%u cells, %lu us)", what, static_cast<unsigned>(count),
              duration_us);
@@ -435,8 +445,8 @@ bool FujiHeatPump::emuTransmit(const uint8_t *cells, size_t count, const char *w
   int last_level = 1;
   const int64_t t0 = esp_timer_get_time();
   for (size_t i = 0; i < count; i++) {
-    const int64_t cell_start = t0 + static_cast<int64_t>(i * fuji_aot30::kRemoteCellTenthsUs / 10);
-    const int64_t cell_mid = cell_start + (fuji_aot30::kRemoteCellTenthsUs / 20);
+    const int64_t cell_start = t0 + static_cast<int64_t>(i * cell_tenths_us / 10);
+    const int64_t cell_mid = cell_start + (cell_tenths_us / 20);
     const int level = cells[i] ? 0 : 1;  // line level is the inverse of the bus bit
     while (esp_timer_get_time() < cell_start) {
     }
@@ -456,7 +466,7 @@ bool FujiHeatPump::emuTransmit(const uint8_t *cells, size_t count, const char *w
     }
   }
   if (mismatches < kEmuMaxMismatches) {
-    const int64_t end = t0 + static_cast<int64_t>(count * fuji_aot30::kRemoteCellTenthsUs / 10);
+    const int64_t end = t0 + static_cast<int64_t>(count * cell_tenths_us / 10);
     while (esp_timer_get_time() < end) {
     }
   }
@@ -485,6 +495,13 @@ bool FujiHeatPump::emuTransmit(const uint8_t *cells, size_t count, const char *w
 void FujiHeatPump::aot30EmulatorPump() {
   emuDrainRx();
   uint32_t now = millis();
+  if (emuEchoCheckPending_ && static_cast<int32_t>(now - emuEchoCheckAtMs_) >= 0) {
+    emuEchoCheckPending_ = false;
+    ESP_LOGW(TAG, "AOT30 timing test: setting at %u%% cell time was %s by the unit (%u echo(es))",
+             static_cast<unsigned>(emuSettingCellPercent_.load()),
+             unitSettingEchoCount_ != emuEchoBaseline_ ? "ECHOED" : "NOT echoed",
+             static_cast<unsigned>(unitSettingEchoCount_ - emuEchoBaseline_));
+  }
   const uint32_t command = emuCommand_.exchange(0);
   if (command == kEmuStopCommand && emuStage_ != EmuStage::IDLE) {
     emuFinish(true);
@@ -622,7 +639,11 @@ void FujiHeatPump::aot30EmulatorPump() {
   }
 
   now = millis();
-  if (!emuTransmit(cells, count, what)) {
+  uint32_t cell_tenths_us = fuji_aot30::kRemoteCellTenthsUs;
+  if (action.kind == fuji_aot30::Action::Kind::SETTING) {
+    cell_tenths_us = cell_tenths_us * emuSettingCellPercent_.load() / 100;  // timing experiment, 100 = normal
+  }
+  if (!emuTransmit(cells, count, what, cell_tenths_us)) {
     ESP_LOGE(TAG, "AOT30 test stopped. Reconnect the wired remote.");
     emuFinish(false);
     return;
@@ -631,6 +652,11 @@ void FujiHeatPump::aot30EmulatorPump() {
   emuIgnoreRxUntilMs_ = millis() + kEmuOwnEchoMs;
   if (action.kind != fuji_aot30::Action::Kind::POLL) {
     ESP_LOGW(TAG, "AOT30 emulator: sent %s", what);
+  }
+  if (action.kind == fuji_aot30::Action::Kind::SETTING && emuSettingCellPercent_.load() != 100) {
+    emuEchoBaseline_ = unitSettingEchoCount_;
+    emuEchoCheckAtMs_ = millis() + kEmuEchoWaitMs;
+    emuEchoCheckPending_ = true;
   }
 }
 

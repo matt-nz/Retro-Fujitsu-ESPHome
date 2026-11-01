@@ -107,6 +107,7 @@ class FujitsuClimate : public climate::Climate, public Component {
   // Experimental: the ESP takes over the wired remote's role for good (continuous polling, climate commands
   // become remote messages). The wired remote must be fully disconnected. See FujiHeatPump.h.
   void set_aot30_emulator(bool enabled);
+  void set_aot30_setting_cell_percent(float percent) { this->heat_pump.aot30SetSettingCellPercent(static_cast<uint32_t>(percent)); }
   bool aot30_emulator_active() const { return this->heat_pump.aot30ContinuousActive(); }
 
   // Diagnostics (trimmed for this rebuild -- see the .cpp file's top-of-file comment

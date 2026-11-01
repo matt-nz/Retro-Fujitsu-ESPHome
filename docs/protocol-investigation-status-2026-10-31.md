@@ -606,3 +606,14 @@ fans auto/low/medium/high (quiet maps to low), ECO; DRY is ignored. Safety:
 - Turning the switch off stops polling, and the unit shuts down by itself (as seen in `full-run.sr`).
 - The emulator's own transmissions are discarded from the receive path so they are not mistaken for a remote.
 Host tests: `tests/aot30_emulator_host_test.cpp` sections 6, 6b and 6c.
+
+## Setting speed experiment (2026-11-02, untested on hardware)
+
+Idea: a setting message is 84 cells x 1980.8 us = 166 ms, but a normal poll cycle leaves only about 39 ms idle (measured
+30-58 ms), so a setting cannot be inserted next to a live remote. Question: does the unit's receiver accept a faster
+message? New HA number **AOT30 Setting Cell Time %** (20-100, default 100) scales the cell time of *setting* messages
+only (polls stay at 100 %). Run the **AOT30 Test** button (remote disconnected) with it below 100 and look for
+`AOT30 timing test: setting at N% cell time was ECHOED / NOT echoed by the unit` in the log (the unit echoes a
+setting it accepts, about 190 ms after it starts). Suggested ladder: 90, 75, 60, 50, 40, 30. A 39 ms window would need about 23 %,
+so only a result near that makes insertion next to a live remote plausible; anything above about 50 % still needs the bridge.
+Set the number back to 100 afterwards.

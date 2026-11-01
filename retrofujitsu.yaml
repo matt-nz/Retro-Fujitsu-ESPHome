@@ -232,6 +232,20 @@ sensor:
 # the same underlying value via the climate entity's own make_call(), so it is visible
 # and settable in HA (and the web UI) in every mode, including Auto.
 number:
+  # EXPERIMENT: cell time of setting messages as a percent of the real remote's (100 = normal). Run the AOT30 Test
+  # button with it below 100 and read "AOT30 timing test: ... ECHOED / NOT echoed" in the log.
+  - platform: template
+    name: "AOT30 Setting Cell Time %"
+    id: aot30_setting_cell_percent
+    entity_category: diagnostic
+    optimistic: true
+    min_value: 20
+    max_value: 100
+    step: 5
+    initial_value: 100
+    restore_value: false
+    set_action:
+      - lambda: 'id(fujitsu_hp)->set_aot30_setting_cell_percent(x);'
   - platform: template
     name: "Set Temperature"
     id: fujitsu_set_temperature

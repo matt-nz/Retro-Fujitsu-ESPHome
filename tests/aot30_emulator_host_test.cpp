@@ -311,6 +311,25 @@ int main() {
   CHECK(log_has("wired remote messages seen"));
   CHECK(!hp.aot30EmulatorActive());
 
+  // 7. Setting cell-time experiment: shorter cells, and a report on whether the unit echoed.
+  reset(serial, hp);
+  hp.aot30EmulatorSetDryRun(false);
+  hp.aot30SetSettingCellPercent(50);
+  CHECK(hp.aot30RunTest());
+  advance(hp, 1600);
+  g_log.clear();
+  g_edges.clear();
+  advance(hp, 4500);
+  CHECK(log_has("setting at 50% cell time was NOT echoed"));
+  int half_width_pulses = 0;  // 990 us = half of 1980.8 us
+  for (size_t i = 1; i + 1 < g_edges.size(); i++) {
+    const int64_t w = g_edges[i + 1].t - g_edges[i].t;
+    if (w > 900 && w < 1100) half_width_pulses++;
+  }
+  CHECK(half_width_pulses >= 10);
+  advance(hp, 15000);
+  hp.aot30SetSettingCellPercent(100);
+
   std::printf(failures ? "%d FAILURES\n" : "ALL PASSED\n", failures);
   return failures ? 1 : 0;
 }
