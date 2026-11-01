@@ -40,7 +40,7 @@ int main(int argc, char **argv) {
       int eco, repeat;
       is >> mode >> fan >> temp >> eco >> repeat >> expected;
       Mode m = mode == "cool" ? Mode::COOL : mode == "heat" ? Mode::HEAT : mode == "fan" ? Mode::FAN : Mode::AUTO;
-      Fan f = fan == "high" ? Fan::HIGH : fan == "medium" ? Fan::MEDIUM : fan == "low" ? Fan::LOW : Fan::AUTO;
+      Fan f = fan == "high" ? Fan::FAN_HIGH : fan == "medium" ? Fan::FAN_MEDIUM : fan == "low" ? Fan::FAN_LOW : Fan::FAN_AUTO;
       uint8_t t = temp == "-" ? 0 : static_cast<uint8_t>(std::stoi(temp));
       if (!build_setting(m, f, t, eco != 0, repeat != 0, cells)) {
         std::fprintf(stderr, "build_setting rejected: %s\n", line.c_str());
@@ -69,9 +69,9 @@ int main(int argc, char **argv) {
 
   // Out-of-range values are refused.
   uint8_t c[kSettingCells];
-  if (build_setting(Mode::COOL, Fan::AUTO, 17, false, false, c)) { std::fprintf(stderr, "COOL 17 accepted\n"); failed++; }
-  if (build_setting(Mode::HEAT, Fan::AUTO, 31, false, false, c)) { std::fprintf(stderr, "HEAT 31 accepted\n"); failed++; }
-  if (build_setting(Mode::HEAT, Fan::AUTO, 15, false, false, c)) { std::fprintf(stderr, "HEAT 15 accepted\n"); failed++; }
+  if (build_setting(Mode::COOL, Fan::FAN_AUTO, 17, false, false, c)) { std::fprintf(stderr, "COOL 17 accepted\n"); failed++; }
+  if (build_setting(Mode::HEAT, Fan::FAN_AUTO, 31, false, false, c)) { std::fprintf(stderr, "HEAT 31 accepted\n"); failed++; }
+  if (build_setting(Mode::HEAT, Fan::FAN_AUTO, 15, false, false, c)) { std::fprintf(stderr, "HEAT 15 accepted\n"); failed++; }
   if (checked < 600) { std::fprintf(stderr, "only %d vectors checked\n", checked); failed++; }
 
   std::printf("%d vectors checked, %d failures\n", checked, failed);

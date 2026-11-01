@@ -109,15 +109,15 @@ int main() {
   CHECK(!log_has("polling started"));
   advance(hp, 700);
   CHECK(log_has("polling started"));
-  CHECK(hp.aot30EmulatorQueueSetting(Mode::HEAT, Fan::AUTO, 20, false));
+  CHECK(hp.aot30EmulatorQueueSetting(Mode::HEAT, Fan::FAN_AUTO, 20, false));
   advance(hp, 2500);
   CHECK(log_has("setting queued (mode 2, fan 5, 20 C, eco 0)"));
   CHECK(log_count("DRY RUN would send setting (round 1)") == 1);
   CHECK(log_count("DRY RUN would send setting (round 2)") == 1);
   CHECK(log_count("DRY RUN would send poll (pending)") == 2);
   CHECK(g_gpio_sets == 0 && g_matrix_calls == 0);
-  CHECK(!hp.aot30EmulatorQueueSetting(Mode::COOL, Fan::AUTO, 17, false));  // below the COOL minimum
-  CHECK(!hp.aot30EmulatorQueueSetting(Mode::HEAT, Fan::AUTO, 31, false));
+  CHECK(!hp.aot30EmulatorQueueSetting(Mode::COOL, Fan::FAN_AUTO, 17, false));  // below the COOL minimum
+  CHECK(!hp.aot30EmulatorQueueSetting(Mode::HEAT, Fan::FAN_AUTO, 31, false));
 
   // 2. Refuses to start when the bus was busy just before.
   reset(serial, hp);
@@ -174,7 +174,7 @@ int main() {
   CHECK(!g_edges.empty() && g_edges.back().level == 1);  // line released high
 
   // A full change goes out as setting, 0A poll, setting, 0A poll.
-  CHECK(hp.aot30EmulatorQueueSetting(Mode::HEAT, Fan::AUTO, 20, false));
+  CHECK(hp.aot30EmulatorQueueSetting(Mode::HEAT, Fan::FAN_AUTO, 20, false));
   g_log.clear();
   advance(hp, 2500);
   CHECK(log_count("sent setting (round 1)") == 1 && log_count("sent setting (round 2)") == 1);

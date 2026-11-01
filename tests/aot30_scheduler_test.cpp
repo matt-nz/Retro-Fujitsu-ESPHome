@@ -49,8 +49,8 @@ int main() {
   }
 
   // Turn on: setting in the next poll slot, then the captured script.
-  CHECK(s.queue_setting(Mode::HEAT, Fan::AUTO, 20, false));
-  CHECK(!s.queue_setting(Mode::HEAT, Fan::AUTO, 21, false));  // one change at a time
+  CHECK(s.queue_setting(Mode::HEAT, Fan::FAN_AUTO, 20, false));
+  CHECK(!s.queue_setting(Mode::HEAT, Fan::FAN_AUTO, 21, false));  // one change at a time
   CHECK(!s.queue_off());
   auto ev = run(s, 2000, 6000);
   CHECK(ev.size() >= 9);
@@ -67,7 +67,7 @@ int main() {
   // A late transmission (bus busy) shifts the rest of the script, it does not skip steps.
   Scheduler late;
   late.start(0);
-  CHECK(late.queue_setting(Mode::COOL, Fan::LOW, 24, true));
+  CHECK(late.queue_setting(Mode::COOL, Fan::FAN_LOW, 24, true));
   Action x;
   CHECK(late.due(0, &x) && x.kind == Action::Kind::SETTING);
   late.sent(50);  // went out 50 ms late
@@ -77,7 +77,7 @@ int main() {
   // Turn off: off message, a poll still flagged running, then idle polls.
   Scheduler off;
   off.start(0);
-  CHECK(off.queue_setting(Mode::AUTO, Fan::AUTO, 22, false));
+  CHECK(off.queue_setting(Mode::AUTO, Fan::FAN_AUTO, 22, false));
   run(off, 0, 3000);
   CHECK(off.running());
   CHECK(off.queue_off());
@@ -92,9 +92,9 @@ int main() {
   // Invalid setpoints are refused; FAN ignores the setpoint.
   Scheduler bad;
   bad.start(0);
-  CHECK(!bad.queue_setting(Mode::COOL, Fan::AUTO, 17, false));
-  CHECK(!bad.queue_setting(Mode::HEAT, Fan::AUTO, 31, false));
-  CHECK(bad.queue_setting(Mode::FAN, Fan::AUTO, 0, false));
+  CHECK(!bad.queue_setting(Mode::COOL, Fan::FAN_AUTO, 17, false));
+  CHECK(!bad.queue_setting(Mode::HEAT, Fan::FAN_AUTO, 31, false));
+  CHECK(bad.queue_setting(Mode::FAN, Fan::FAN_AUTO, 0, false));
 
   // millis() wrap-around.
   Scheduler wrap;

@@ -21,7 +21,7 @@ struct Action {
   bool running = false;  // POLL: run flag (poll byte 2 = 17 when set, 13 otherwise)
   bool pending = false;  // POLL: pending flag (poll byte 3 = 0A when set, 08 otherwise)
   Mode mode = Mode::HEAT;
-  Fan fan = Fan::AUTO;
+  Fan fan = Fan::FAN_AUTO;
   uint8_t temp = 20;
   bool eco = false;
   bool repeat = false;  // SETTING: second round

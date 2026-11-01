@@ -19,7 +19,8 @@ constexpr size_t kOffCells = 33;
 constexpr uint32_t kRemoteCellTenthsUs = 19808;  // 1980.8 us
 
 enum class Mode : uint8_t { COOL = 1, HEAT = 2, FAN = 4, AUTO = 5 };
-enum class Fan : uint8_t { HIGH = 1, MEDIUM = 2, LOW = 4, AUTO = 5 };
+// Enumerator names carry a FAN_ prefix because Arduino.h defines HIGH and LOW as macros.
+enum class Fan : uint8_t { FAN_HIGH = 1, FAN_MEDIUM = 2, FAN_LOW = 4, FAN_AUTO = 5 };
 
 // Remote messages with every variable cell cleared; all other cells are constant in the captures.
 constexpr char kSettingBase[] = "111111110101010001001011100000001000100000000001010000001011111101000000101111110100";
@@ -62,10 +63,10 @@ inline void load_base_(uint8_t *cells, const char *base, size_t n) {
 // of a change (`22 13 ..`). Returns false and leaves `cells` untouched if a value is out of range.
 inline bool build_setting(Mode mode, Fan fan, uint8_t temp, bool eco, bool repeat, uint8_t *cells) {
   switch (fan) {
-    case Fan::HIGH:
-    case Fan::MEDIUM:
-    case Fan::LOW:
-    case Fan::AUTO: break;
+    case Fan::FAN_HIGH:
+    case Fan::FAN_MEDIUM:
+    case Fan::FAN_LOW:
+    case Fan::FAN_AUTO: break;
     default: return false;
   }
   if (mode == Mode::FAN) {

@@ -736,7 +736,7 @@ void FujitsuClimate::set_aot30_emulator_dry_run(bool dry_run) {
 
 void FujitsuClimate::request_aot30_emulator_heat20() {
   if (!this->aot30_test_tx_enabled_.load() ||
-      !this->heat_pump.aot30EmulatorQueueSetting(fuji_aot30::Mode::HEAT, fuji_aot30::Fan::AUTO, 20, false)) {
+      !this->heat_pump.aot30EmulatorQueueSetting(fuji_aot30::Mode::HEAT, fuji_aot30::Fan::FAN_AUTO, 20, false)) {
     ESP_LOGW(TAG, "AOT30 emulator HEAT 20 rejected: arm the TX switch, enable the emulator and wait for it to start");
   }
 }
