@@ -623,3 +623,9 @@ have to be restarted between speeds: it polls, then sends HEAT 20, 21, 22 ... 26
 per rung, about 40 s in all), with a different setpoint each rung so an accepted setting is visible. Read the
 `speed ladder rung N/7` and `timing test ... ECHOED / NOT echoed` lines. A run ends the same way as the plain test: polling stops and the
 unit shuts itself off, so no breaker is needed between runs. The cell time is restored to 100 % afterwards.
+
+## Speed ladder result (2026-11-02)
+
+Only 100 % cell time was accepted; 80, 60, 50, 40, 30 and 25 % were all rejected, with no harm to the unit (it kept answering polls). The
+unit's receiver tolerates very little timing change, so speeding up a setting to fit the 30-58 ms gap next to a live remote is ruled out. Keeping
+the physical remote needs the bridge design; otherwise use the continuous emulator. See `captures/matt-captures/settings-captures-notes.md`.

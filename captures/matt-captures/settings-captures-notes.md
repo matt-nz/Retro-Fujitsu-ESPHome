@@ -246,3 +246,21 @@ setting: the exchange is longer (setting 164 ms, then the unit's echo), and the 
 finished. Gaps during a change: 397 (poll -> round 1), 405 (-> `0A` poll), 398 (-> round 2), 407 (-> `0A` poll), 306 (-> normal
 poll). The scheduler now waits an extra 150 ms before round 1 to match (`kSettingExtraDelayMs`); the earlier firmware used 247 ms and
 the unit accepted that too.
+
+## Speed ladder result (esphome-web-e4b13c-logs-8.txt, 2026-11-02)
+
+Remote disconnected, one press of the speed ladder (HEAT 20..26 at 100, 80, 60, 50, 40, 30, 25 % of the remote's 1980.8 us
+cell time, two rounds per rung):
+
+| Rung | Cell time | Result |
+|---|---|---|
+| 1 | 100 % | ECHOED (both rounds) |
+| 2-7 | 80, 60, 50, 40, 30, 25 % | NOT echoed (both rounds, every rung) |
+
+The unit also did not act on the rejected settings: on the following `0A` (pending) poll it answered with the old
+setting (`7F 12 13 96 02 5F 7E`, HEAT 20), not the new one. It kept answering polls normally, so a rejected message
+does no harm. Even 80 % (a 20 % speed-up) is refused, so the unit's receiver has little timing tolerance (the unit and remote
+clocks differ by about 4 %). A setting would need to be about 4x faster to fit the 30-58 ms free gap, so **inserting a setting
+next to a live remote by speeding it up is not possible**. Remaining ways to keep the physical remote: the bridge (second LIN
+transceiver), or give it up and use the emulator.
+(Rungs between 80 and 100 % were not tried; they would save under 35 ms, which is not enough to matter.)
