@@ -549,3 +549,38 @@ the missing pull-up. Suggested fix: a 2.2 kΩ resistor plus small diode from the
 (1 kΩ if the line idles below about 8 V), fitted only while the remote is disconnected. **Retracted:** with all three of the
 remote's wires removed the LIN line idles at 12 V on its own; the low level came from the unpowered remote loading the line.
 No pull-up is needed. See the resolution at the end of the settings-captures notes.
+
+## First successful emulator run (2 Nov 2026, 10:32; log `esphome-web-e4b13c-logs-6.txt`)
+
+With the wired remote disconnected completely (all three wires), the button worked: the ESP32 started the heat pump,
+and the unit stayed alive while the ESP32 polled it. When the test finished and polling stopped, the unit shut down.
+
+What the log shows, in order:
+- 10:32:26.1 button pressed; 10:32:27.6 "bus silent, polling started" after the 1.5 s silence check.
+- The very first poll went out with the run flag off (`7F 28 13 08`); the unit replied `7F 18 17 48 80` at once, i.e. its
+  reply already said running. The following polls followed that flag (`7F 28 17 08`), as designed, and no reply ever
+  changed. So sending `13` to a unit that reports running did no visible harm.
+- 10:32:30.03 and .835: the setting went out as round 1 and round 2 (`7F 22 03 96 02 5F 7E`, then `7F 22 13 96 …`). After each
+  the unit echoed `7F 12 03|13 96 02 5F 7E` twice with our `7F 28 17 0A` poll between, exactly the exchange the real remote
+  produces. No read-back mismatch was logged for any message.
+- Polling continued at a median of 247.0 ms (range 236–310 ms in the log's timestamps), 52 polls and 50 replies in about
+  14 s, until 10:32:41.5 when the test finished and the bus was released. "Bus Alive" went off 4 s later.
+- Not working yet: the log shows `Unmapped controller state byte: 0x96` after every echo, so the HA climate entity did not
+  update. The firmware's byte table does not contain this value (HEAT 20, auto fan); this is the known limit of the byte
+  decode. The emulator knows what it sent, so the fix is to set the observed state from the command itself (and to decode
+  cells properly for everything else), not to grow the table.
+
+Conclusions: the cell encoder, the timing script, the bit-bang transmitter and the read-back check all work against the
+real unit, and the unit accepts commands from the ESP32 when it plays the remote's role. It also needs to be polled
+continuously: it stopped when polling stopped.
+
+Open choices for permanent use (HA control):
+1. **ESP32 replaces the wired remote.** A mode that polls continuously and turns the HA climate entity's changes into
+   settings (mode, fan, setpoint, ECO) and the off message; state comes from the commands and the unit's echoes. Simplest,
+   but the physical remote stays disconnected. The unit's room-temperature sensing would need to be settled (the remote
+   showed no room temperature on the bus; the thermostat may use the unit's own return-air sensor).
+2. **ESP32 between the unit and the remote** (a second LIN transceiver): it polls the unit itself, relays the real remote's
+   settings, and can inject its own. Keeps the remote working; needs extra hardware and more protocol (what the remote
+   expects when it is polled by the ESP32 instead of the unit), so it is a larger step.
+3. Unanswered: what happens to the unit if the ESP32 stops polling for a long time (it shut down here), and whether
+   reconnecting the remote resumes normal operation (it should, as the remote rejoins after a power cycle).
