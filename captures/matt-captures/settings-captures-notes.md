@@ -172,3 +172,25 @@ module connected but ~12 V without it means the module loads the bus; about 0 V 
 or nothing pulls it up. If it is a missing pull-up, add a master-style pull-up on the ESP32 side (1 kΩ from the LIN
 wire to the 12 V supply through a diode, as the LIN spec shows) and repeat the test. The firmware now refuses to start
 the test, with a message saying this, when the bus is low with no traffic after the 1.5 s silence check.
+
+### LIN wire voltages (2 Nov 2026, multimeter) and what they imply
+
+| Condition | LIN wire | Notes |
+|---|---|---|
+| Wired remote connected | 8.2 – 9.3 V | recessive (idle) level with traffic, the meter averages the pulses |
+| Remote disconnected, ESP32 module connected | 2.6 V | transceiver supply (VIN) at 12 V |
+
+- 2.6 V is below the LIN dominant threshold (about 40 % of 12 V = 4.8 V), so the transceiver reads the line as
+  dominant and its RX output stays low, which is what `test.sr` shows. The line is not "silent": it sits at a
+  mid-rail level set by a resistor divider.
+- With the remote connected the idle level is about 9 V, well above the recessive threshold (about 60 % = 7.2 V).
+  So the remote contributes the pull-up to the supply, as a LIN master does; without it, the unit's side and the
+  module's own 30 kΩ pull-up leave the line at 2.6 V. A rough estimate from the divider: if only the module's 30 kΩ
+  pulls up, the unit side pulls down with about 8 kΩ; a pull-up of about 2 kΩ (through a diode) then gives roughly 9 V,
+  which is close to what the remote gives. These are estimates from two voltages, not measurements of the resistances.
+- The emulator therefore needs to supply that pull-up. Suggested try, before running the button again: a 2.2 kΩ
+  resistor in series with a small diode (1N4148 or similar, anode to the 12 V supply, cathode to the resistor) from the
+  12 V supply to the LIN wire at the module, fitted with a jumper or connector so it is in place only when the wired
+  remote is disconnected. Check with the meter that the LIN wire then idles at about 8–10 V; if it is lower, use
+  1 kΩ (the LIN master value). Fit it only while the remote is disconnected, since the remote has its own pull-up.
+  After that the firmware's check should see the line high and the test button should start polling.
