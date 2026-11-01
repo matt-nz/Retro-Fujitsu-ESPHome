@@ -347,3 +347,31 @@ any other remote settings are unmodelled.
   cell-level control of the line. Do not transmit from this capture's evidence alone.
 - Unexplained: a unit reply that stalled for 1.01 s and ended with a lone `04`; the extra stop-cell low
   pulse; the `03`/`13` and `08`/`0A` variants.
+
+## Next logic-analyser session checklist (1 Nov 2026)
+
+Goal: find out whether any byte or cell besides the setting value varies with the setting, and
+whether the unit sends anything without the remote. Capture at 1 MHz or faster on D1 with the same
+wiring as `start-up.sr`, one file per step, and decode each with
+`python3 tools/decode_logic_capture.py <file>.sr --messages`. Write the time of every press on paper
+(the analyser file has no labels), and keep presses at least 5 s apart.
+
+1. **Reference run.** Power up the unit, press ON in HEAT, step the setpoint one degree at a time
+   18→23 and back, with fan AUTO. Compare every byte and cell of each setting message, not only the
+   value byte. Expected if there is no checksum: only the value byte changes.
+2. **Fan and mode sweep.** At a fixed setpoint, change fan LOW/MEDIUM/HIGH/AUTO, then each mode (COOL, DRY,
+   FAN, AUTO, HEAT). Note whether the extra cells (ninth cell, stop-cell low pulse) ever change.
+3. **`03` vs `13`.** Make one single press, then a press-and-hold of the same button. Record which one
+   produces the second round with `22 13`.
+4. **Remote disconnected.** Power up the unit with the wired remote unplugged (not the ESP32). Record
+   whether any polls appear, and whether the unit sends `7F 12 01` or anything else. This shows who
+   owns the poll cycle.
+5. **Idle soak.** Leave the unit running 10 minutes with no presses to see whether `08` becomes `0A`,
+   a reply byte other than `48 80` appears, or the 1 s reply stall repeats.
+6. **Warm the remote** (hand or warm air for a minute) while the unit runs, to check that no byte
+   follows room temperature.
+
+Decision after the session: if only the value byte and fixed cell patterns vary, the next step is a
+bench transmitter on a spare line checked against the remote's capture at microsecond level, before
+any connection to the heat pump. The existing one-shot UART transmit experiment stays unused until then
+because a 500 baud 8E1 UART cannot reproduce the remote's waveform.
