@@ -139,3 +139,10 @@ setting message. Any transmit experiment would need cell-level control of the li
 or RMT timing at 1980.8 µs per cell) and should copy the remote's exact cell pattern. The ninth cell could
 be forced with the hardware parity setting by choosing even or odd parity per byte, but the low stop cell
 and the extra cells cannot. Nothing here shows the unit accepts a message from a second sender.
+
+## Update (1 Nov 2026, later): the odd cells are packet fields
+
+The ninth-cell sequence and the 22 low stop cells above are explained by the later captures: after the
+second byte, a setting message is a bit-serial packet with fixed field positions, and cutting it at falling
+edges mis-frames it. See [`settings-captures-notes.md`](settings-captures-notes.md). The bit clocks, 11-cell
+frames for the first two bytes, message timing and the unexplained stalled reply remain as above.

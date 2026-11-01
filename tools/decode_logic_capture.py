@@ -2,7 +2,7 @@
 """Decode a sigrok/PulseView logic capture (.sr) of the Fujitsu wired-remote bus.
 
 Usage:
-    python3 tools/decode_logic_capture.py captures/matt-captures/start-up.sr [--channel 1] [--messages] [--check]
+    python3 tools/decode_logic_capture.py captures/matt-captures/start-up.sr [--channel 1] [--messages] [--settings] [--check]
 
 Pure Python (standard library only). The line idles high and each byte starts with a falling
 edge. For every byte the decoder:
@@ -164,6 +164,57 @@ def split_messages(frames):
     return messages
 
 
+# --- Setting packets decoded by cell position -------------------------------------------------
+# A setting message (`7F 22|12 0x|1x vv 02 5F 7E`, 84 cells from its first falling edge) is not a
+# series of UART bytes after its first two bytes: the fields sit at fixed cell positions. Cell
+# values below are bus bits (the line level inverted), least significant bit first.
+PACKET_CELLS = 84
+FIELD_CELLS = {
+    "round": (27, 1),   # 0 first transmission (`03`), 1 repeat (`13`)
+    "mode": (33, 3),    # 1 COOL, 2 HEAT, 4 FAN, 5 AUTO (DRY not captured yet)
+    "fan": (37, 3),     # 1 high, 2 medium, 4 low, 5 auto
+    "temp": (40, 5),    # setpoint in degrees C, 5 bits (16..31)
+    "eco": (54, 1),
+}
+MODE_NAMES = {1: "COOL", 2: "HEAT", 4: "FAN", 5: "AUTO"}
+FAN_NAMES = {1: "high", 2: "medium", 4: "low", 5: "auto"}
+
+
+def packet_cells(starts, levels, frames, clocks):
+    """Yield (message, line cells) for every complete 7-byte setting message."""
+    import bisect
+    for m in split_messages(frames):
+        v = [f["bus"] for f in m]
+        if len(v) == 7 and v[0] == 0x7F and v[1] in (0x22, 0x12):
+            clock = clocks[m[0]["sender"]]
+            t0 = m[0]["t"]
+            cells = [levels[bisect.bisect_right(starts, t0 + (c + 0.5) * clock) - 1] for c in range(PACKET_CELLS)]
+            yield m, cells
+
+
+def decode_setting_cells(cells):
+    bus = [1 - c for c in cells]
+    out = {}
+    for name, (first, width) in FIELD_CELLS.items():
+        out[name] = sum(bus[first + i] << i for i in range(width))
+    out["setting"] = (MODE_NAMES.get(out["mode"], "mode%d" % out["mode"]),
+                      out["temp"] if out["mode"] != 4 else None,
+                      FAN_NAMES.get(out["fan"], "fan%d" % out["fan"]), bool(out["eco"]))
+    return out
+
+
+def describe_settings(starts, levels, frames, clocks):
+    lines = []
+    for m, cells in packet_cells(starts, levels, frames, clocks):
+        r = decode_setting_cells(cells)
+        mode, temp, fan, eco = r["setting"]
+        lines.append("%9.3f s  %-6s %s  -> %s %s fan %s eco %s%s" % (
+            m[0]["t"] / 1e6, m[0]["sender"], " ".join("%02X" % f["bus"] for f in m), mode,
+            "-" if temp is None else "%d C" % temp, fan, "on" if eco else "off",
+            "  (repeat)" if r["round"] else ""))
+    return "\n".join(lines)
+
+
 def report(frames, clocks, total_us):
     out = []
     out.append("capture length %.3f s, %d frames" % (total_us / 1e6, len(frames)))
@@ -241,6 +292,7 @@ def main():
     ap.add_argument("capture")
     ap.add_argument("--channel", type=int, default=1, help="bit index of the RX channel (PulseView D1 = 1)")
     ap.add_argument("--messages", action="store_true")
+    ap.add_argument("--settings", action="store_true", help="decode setting messages by cell position")
     ap.add_argument("--check", action="store_true")
     args = ap.parse_args()
 
@@ -255,6 +307,9 @@ def main():
     if args.messages:
         print()
         print(describe_messages(msgs, clocks))
+    if args.settings:
+        print()
+        print(describe_settings(starts, levels, frames, clocks))
     if args.check:
         problems = check(frames, clocks, msgs, stops)
         if not same:

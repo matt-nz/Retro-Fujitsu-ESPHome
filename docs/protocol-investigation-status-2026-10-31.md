@@ -388,3 +388,23 @@ Decision after the session: if only the value byte and fixed cell patterns vary,
 bench transmitter on a spare line checked against the remote's capture at microsecond level, before
 any connection to the heat pump. The existing one-shot UART transmit experiment stays unused until then
 because a 500 baud 8E1 UART cannot reproduce the remote's waveform.
+
+## Cell-position decode of setting packets and checklist progress (1 Nov 2026)
+
+Four more logic-analyser captures (`heat.sr`, `fan-mode.sr`, `eco.sr`, `idle.sr`) show that the setting message
+is a bit-serial packet with fixed field positions: round flag, mode, fan, setpoint and ECO each occupy fixed
+cells, and no other cell varies in any of 149 captured packets (no checksum is visible). Details, the field
+table, timing and open items are in
+[`../captures/matt-captures/settings-captures-notes.md`](../captures/matt-captures/settings-captures-notes.md);
+`python3 tests/logic_capture_test.py` checks it.
+
+This supersedes the "setting-value bit-field model" above (its shift-by-mode was an artefact of UART framing)
+and explains the ninth-cell and stop-cell observations. The byte-level parser in the ESP firmware is
+unambiguous only for HEAT 18–23 °C; setpoints above 23 °C and below 18 °C in HEAT need capturing, because
+the missing setpoint bits fall in cells that the UART reports only as parity/framing information.
+
+Checklist status: steps 1 (setpoint sweep, HEAT 18–23 only), 2 (fan and mode sweep, plus ECO) and 5 (idle
+soak, unit off only) are captured; step 3 (single versus held press) is dropped because the remote has no
+long press, and the `13` repeat is just the second round of every change; step 4 is done; step 6 is low
+priority. Still to capture, in priority order: HEAT 16–17 and 24–30, the full COOL/AUTO/FAN setpoint
+ranges, DRY mode, and a running-state idle soak.
