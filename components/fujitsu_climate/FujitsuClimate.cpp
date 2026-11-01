@@ -717,6 +717,12 @@ void FujitsuClimate::request_aot30_test() {
   }
 }
 
+void FujitsuClimate::request_aot30_speed_ladder() {
+  if (!this->heat_pump.aot30RunSpeedLadder()) {
+    ESP_LOGW(TAG, "AOT30 emulator or test already running; wait for it to finish");
+  }
+}
+
 void FujitsuClimate::set_aot30_emulator(bool enabled) {
   if (enabled) {
     if (!this->heat_pump.aot30StartEmulator()) {

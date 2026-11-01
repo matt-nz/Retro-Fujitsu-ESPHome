@@ -104,6 +104,7 @@ class FujitsuClimate : public climate::Climate, public Component {
   bool get_control_enabled() const { return control_enabled_; }
   // Experimental: runs the wired-remote emulation test (HEAT 20). The wired remote must be disconnected.
   void request_aot30_test();
+  void request_aot30_speed_ladder();
   // Experimental: the ESP takes over the wired remote's role for good (continuous polling, climate commands
   // become remote messages). The wired remote must be fully disconnected. See FujiHeatPump.h.
   void set_aot30_emulator(bool enabled);

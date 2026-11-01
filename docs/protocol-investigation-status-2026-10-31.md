@@ -617,3 +617,9 @@ only (polls stay at 100 %). Run the **AOT30 Test** button (remote disconnected) 
 setting it accepts, about 190 ms after it starts). Suggested ladder: 90, 75, 60, 50, 40, 30. A 39 ms window would need about 23 %,
 so only a result near that makes insertion next to a live remote plausible; anything above about 50 % still needs the bridge.
 Set the number back to 100 afterwards.
+
+**Speed ladder (one run).** The **AOT30 Speed Ladder** button does the experiment above in a single run, so the unit does not
+have to be restarted between speeds: it polls, then sends HEAT 20, 21, 22 ... 26 at 100, 80, 60, 50, 40, 30 and 25 % cell time (about 3.5 s
+per rung, about 40 s in all), with a different setpoint each rung so an accepted setting is visible. Read the
+`speed ladder rung N/7` and `timing test ... ECHOED / NOT echoed` lines. A run ends the same way as the plain test: polling stops and the
+unit shuts itself off, so no breaker is needed between runs. The cell time is restored to 100 % afterwards.

@@ -337,6 +337,32 @@ int main() {
   CHECK(log_has("setting at 100% cell time was NOT echoed"));
   advance(hp, 15000);
 
+  // 8. Speed ladder: seven rungs in one run, one setting each, percent restored at the end.
+  reset(serial, hp);
+  hp.aot30EmulatorSetDryRun(true);
+  CHECK(hp.aot30RunSpeedLadder());
+  CHECK(!hp.aot30RunTest());
+  advance(hp, 1600);
+  advance(hp, 2000);
+  CHECK(log_has("rung 1/7: HEAT 20 at 100% cell time"));
+  advance(hp, 12000);
+  CHECK(log_has("rung 2/7: HEAT 21 at 80% cell time"));
+  CHECK(log_has("rung 4/7: HEAT 23 at 50% cell time"));
+  advance(hp, 14000);
+  CHECK(log_has("rung 7/7: HEAT 26 at 25% cell time"));
+  CHECK(log_count("DRY RUN would send setting (round 1)") == 7);
+  CHECK(log_count("DRY RUN would send setting (round 2)") == 7);
+  advance(hp, 12000);
+  CHECK(log_has("test finished"));
+  CHECK(!hp.aot30EmulatorActive());
+  CHECK(log_has("at 25% cell time was"));
+  // After the ladder the cell time is back to normal for the plain test.
+  g_log.clear();
+  CHECK(hp.aot30RunTest());
+  advance(hp, 4500);
+  CHECK(log_has("setting at 100% cell time"));
+  advance(hp, 15000);
+
   std::printf(failures ? "%d FAILURES\n" : "ALL PASSED\n", failures);
   return failures ? 1 : 0;
 }

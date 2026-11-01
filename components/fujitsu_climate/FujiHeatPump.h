@@ -248,6 +248,9 @@ class FujiHeatPump {
   bool emuTransmit(const uint8_t *cells, size_t count, const char *what, uint32_t cell_tenths_us);
   // Timing experiment: how much faster than the real remote the unit still accepts a setting message.
   std::atomic<uint32_t> emuSettingCellPercent_{100};
+  bool emuLadder_ = false;
+  size_t emuLadderIdx_ = 0;
+  bool emuQueueTestSetting();
   uint32_t unitSettingEchoCount_ = 0;  // setting messages sent by the unit (its echoes)
   uint32_t emuEchoBaseline_ = 0;
   uint32_t emuEchoCheckAtMs_ = 0;
@@ -272,6 +275,8 @@ class FujiHeatPump {
 
   // One-shot remote-emulation test (HEAT 20, auto fan, ECO off). Main thread. False if one is running.
   bool aot30RunTest();
+  // Same, but steps the setting cell time down (100, 80, 60, 50, 40, 30, 25 %) in one run, one setting per rung.
+  bool aot30RunSpeedLadder();
   // Continuous remote emulation, for Home Assistant control. Main thread. The wired remote must stay disconnected
   // (all three wires). Start is refused by the bus task if a remote is heard; the emulator stops itself if one
   // appears later or the bus misbehaves. aot30EmulatorActive() tells whether it is (still) running.

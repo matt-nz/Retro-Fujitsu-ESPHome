@@ -532,6 +532,15 @@ button:
     on_press:
       - lambda: 'id(fujitsu_hp)->request_aot30_test();'
 
+  # EXPERIMENT (remote disconnected): one run that sends HEAT 20, 21, 22 ... at 100, 80, 60, 50, 40, 30, 25 % cell time.
+  # Read the "speed ladder rung" and "timing test ... ECHOED / NOT echoed" lines in the log.
+  - platform: template
+    name: "AOT30 Speed Ladder (remote disconnected)"
+    icon: "mdi:speedometer"
+    entity_category: diagnostic
+    on_press:
+      - lambda: 'id(fujitsu_hp)->request_aot30_speed_ladder();'
+
 # Diagnostic interval
 interval:
   - interval: 1s

@@ -262,6 +262,11 @@ namespace {
 constexpr uint32_t kEmuTestCommand = 1;
 constexpr uint32_t kEmuStartCommand = 2;
 constexpr uint32_t kEmuStopCommand = 3;
+constexpr uint32_t kEmuLadderCommand = 4;
+// Speed ladder: setting cell time in percent of the real remote's, one setting per rung (HEAT, setpoint 20 + rung).
+constexpr uint32_t kEmuLadderPercent[] = {100, 80, 60, 50, 40, 30, 25};
+constexpr size_t kEmuLadderRungs = sizeof(kEmuLadderPercent) / sizeof(kEmuLadderPercent[0]);
+constexpr uint32_t kEmuLadderGapMs = 2000;
 // How long after a setting the unit's echo should have started (it comes about 190 ms after the start of the message).
 constexpr uint32_t kEmuEchoWaitMs = 450;
 // Our own transmission comes back on RX and takes up to this long to finish arriving. The unit never replies
@@ -285,6 +290,14 @@ bool FujiHeatPump::aot30RunTest() {
     return false;  // a test is already running
   }
   emuCommand_.store(kEmuTestCommand);
+  return true;
+}
+
+bool FujiHeatPump::aot30RunSpeedLadder() {
+  if (emuEnabled_.exchange(true)) {
+    return false;
+  }
+  emuCommand_.store(kEmuLadderCommand);
   return true;
 }
 
@@ -369,7 +382,31 @@ void FujiHeatPump::emuApplyTarget() {
   emuPublishObserved(target);
 }
 
+// The one-shot test sends HEAT 20; the speed ladder sends HEAT 20, 21, 22, ... each at the next cell time.
+bool FujiHeatPump::emuQueueTestSetting() {
+  const uint8_t temp = static_cast<uint8_t>(20 + (emuLadder_ ? emuLadderIdx_ : 0));
+  if (emuLadder_) {
+    aot30SetSettingCellPercent(kEmuLadderPercent[emuLadderIdx_]);
+  }
+  if (!emuScheduler_.queue_setting(fuji_aot30::Mode::HEAT, fuji_aot30::Fan::FAN_AUTO, temp, false)) {
+    ESP_LOGE(TAG, "AOT30 test: could not queue HEAT %u", static_cast<unsigned>(temp));
+    return false;
+  }
+  if (emuLadder_) {
+    ESP_LOGW(TAG, "AOT30 speed ladder rung %u/%u: HEAT %u at %u%% cell time", static_cast<unsigned>(emuLadderIdx_ + 1),
+             static_cast<unsigned>(kEmuLadderRungs), static_cast<unsigned>(temp),
+             static_cast<unsigned>(emuSettingCellPercent_.load()));
+  } else {
+    ESP_LOGW(TAG, "AOT30 test: sending HEAT 20, fan auto, ECO off");
+  }
+  return true;
+}
+
 void FujiHeatPump::emuFinish(bool ok) {
+  if (emuLadder_) {
+    emuLadder_ = false;
+    emuSettingCellPercent_.store(100);
+  }
   const bool continuous = emuContinuous_.load();
   emuScheduler_.stop();
   emuStage_ = EmuStage::IDLE;
@@ -507,8 +544,10 @@ void FujiHeatPump::aot30EmulatorPump() {
     emuFinish(true);
     return;
   }
-  if (command == kEmuTestCommand || command == kEmuStartCommand) {
-    if (command == kEmuTestCommand) {
+  if (command == kEmuTestCommand || command == kEmuStartCommand || command == kEmuLadderCommand) {
+    emuLadder_ = command == kEmuLadderCommand;
+    emuLadderIdx_ = 0;
+    if (command != kEmuStartCommand) {
       emuContinuous_.store(false);
     }
     emuApplied_ = fuji_aot30::Target();
@@ -568,13 +607,11 @@ void FujiHeatPump::aot30EmulatorPump() {
           ESP_LOGW(TAG, "AOT30 emulator: running, polling continuously. Waiting for a command.");
           break;
         }
-        if (!emuScheduler_.queue_setting(fuji_aot30::Mode::HEAT, fuji_aot30::Fan::FAN_AUTO, 20, false)) {
-          ESP_LOGE(TAG, "AOT30 test: could not queue HEAT 20");
+        if (!emuQueueTestSetting()) {
           emuFinish(false);
           return;
         }
         emuStage_ = EmuStage::SCRIPT;
-        ESP_LOGW(TAG, "AOT30 test: sending HEAT 20, fan auto, ECO off");
       }
       break;
     case EmuStage::SCRIPT:
@@ -584,6 +621,17 @@ void FujiHeatPump::aot30EmulatorPump() {
       }
       break;
     case EmuStage::TAIL:
+      if (emuLadder_ && emuLadderIdx_ + 1 < kEmuLadderRungs) {
+        if (now - emuStageStartMs_ >= kEmuLadderGapMs) {
+          emuLadderIdx_++;
+          if (!emuQueueTestSetting()) {
+            emuFinish(false);
+            return;
+          }
+          emuStage_ = EmuStage::SCRIPT;
+        }
+        break;
+      }
       if (now - emuStageStartMs_ >= kEmuTestTailMs) {
         emuFinish(true);
         return;
