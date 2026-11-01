@@ -30,6 +30,9 @@ struct Action {
 class Scheduler {
  public:
   static constexpr uint32_t kPollPeriodMs = 247;  // median 246.6 ms, range 238-249 ms
+  // The real remote's first setting round follows its last normal poll by 397 ms in 19 of 21 captured changes (247 ms in
+  // the other two), i.e. 150 ms later than the next poll would have been.
+  static constexpr uint32_t kSettingExtraDelayMs = 150;
 
   void start(uint32_t now_ms) {
     active_ = true;
@@ -89,6 +92,7 @@ class Scheduler {
     script_len_ = 5;
     script_pos_ = 0;
     t0_set_ = false;
+    next_poll_ms_ += kSettingExtraDelayMs;
     after_running_ = true;
     awaiting_confirm_ = true;
     return true;

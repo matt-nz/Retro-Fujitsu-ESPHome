@@ -48,14 +48,14 @@ int main() {
     if (i) CHECK(idle[i].t - idle[i - 1].t == Scheduler::kPollPeriodMs);
   }
 
-  // Turn on: setting in the next poll slot, then the captured script.
+  // Turn on: setting one poll slot plus 150 ms after the last poll (397 ms, as the real remote does), then the captured script.
   CHECK(s.queue_setting(Mode::HEAT, Fan::FAN_AUTO, 20, false));
   CHECK(!s.queue_setting(Mode::HEAT, Fan::FAN_AUTO, 21, false));  // one change at a time
   CHECK(!s.queue_off());
   auto ev = run(s, 2000, 6000);
   CHECK(ev.size() >= 9);
   uint32_t t0 = ev[0].t;
-  CHECK(t0 == 2235);  // next poll slot after 1988 + 247
+  CHECK(t0 == 2385);  // 1988 + 247 + 150
   CHECK(ev[0].a.kind == Action::Kind::SETTING && !ev[0].a.repeat && ev[0].a.temp == 20 && ev[0].a.mode == Mode::HEAT);
   CHECK(ev[1].t == t0 + 405 && ev[1].a.kind == Action::Kind::POLL && ev[1].a.running && ev[1].a.pending);
   CHECK(ev[2].t == t0 + 803 && ev[2].a.kind == Action::Kind::SETTING && ev[2].a.repeat);
@@ -69,10 +69,11 @@ int main() {
   late.start(0);
   CHECK(late.queue_setting(Mode::COOL, Fan::FAN_LOW, 24, true));
   Action x;
-  CHECK(late.due(0, &x) && x.kind == Action::Kind::SETTING);
-  late.sent(50);  // went out 50 ms late
-  CHECK(!late.due(50 + 404, &x));
-  CHECK(late.due(50 + 405, &x) && x.kind == Action::Kind::POLL);
+  CHECK(!late.due(Scheduler::kSettingExtraDelayMs - 1, &x));
+  CHECK(late.due(Scheduler::kSettingExtraDelayMs, &x) && x.kind == Action::Kind::SETTING);
+  late.sent(200);  // went out 50 ms late
+  CHECK(!late.due(200 + 404, &x));
+  CHECK(late.due(200 + 405, &x) && x.kind == Action::Kind::POLL);
 
   // Turn off: off message, a poll still flagged running, then idle polls.
   Scheduler off;
