@@ -76,15 +76,57 @@ running. Cause unknown; worth watching for a running-state idle soak.
 
 ## Open items
 
-- Setpoints 16, 17 and 24–30 in HEAT and the full COOL and AUTO ranges (FAN carries no setpoint). The
-  installation is ducted with no DRY mode and no vanes, so the remote's whole feature set is power,
-  the modes AUTO/COOL/HEAT/FAN, four fan speeds plus auto, setpoint and ECO, and all of them are now
-  mapped except the untested setpoint range.
+- Logic-analyser confirmation of the setpoint ranges above (HEAT 16–17 and 24–30, COOL and AUTO 18–30):
+  they are established from the ESP logs only, at byte level. The installation is ducted with no DRY mode
+  and no vanes, so the remote's whole feature set is power, the modes AUTO/COOL/HEAT/FAN, four fan
+  speeds plus auto, setpoint and ECO, and all of them are now mapped.
 - What makes the repeat round appear or not; whether cells 33–44 contain bits beyond those mapped.
 - The unit reply deviations above. A running-state idle soak would show how often they occur.
 - Whether the unit accepts a message from a second sender, and what the constant cells (including the
   first 33 and last 29 cells) are for; no checksum has been found, which fits with all non-field cells
   being constant.
+
+## Setpoint ranges from the labeled ESP logs (`my-test`, `seq`, `eco`, `cold-test`, `start-test`, `idle`)
+
+These ESP logs carry only UART-level bytes, with the operator's `[LABEL]` lines. The labels are
+sometimes before and sometimes after the change, or wrong, so they were used only to pick out the
+sweeps; the conclusions rest on the byte sequences and are checked by `tests/esp_log_model_test.py`.
+The test builds every setting with the encoder, passes it through the fixed 500 baud 8E1 receiver
+model, and requires that:
+- all 43 distinct (value, flag) pairs seen in the four labeled sweep logs are produced by the model, so
+  the cell layout predicts bytes in ranges that were never on the logic analyser;
+- the logs contain the sweeps in the predicted order: HEAT 16→30, AUTO 18→30 and COOL 18→30, each
+  one degree per press;
+- COOL and AUTO stay at 30 when pressed past it (the final value repeats, `F5` and `EB`); HEAT's upper
+  limit was not pressed past, so 30 there rests on the label count (15 steps from 16);
+- ECO sets the second byte to `42` in COOL, AUTO and HEAT alike, and the fan values at AUTO 18 and HEAT 20
+  match the model.
+
+| Mode | Setpoint range | Byte view for the whole sweep (value byte, auto fan) |
+|---|---|---|
+| HEAT | 16–30 | `16 36 56 76 96 B6 D6 F6` for 16–23, then the same eight again for 24–30 (23's partner is 31) |
+| COOL | 18–30 | `95 9D A5 AD B5 BD C5 CD D5 DD E5 ED F5` (+8 per degree) |
+| AUTO | 18–30 | `2B 3B 4B 5B 6B 7B 8B 9B AB BB CB DB EB` (+0x10 per degree) |
+| FAN | none | `0B` (auto fan), `03`/`05`/`09` for the other speeds |
+
+Two limits of the byte view follow, both consequences of the UART cutting the packet at falling edges:
+- **HEAT repeats:** in HEAT the value byte keeps only the setpoint's low three bits, so 24–30 °C produce the same bytes as
+  16–22 °C. Only the cell positions (setpoint bits 3 and 4, cells 43–44) tell them apart.
+- **Cross-mode repeats:** some bytes occur in more than one mode, for example `A5` is COOL 20 °C or
+  AUTO 26 °C at medium fan, `95` COOL 18 or AUTO 25 at medium, and `8A`/`92` are HEAT 20 (28) medium/low or
+  COOL medium at 17/18. The remote's own state tells these apart in practice, the byte alone does not.
+
+The firmware's byte table (`FujiPassiveStream.h`) only maps values from the first captures, so for
+HEAT setpoints above 23 °C it shows the aliased lower setpoint (for example 26 °C appears as 18 °C), and
+the COOL and AUTO values that were never mapped are ignored. Fixing this properly needs the cell positions
+rather than a larger byte table: capture the line's edge times on the ESP32 (a GPIO interrupt with microsecond
+timestamps is enough at 500 baud) and decode cells as `tools/decode_logic_capture.py --settings` does.
+
+Other logs: `idle.log` is about 5.3 min (09:08:33–09:13:51) of the unit off with 5,206 replies
+`7F 18 13 48 80` and 5,205 polls `7F 28 13 08`, no other message (a later stray line at 09:30 follows a
+16-minute gap in the log); `start-test.log` shows the unit's first message at power-up is `7F 12 01`
+(07:13:02.9) before polls `7F 28 13 08` with replies `7F 18 13 48 80`, as in `start-up.sr`.
+The one unit-off soak in the logic analyser and this one agree: nothing varies while the unit is off.
 
 ## Encoder (model of the captures, does not transmit)
 

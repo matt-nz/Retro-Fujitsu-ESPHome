@@ -442,3 +442,18 @@ accepts a setting from a second sender, and when it is safe to send. A cautious 
 3. Only then change one field at a time, keeping the control-enabled switch and a physical disconnect.
 The unit stalling for a second and replying with `04`, and the one `07` reply byte, show that the unit
 sometimes behaves unexpectedly while running, so step 2 should be watched on the analyser.
+
+## Labeled ESP logs: setpoint ranges (1 Nov 2026, evening)
+
+New labeled ESP logs (`my-test`, `seq`, `eco`, `start-test`, `idle`) cover the full setpoint ranges.
+`tests/esp_log_model_test.py` shows that the cell-layout encoder predicts every setting byte seen in them:
+HEAT 16–30, COOL 18–30 and AUTO 18–30, one degree per press, with COOL and AUTO clamping at 30, and ECO as
+a flag in the second byte in every mode. Details and the byte tables are in
+[`../captures/matt-captures/settings-captures-notes.md`](../captures/matt-captures/settings-captures-notes.md).
+Operator labels were used only to locate the sweeps.
+
+Consequence for the firmware: the ESP's byte-level view cannot tell HEAT 24–30 from 16–22 (and a few bytes are
+shared between modes), so HA currently shows an aliased setpoint for HEAT above 23 °C and ignores unmapped
+COOL/AUTO values. The fix is a cell-level decoder on the ESP32 using GPIO edge timestamps, not a bigger byte
+table. Remaining capture needs are small: a logic-analyser confirmation of the extreme setpoints, and a
+running-state idle soak.

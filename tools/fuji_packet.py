@@ -27,6 +27,9 @@ SENDER_CELLS = (16, 17)  # remote: 0 1 (second byte 0x22), unit: 1 0 (0x12)
 MODES = {"cool": 1, "heat": 2, "fan": 4, "auto": 5}
 FANS = {"high": 1, "medium": 2, "low": 4, "auto": 5}
 FAN_MODE_TEMP = 16  # what the remote sends in the temperature field in FAN mode
+# Setpoint ranges seen on the bus (the remote clamps at the top in COOL and AUTO; the HEAT limits come
+# from operator labels and the number of steps, the clamp was not observed there).
+TEMP_RANGES = {"heat": (16, 30), "cool": (18, 30), "auto": (18, 30)}
 
 
 def encode(mode, fan, temp=None, eco=False, repeat=False, sender="remote"):
@@ -35,8 +38,9 @@ def encode(mode, fan, temp=None, eco=False, repeat=False, sender="remote"):
         raise ValueError("mode must be one of %s and fan one of %s" % (sorted(MODES), sorted(FANS)))
     if mode == "fan":
         temp = FAN_MODE_TEMP
-    if temp is None or not 16 <= temp <= 31:
-        raise ValueError("temperature must be 16..31 (got %r)" % (temp,))
+    low, high = TEMP_RANGES.get(mode, (16, 31))
+    if temp is None or not low <= temp <= high:
+        raise ValueError("%s setpoint must be %d..%d (got %r)" % (mode, low, high, temp))
     cells = [int(c) for c in BASE]
     values = {"round": int(repeat), "mode": MODES[mode], "fan": FANS[fan], "temp": temp, "eco": int(eco)}
     for name, (first, width) in FIELDS.items():
