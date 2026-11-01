@@ -653,7 +653,7 @@ void FujiHeatPump::aot30EmulatorPump() {
   if (action.kind != fuji_aot30::Action::Kind::POLL) {
     ESP_LOGW(TAG, "AOT30 emulator: sent %s", what);
   }
-  if (action.kind == fuji_aot30::Action::Kind::SETTING && emuSettingCellPercent_.load() != 100) {
+  if (action.kind == fuji_aot30::Action::Kind::SETTING) {
     emuEchoBaseline_ = unitSettingEchoCount_;
     emuEchoCheckAtMs_ = millis() + kEmuEchoWaitMs;
     emuEchoCheckPending_ = true;

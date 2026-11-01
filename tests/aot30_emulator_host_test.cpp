@@ -329,6 +329,13 @@ int main() {
   CHECK(half_width_pulses >= 10);
   advance(hp, 15000);
   hp.aot30SetSettingCellPercent(100);
+  // The verdict is also logged at normal speed, so 100 % can be used as the control run.
+  CHECK(hp.aot30RunTest());
+  advance(hp, 1600);
+  g_log.clear();
+  advance(hp, 4500);
+  CHECK(log_has("setting at 100% cell time was NOT echoed"));
+  advance(hp, 15000);
 
   std::printf(failures ? "%d FAILURES\n" : "ALL PASSED\n", failures);
   return failures ? 1 : 0;
