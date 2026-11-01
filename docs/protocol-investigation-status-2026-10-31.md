@@ -351,7 +351,7 @@ any other remote settings are unmodelled.
 ## Next logic-analyser session checklist (1 Nov 2026)
 
 Goal: find out whether any byte or cell besides the setting value varies with the setting, and
-whether the unit sends anything without the remote. Capture at 1 MHz or faster on D1 with the same
+whether the unit sends anything without the remote. Capture on D1 (1 MHz for the short runs; 50 kHz is enough for long ones) with the same
 wiring as `start-up.sr`, one file per step, and decode each with
 `python3 tools/decode_logic_capture.py <file>.sr --messages`. Write the time of every press on paper
 (the analyser file has no labels), and keep presses at least 5 s apart.
@@ -367,7 +367,14 @@ wiring as `start-up.sr`, one file per step, and decode each with
    no traffic at all on RX. So the unit never speaks first; the remote owns the poll cycle and the unit
    only replies (and echoes). Any transmitter would have to take the remote's role (poll and settings),
    not join as a quiet second controller, and cannot be tested with the remote removed.
-5. **Idle soak.** Leave the unit running 10 minutes with no presses to see whether `08` becomes `0A`,
+5. **Idle soak (use a low sample rate).** Sample rate is the thing to cut, not the length. At 1 MHz
+   ten minutes is 600 million samples, which PulseView holds in RAM; the compressed `.sr` would be small
+   but the session would not. A bit is 2 ms wide, so 50 kHz (20 µs resolution) is plenty: ten minutes
+   is 30 million samples (about 30 MB in memory). I replayed `start-up.sr` decimated to 100, 50 and
+   20 kHz and `decode_logic_capture.py --check` still passed at all three (bit times within 0.1 % of
+   the 1 MHz values, same 659 bytes, 392 parity and 22 framing flags). If memory is still a worry,
+   take two or three five-minute files instead. Anything the idle soak is looking for (`0A` polls,
+   changed replies, a stalled reply) is a whole-message event, so the lower rate does not hide it. Leave the unit running 10 minutes with no presses to see whether `08` becomes `0A`,
    a reply byte other than `48 80` appears, or the 1 s reply stall repeats.
 6. **Room temperature (low priority).** Existing data already says the reply carries none: across all
    ESP logs from 31 Oct (warm day, 13:22–21:53; 3,000 replies) and `start-up.sr` from 1 Nov (cooler
