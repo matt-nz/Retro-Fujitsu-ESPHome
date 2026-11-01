@@ -101,15 +101,8 @@ class FujitsuClimate : public climate::Climate, public Component {
   // retrofujitsu.yaml).
   void set_control_enabled(bool enabled);
   bool get_control_enabled() const { return control_enabled_; }
-  void set_aot30_test_tx_enabled(bool enabled);
-  void request_aot30_heat20_on_test();
-  void request_aot30_startup_heat20_on_test();
-  // Wired-remote emulation (experimental): the remote must be disconnected. Needs the arm switch.
-  bool set_aot30_emulator_enabled(bool enabled);
-  void set_aot30_emulator_dry_run(bool dry_run);
-  void request_aot30_emulator_heat20();
-  void request_aot30_emulator_off();
-  void process_aot30_test_tx_request();
+  // Experimental: runs the wired-remote emulation test (HEAT 20). The wired remote must be disconnected.
+  void request_aot30_test();
 
   // Diagnostics (trimmed for this rebuild -- see the .cpp file's top-of-file comment
   // for which of the old exploratory diagnostics were retired and why).
@@ -162,14 +155,9 @@ class FujitsuClimate : public climate::Climate, public Component {
   volatile bool pending_update{false};
 
  protected:
-  enum class Aot30TestRequest : uint8_t { NONE, HEAT20, STARTUP_AND_HEAT20 };
-
   bool hardware_present_{false};
   bool control_enabled_{false};
   bool debug_{false};
-  std::atomic<bool> aot30_test_tx_enabled_{false};
-  std::atomic<Aot30TestRequest> aot30_test_tx_request_{Aot30TestRequest::NONE};
-  std::atomic<bool> aot30_test_tx_sent_{false};
   int rx_pin_{16};
   int tx_pin_{17};
 

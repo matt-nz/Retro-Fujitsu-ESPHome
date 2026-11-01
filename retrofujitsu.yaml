@@ -26,8 +26,8 @@
 # day (state-of-play.md's "4A.1" section) after a locking hardening pass following a
 # crash, so this is a considered change, not an oversight. Flip it off in HA/the web
 # UI any time you want read-only monitoring (e.g. while testing new firmware).
-# The separately armed AOT30 experiments below are one-shot captured-frame tests,
-# not a general transmitter or the normal climate-control path.
+# The "AOT30 Test" button below is an experimental wired-remote emulation test (the wired remote must
+# be disconnected), not a general transmitter or the normal climate-control path.
 
 esphome:
   name: aircon
@@ -466,50 +466,6 @@ switch:
     turn_off_action:
       - lambda: 'id(fujitsu_hp)->set_thermo_write_test(false);'
 
-  # One-shot AOT30L protocol experiments. Keep disarmed except when testing with the
-  # wired remote disconnected.
-  - platform: template
-    name: "AOT30 Experimental TX Arm"
-    id: aot30_test_tx_arm
-    icon: "mdi:transit-connection-variant"
-    entity_category: diagnostic
-    optimistic: true
-    restore_mode: ALWAYS_OFF
-    turn_on_action:
-      - lambda: 'id(fujitsu_hp)->set_aot30_test_tx_enabled(true);'
-    turn_off_action:
-      - lambda: 'id(fujitsu_hp)->set_aot30_test_tx_enabled(false);'
-
-  # AOT30L/ART30RL wired-remote EMULATOR (experimental). On this bus the wired remote is the master and
-  # nothing can be sent while it is connected, so the ESP32 takes its place: DISCONNECT THE WIRED REMOTE
-  # first. Needs the arm switch above. Dry run (default on) only logs what would be sent; turn it off
-  # for live transmission. It refuses to start if the bus was active in the last 1.5 s.
-  - platform: template
-    name: "AOT30 Emulator Dry Run"
-    id: aot30_emulator_dry_run
-    icon: "mdi:test-tube"
-    entity_category: diagnostic
-    optimistic: true
-    restore_mode: ALWAYS_ON
-    turn_on_action:
-      - lambda: 'id(fujitsu_hp)->set_aot30_emulator_dry_run(true);'
-    turn_off_action:
-      - lambda: 'id(fujitsu_hp)->set_aot30_emulator_dry_run(false);'
-  - platform: template
-    name: "AOT30 Remote Emulator Enabled"
-    id: aot30_emulator_enable
-    icon: "mdi:remote"
-    entity_category: diagnostic
-    optimistic: true
-    restore_mode: ALWAYS_OFF
-    turn_on_action:
-      - lambda: |-
-          if (!id(fujitsu_hp)->set_aot30_emulator_enabled(true)) {
-            id(aot30_emulator_enable).publish_state(false);
-          }
-    turn_off_action:
-      - lambda: 'id(fujitsu_hp)->set_aot30_emulator_enabled(false);'
-
   # Economy Mode as a standalone switch -- added 21 Aug 2026. climate.preset already
   # supports CLIMATE_PRESET_ECO (confirmed live-adopted, both directions, same day),
   # but neither the web UI nor a plain HA dashboard surfaces a preset control the same
@@ -534,31 +490,17 @@ button:
   - platform: safe_mode
     name: "Safe Mode Boot"
     entity_category: diagnostic
+  # EXPERIMENTAL -- DISCONNECT THE WIRED REMOTE FIRST (it is the bus master; nothing can be sent while it
+  # is connected). The ESP32 takes the remote's place for about 20 s: waits for a silent bus, polls, sends
+  # HEAT 20 (auto fan, ECO off) the way the remote does, keeps polling, then releases the bus. Start with the
+  # unit OFF. It refuses to run if it sees bus traffic, and aborts on any read-back mismatch. See the
+  # "Wired-remote emulator firmware" section of docs/protocol-investigation-status-2026-10-31.md.
   - platform: template
-    name: "Send Captured HEAT 20 ON Test"
-    icon: "mdi:transmission-tower"
-    entity_category: diagnostic
-    on_press:
-      - lambda: 'id(fujitsu_hp)->request_aot30_heat20_on_test();'
-  - platform: template
-    name: "Send Startup + HEAT 20 ON Test"
-    icon: "mdi:transmission-tower"
-    entity_category: diagnostic
-    on_press:
-      - lambda: 'id(fujitsu_hp)->request_aot30_startup_heat20_on_test();'
-
-  - platform: template
-    name: "AOT30 Emulator: HEAT 20 ON"
+    name: "AOT30 Test: HEAT 20 ON (remote disconnected)"
     icon: "mdi:fire"
     entity_category: diagnostic
     on_press:
-      - lambda: 'id(fujitsu_hp)->request_aot30_emulator_heat20();'
-  - platform: template
-    name: "AOT30 Emulator: OFF"
-    icon: "mdi:power"
-    entity_category: diagnostic
-    on_press:
-      - lambda: 'id(fujitsu_hp)->request_aot30_emulator_off();'
+      - lambda: 'id(fujitsu_hp)->request_aot30_test();'
 
 # Diagnostic interval
 interval:

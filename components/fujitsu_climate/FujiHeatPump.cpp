@@ -240,46 +240,37 @@ void FujiHeatPump::sendPendingFrame() {
 
 // ---------------------------------------------------------------------------------------------
 // AOT30L/ART30RL wired-remote emulation. EXPERIMENTAL; read the comment in FujiHeatPump.h first.
+// One button runs a fixed test: wait for a silent bus, poll for a while, send HEAT 20 as the wired
+// remote would, keep polling, then stop and release the bus.
 // ---------------------------------------------------------------------------------------------
 namespace {
-// Command mailbox layout (main thread -> bus task): kind in bits 0-3, mode 4-6, fan 7-9, temp 10-14, eco 15.
-constexpr uint32_t kEmuStart = 1;
-constexpr uint32_t kEmuSetting = 2;
-constexpr uint32_t kEmuOff = 3;
-// The bus must have been silent this long before the emulator starts; a connected remote polls every ~247 ms.
+constexpr uint32_t kEmuTestCommand = 1;
+// The bus must have been silent this long before the test starts; a connected remote polls every ~247 ms.
 constexpr uint32_t kEmuStartQuietMs = 1500;
+// Polling time before and after the setting, so the unit sees a normal cycle around it.
+constexpr uint32_t kEmuTestLeadMs = 2000;
+constexpr uint32_t kEmuTestTailMs = 10000;
 // Do not start a transmission within this long of the last received byte (the unit's reply is still coming).
 constexpr uint32_t kEmuQuietBeforeTxMs = 12;
 // Abort a transmission after this many cells whose read-back differs from what was driven.
 constexpr uint32_t kEmuMaxMismatches = 3;
 }  // namespace
 
-void FujiHeatPump::aot30EmulatorSetEnabled(bool enabled) {
-  if (enabled) {
-    emuCommand_.store(kEmuStart);
-    emuEnabled_.store(true);
-  } else {
-    emuEnabled_.store(false);
-    emuCommand_.store(0);
+bool FujiHeatPump::aot30RunTest() {
+  if (emuEnabled_.exchange(true)) {
+    return false;  // a test is already running
   }
+  emuCommand_.store(kEmuTestCommand);
+  return true;
 }
 
-bool FujiHeatPump::aot30EmulatorQueueSetting(fuji_aot30::Mode mode, fuji_aot30::Fan fan, uint8_t temp, bool eco) {
-  if (!emuEnabled_.load() || (mode != fuji_aot30::Mode::FAN && !fuji_aot30::temp_in_range(mode, temp))) {
-    return false;
+void FujiHeatPump::emuFinish(bool ok) {
+  emuScheduler_.stop();
+  emuStage_ = EmuStage::IDLE;
+  emuEnabled_.store(false);
+  if (ok) {
+    ESP_LOGW(TAG, "AOT30 test finished; the bus is released. Reconnect the wired remote (it takes over polling).");
   }
-  const uint32_t command = kEmuSetting | (static_cast<uint32_t>(mode) << 4) | (static_cast<uint32_t>(fan) << 7) |
-                           (static_cast<uint32_t>(temp & 0x1F) << 10) | (eco ? (1u << 15) : 0u);
-  uint32_t expected = 0;
-  return emuCommand_.compare_exchange_strong(expected, command);
-}
-
-bool FujiHeatPump::aot30EmulatorQueueOff() {
-  if (!emuEnabled_.load()) {
-    return false;
-  }
-  uint32_t expected = 0;
-  return emuCommand_.compare_exchange_strong(expected, kEmuOff);
 }
 
 void FujiHeatPump::emuDrainRx() {
@@ -312,34 +303,6 @@ void FujiHeatPump::emuDrainRx() {
     }
   }
   flush_chunk();
-}
-
-void FujiHeatPump::emuHandleCommand(uint32_t command) {
-  const uint32_t kind = command & 0xF;
-  if (kind == kEmuStart) {
-    emuScheduler_.stop();
-    emuWaitingQuiet_ = true;
-    emuStartRequestedMs_ = millis();
-    ESP_LOGW(TAG, "AOT30 emulator: start requested (%s); checking that the bus is silent for %u ms",
-             emuDryRun_.load() ? "DRY RUN, nothing will be driven" : "LIVE", static_cast<unsigned>(kEmuStartQuietMs));
-  } else if (kind == kEmuSetting) {
-    const auto mode = static_cast<fuji_aot30::Mode>((command >> 4) & 0x7);
-    const auto fan = static_cast<fuji_aot30::Fan>((command >> 7) & 0x7);
-    const uint8_t temp = (command >> 10) & 0x1F;
-    const bool eco = (command >> 15) & 1;
-    if (emuScheduler_.queue_setting(mode, fan, temp, eco)) {
-      ESP_LOGW(TAG, "AOT30 emulator: setting queued (mode %u, fan %u, %u C, eco %u)", static_cast<unsigned>(mode),
-               static_cast<unsigned>(fan), static_cast<unsigned>(temp), static_cast<unsigned>(eco));
-    } else {
-      ESP_LOGW(TAG, "AOT30 emulator: setting rejected (not running yet, or another change is in progress)");
-    }
-  } else if (kind == kEmuOff) {
-    if (emuScheduler_.queue_off()) {
-      ESP_LOGW(TAG, "AOT30 emulator: power-off queued");
-    } else {
-      ESP_LOGW(TAG, "AOT30 emulator: power-off rejected (not running yet, or another change is in progress)");
-    }
-  }
 }
 
 bool FujiHeatPump::emuTransmit(const uint8_t *cells, size_t count, const char *what) {
@@ -416,34 +379,65 @@ bool FujiHeatPump::emuTransmit(const uint8_t *cells, size_t count, const char *w
 
 void FujiHeatPump::aot30EmulatorPump() {
   emuDrainRx();
-  const uint32_t command = emuCommand_.exchange(0);
-  if (command != 0) {
-    emuHandleCommand(command);
+  uint32_t now = millis();
+  if (emuCommand_.exchange(0) == kEmuTestCommand) {
+    emuScheduler_.stop();
+    emuStage_ = EmuStage::WAIT_QUIET;
+    emuStageStartMs_ = now;
+    ESP_LOGW(TAG, "AOT30 test started%s: checking that the bus is silent for %u ms. The wired remote must be "
+                  "disconnected.",
+             emuDryRun_.load() ? " (DRY RUN)" : "", static_cast<unsigned>(kEmuStartQuietMs));
   }
 
-  uint32_t now = millis();
-  if (emuWaitingQuiet_) {
-    const bool traffic_before = lastRxByteMs != 0 && static_cast<uint32_t>(emuStartRequestedMs_ - lastRxByteMs) < kEmuStartQuietMs;
-    const bool traffic_since = lastRxByteMs != 0 && static_cast<int32_t>(lastRxByteMs - emuStartRequestedMs_) > 0;
-    if (traffic_before || traffic_since) {
-      ESP_LOGE(TAG, "AOT30 emulator: refused, bus traffic seen within %u ms of starting. Is the wired remote "
-                    "still connected? Disconnect it first.",
-               static_cast<unsigned>(kEmuStartQuietMs));
-      emuWaitingQuiet_ = false;
-      emuEnabled_.store(false);
+  switch (emuStage_) {
+    case EmuStage::IDLE:
+      return;
+    case EmuStage::WAIT_QUIET: {
+      const bool traffic_before =
+          lastRxByteMs != 0 && static_cast<uint32_t>(emuStageStartMs_ - lastRxByteMs) < kEmuStartQuietMs;
+      const bool traffic_since = lastRxByteMs != 0 && static_cast<int32_t>(lastRxByteMs - emuStageStartMs_) > 0;
+      if (traffic_before || traffic_since) {
+        ESP_LOGE(TAG, "AOT30 test refused: bus traffic seen within %u ms of starting. Is the wired remote still "
+                      "connected? Disconnect it and press the button again.",
+                 static_cast<unsigned>(kEmuStartQuietMs));
+        emuFinish(false);
+        return;
+      }
+      if (now - emuStageStartMs_ >= kEmuStartQuietMs) {
+        emuScheduler_.start(now);
+        emuStage_ = EmuStage::LEAD;
+        emuStageStartMs_ = now;
+        ESP_LOGW(TAG, "AOT30 test: bus silent, polling started (unit assumed OFF)");
+      }
       return;
     }
-    if (now - emuStartRequestedMs_ >= kEmuStartQuietMs) {
-      emuWaitingQuiet_ = false;
-      emuScheduler_.start(now);
-      emuTxCount_ = 0;
-      ESP_LOGW(TAG, "AOT30 emulator: bus silent, polling started (unit assumed OFF)");
-    }
-    return;
+    case EmuStage::LEAD:
+      if (now - emuStageStartMs_ >= kEmuTestLeadMs) {
+        if (!emuScheduler_.queue_setting(fuji_aot30::Mode::HEAT, fuji_aot30::Fan::FAN_AUTO, 20, false)) {
+          ESP_LOGE(TAG, "AOT30 test: could not queue HEAT 20");
+          emuFinish(false);
+          return;
+        }
+        emuStage_ = EmuStage::SCRIPT;
+        ESP_LOGW(TAG, "AOT30 test: sending HEAT 20, fan auto, ECO off");
+      }
+      break;
+    case EmuStage::SCRIPT:
+      if (!emuScheduler_.busy()) {
+        emuStage_ = EmuStage::TAIL;
+        emuStageStartMs_ = now;
+      }
+      break;
+    case EmuStage::TAIL:
+      if (now - emuStageStartMs_ >= kEmuTestTailMs) {
+        emuFinish(true);
+        return;
+      }
+      break;
   }
 
   fuji_aot30::Action action;
-  if (!emuScheduler_.active() || !emuScheduler_.due(now, &action)) {
+  if (!emuScheduler_.due(now, &action)) {
     return;
   }
   if (_serial->available() > 0 || (lastRxByteMs != 0 && now - lastRxByteMs < kEmuQuietBeforeTxMs)) {
@@ -462,7 +456,7 @@ void FujiHeatPump::aot30EmulatorPump() {
     case fuji_aot30::Action::Kind::SETTING:
       if (!fuji_aot30::build_setting(action.mode, action.fan, action.temp, action.eco, action.repeat, cells)) {
         ESP_LOGE(TAG, "AOT30 emulator: invalid setting, stopping");
-        emuEnabled_.store(false);
+        emuFinish(false);
         return;
       }
       count = fuji_aot30::kSettingCells;
@@ -478,83 +472,15 @@ void FujiHeatPump::aot30EmulatorPump() {
   }
 
   now = millis();
-  const bool ok = emuTransmit(cells, count, what);
-  if (!ok) {
-    emuEnabled_.store(false);
-    emuScheduler_.stop();
-    ESP_LOGE(TAG, "AOT30 emulator stopped. Reconnect the wired remote.");
+  if (!emuTransmit(cells, count, what)) {
+    ESP_LOGE(TAG, "AOT30 test stopped. Reconnect the wired remote.");
+    emuFinish(false);
     return;
   }
   emuScheduler_.sent(now);
-  emuTxCount_++;
   if (action.kind != fuji_aot30::Action::Kind::POLL) {
     ESP_LOGW(TAG, "AOT30 emulator: sent %s", what);
   }
-}
-
-bool FujiHeatPump::sendCapturedHeat20OnMessage() {
-  if (_serial == nullptr) {
-    ESP_LOGE(TAG, "Cannot send AOT30 test message: UART is not connected");
-    return false;
-  }
-  if (_serial->available() > 0) {
-    ESP_LOGW(TAG, "AOT30 test TX blocked: UART receive data is pending");
-    return false;
-  }
-
-  const size_t written = _serial->write(fuji_aot30::kCapturedHeat20OnUart.data(),
-                                        fuji_aot30::kCapturedHeat20OnUart.size());
-  _serial->flush();
-  if (written != fuji_aot30::kCapturedHeat20OnUart.size()) {
-    ESP_LOGE(TAG, "AOT30 test message write incomplete: wrote %u of %u bytes",
-             static_cast<unsigned>(written),
-             static_cast<unsigned>(fuji_aot30::kCapturedHeat20OnUart.size()));
-    return false;
-  }
-
-  ESP_LOGW(TAG, "AOT30 experimental TX sent captured HEAT 20 ON frame once "
-                "(UART: 80 DD FC 69 FD A0 81; decoded: 7F 22 03 96 02 5F 7E)");
-  return true;
-}
-
-bool FujiHeatPump::sendCandidateStartupAndHeat20On() {
-  if (_serial == nullptr) {
-    ESP_LOGE(TAG, "Cannot send AOT30 startup experiment: UART is not connected");
-    return false;
-  }
-  if (_serial->available() > 0) {
-    ESP_LOGW(TAG, "AOT30 startup experiment blocked: UART receive data is pending");
-    return false;
-  }
-
-  const size_t startup_written = _serial->write(fuji_aot30::kCandidateStartupSequenceUart.data(),
-                                                fuji_aot30::kCandidateStartupSequenceUart.size());
-  _serial->flush();
-  if (startup_written != fuji_aot30::kCandidateStartupSequenceUart.size()) {
-    ESP_LOGE(TAG, "AOT30 startup sequence write incomplete: wrote %u of %u bytes",
-             static_cast<unsigned>(startup_written),
-             static_cast<unsigned>(fuji_aot30::kCandidateStartupSequenceUart.size()));
-    return false;
-  }
-
-  ESP_LOGW(TAG, "AOT30 experimental startup sequence sent once "
-                "(UART: 80 D7 EC F7 80 ED FE; decoded: 7F 28 13 08 7F 12 01)");
-  delay(fuji_aot30::kStartupToSettingDelayMs);
-
-  const size_t setting_written = _serial->write(fuji_aot30::kCapturedHeat20OnUart.data(),
-                                                fuji_aot30::kCapturedHeat20OnUart.size());
-  _serial->flush();
-  if (setting_written != fuji_aot30::kCapturedHeat20OnUart.size()) {
-    ESP_LOGE(TAG, "AOT30 HEAT 20 setting write incomplete: wrote %u of %u bytes",
-             static_cast<unsigned>(setting_written),
-             static_cast<unsigned>(fuji_aot30::kCapturedHeat20OnUart.size()));
-    return false;
-  }
-
-  ESP_LOGW(TAG, "AOT30 experimental HEAT 20 ON setting sent once after %u ms "
-                "(UART: 80 DD FC 69 FD A0 81; decoded: 7F 22 03 96 02 5F 7E)",
-           static_cast<unsigned>(fuji_aot30::kStartupToSettingDelayMs));
-  return true;
 }
 
 bool FujiHeatPump::waitForFrame() {

@@ -12,9 +12,6 @@ python3 tools/decode_logic_capture.py captures/matt-captures/start-up.sr --check
 
 g++ -std=c++17 -Wall -Wextra $INC tests/passive_stream_test.cpp -o "$OUT/passive"
 "$OUT/passive" captures/matt-captures | tail -1
-g++ -std=c++17 -Wall -Wextra $INC tests/aot30_transmit_test.cpp -o "$OUT/transmit"
-"$OUT/transmit"
-echo "aot30_transmit_test OK"
 g++ -std=c++17 -Wall -Wextra $INC tests/aot30_cells_test.cpp -o "$OUT/cells"
 "$OUT/cells" tests/golden_cells.txt
 g++ -std=c++17 -Wall -Wextra $INC tests/aot30_scheduler_test.cpp -o "$OUT/sched"

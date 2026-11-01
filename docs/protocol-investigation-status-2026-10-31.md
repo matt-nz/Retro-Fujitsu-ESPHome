@@ -473,22 +473,22 @@ replies. A setting message is 164 ms long, but the free gap between the unit's r
 slot). The only way to send a command is to take the remote's place: **disconnect the wired remote**, and let
 the ESP32 poll and send settings exactly as the captures show.
 
-**What was added** (all off by default; dry run is on by default):
+**What was added** (updated 1 Nov 2026, evening: simplified to one button, no switches):
 - `FujiAot30Cells.h` builds the 84-cell setting, 44-cell poll and 33-cell off messages (mirrors
   `tools/fuji_packet.py`; checked against 677 generated vectors in `tests/golden_cells.txt`).
 - `FujiAot30Scheduler.h` is the timing script from the captures: a change goes out in place of a poll
   (round 1), a poll flagged `0A` 405 ms later, round 2 at 803 ms, another `0A` poll at 1210 ms, then normal polls
   (run flag set) every 247 ms. Power-off is the off message, a poll still flagged running at +167 ms, then idle polls
-  from +405 ms.
-- `FujiHeatPump::aot30EmulatorPump()` (called from the bus task while the emulator is enabled) reads the UART without
-  blocking, waits for the bus to be quiet, then drives GPIO17 as a plain pin at 1980.8 µs per cell and reads GPIO16
-  back every cell. Three mismatches (the line not following what was driven, or another device pulling it low) abort
-  the message, release the line, give the pin back to the UART and disable the emulator.
-- It refuses to start if any byte was received in the 1.5 s before starting or while waiting, which is what
-  a connected remote (polling every 247 ms) would cause.
-- Entities: the existing "AOT30 Experimental TX Arm" switch must be on; then "AOT30 Emulator Dry Run" (default on),
-  "AOT30 Remote Emulator Enabled", and buttons "AOT30 Emulator: HEAT 20 ON" (HEAT 20 °C, auto fan, ECO off) and
-  "AOT30 Emulator: OFF". Turning the arm off disables the emulator. The old one-shot UART test buttons are unchanged.
+  from +405 ms (not used by the button).
+- One button, **"AOT30 Test: HEAT 20 ON (remote disconnected)"**, runs a fixed test of about 20 s with no other
+  controls: it waits for 1.5 s of bus silence, polls for 2 s (unit assumed off), sends HEAT 20 °C, auto fan, ECO off
+  as the remote does, keeps polling for 10 s, then stops and releases the bus. While running it drives GPIO17 as a
+  plain pin at 1980.8 µs per cell and reads GPIO16 back every cell; three mismatches (the line not following what was
+  driven, or another device pulling it low) abort, release the line and end the test. It refuses to run if any byte was
+  received in the 1.5 s before pressing or during the silence check, which is what a connected remote would cause.
+  The log lines to watch start with "AOT30 test" and "AOT30 emulator".
+- The earlier one-shot UART test buttons, the arm switch and the dry-run/enable switches were removed. After the test
+  ends the ESP32 no longer polls, so reconnect the wired remote (it takes over) or the unit will sit without a master.
 
 **Tests** (`sh tests/run_all.sh`): the cell encoder against the Python model, the scheduler timeline (including
 late sends and millis wrap), and the real `FujiHeatPump.cpp` compiled on a desktop with a fake clock, UART and
@@ -497,26 +497,23 @@ change and power-off, abort on read-back mismatch, and disabling. It could not b
 (the ESPHome package is not available from the internal package index), so the ESP-IDF calls
 (`esp_rom_gpio_connect_out_signal`, `gpio_*`, `uart_set_pin`, `esp_timer_get_time`) are unverified until built.
 
-**Suggested first run, in order, stopping at the first surprise:**
-1. Build and flash. With the remote still connected, nothing changes (the emulator is off).
-2. Disconnect the wired remote. Unit powered, ESP32 powered. Arm switch on, dry run left ON, enable the emulator.
-   The log should say "bus silent, polling started"; press the HEAT 20 button and check the log for the
-   dry-run lines (setting round 1, pending poll, setting round 2, pending poll).
-3. Bench check of the waveform: connect the logic analyser to the ESP32's line with the unit disconnected, turn
-   dry run off, and compare the captured polls and setting with `heat.sr` (`tools/decode_logic_capture.py --settings`
-   should print HEAT 20 °C, auto fan). The cells should decode exactly and the bit time should read 1980.8 µs.
-4. Only then connect the unit (still off), dry run off, enable, wait for polling, and check on the analyser that the
-   unit replies `7F 18 13 48 80` (and `7F 12 01` as its first message after power-up). Then press HEAT 20 ON and
-   look for the unit's echoes `7F 12 03 …`.
+**Suggested run, stopping at the first surprise:**
+1. Build and flash. Nothing happens until the button is pressed.
+2. Bench first if you can: unit disconnected, wired remote disconnected, logic analyser on the ESP32 line. Press
+   the button and decode the capture with `tools/decode_logic_capture.py --settings` (it should show HEAT 20 °C, auto
+   fan, both rounds); the bit time should read 1980.8 µs.
+3. Live: unit powered and OFF, wired remote disconnected, press the button. On the analyser look for the unit's
+   replies `7F 18 13 48 80` (and `7F 12 01` as its first message after power-up), then its echoes `7F 12 03 …`
+   after the setting. Reconnect the wired remote when the log says the test has finished.
 
 **Known risks, none tested:**
 - The LIN transceiver's TXD dominant timeout (typically 6–20 ms) may cut off the remote's first byte, whose low
   pulse is 15.8 ms long. The read-back check would show this as an abort at cell 0–7; if it happens the transmitter
   hardware, not the protocol, is the limit.
-- The poll's run flag (13/17) is sent as `13` (off) when the emulator starts; with the unit already running, that
+- The poll's run flag (13/17) is sent as `13` (off) when the test starts; with the unit already running, that
   may command it off. Start with the unit off.
 - If the real remote is reconnected while the emulator runs, the two collide. The read-back abort limits it, but the
-  unit may already have seen a corrupted message. Disable the emulator before reconnecting the remote.
+  unit may already have seen a corrupted message. Reconnect the remote only after the test has finished.
 - Whether the unit accepts commands from the ESP32 is unknown. A failure to respond may also mean the exchange needs
   something the captures never showed (for example a different start-up sequence); capture it on the analyser and
   compare with `start-up.sr`.

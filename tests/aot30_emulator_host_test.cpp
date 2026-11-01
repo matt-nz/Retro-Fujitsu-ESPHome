@@ -100,51 +100,57 @@ int main() {
   static FujiHeatPump hp;
   g_now_us = 10 * 1000 * 1000;
 
-  // 1. Dry run: starts after 1.5 s of silence, logs the scripted messages, drives nothing.
+  // 1. Dry run: the test starts after 1.5 s of silence, polls, sends HEAT 20, polls on, finishes by itself.
   reset(serial, hp);
   hp.aot30EmulatorSetDryRun(true);
-  hp.aot30EmulatorSetEnabled(true);
+  CHECK(!hp.aot30EmulatorActive());
+  CHECK(hp.aot30RunTest());
+  CHECK(!hp.aot30RunTest());  // already running
   CHECK(hp.aot30EmulatorActive());
   advance(hp, 1000);
   CHECK(!log_has("polling started"));
   advance(hp, 700);
   CHECK(log_has("polling started"));
-  CHECK(hp.aot30EmulatorQueueSetting(Mode::HEAT, Fan::FAN_AUTO, 20, false));
+  advance(hp, 2000);
+  CHECK(log_has("sending HEAT 20, fan auto, ECO off"));
   advance(hp, 2500);
-  CHECK(log_has("setting queued (mode 2, fan 5, 20 C, eco 0)"));
   CHECK(log_count("DRY RUN would send setting (round 1)") == 1);
   CHECK(log_count("DRY RUN would send setting (round 2)") == 1);
   CHECK(log_count("DRY RUN would send poll (pending)") == 2);
+  CHECK(hp.aot30EmulatorActive());
+  advance(hp, 12000);
+  CHECK(log_has("test finished"));
+  CHECK(!hp.aot30EmulatorActive());
   CHECK(g_gpio_sets == 0 && g_matrix_calls == 0);
-  CHECK(!hp.aot30EmulatorQueueSetting(Mode::COOL, Fan::FAN_AUTO, 17, false));  // below the COOL minimum
-  CHECK(!hp.aot30EmulatorQueueSetting(Mode::HEAT, Fan::FAN_AUTO, 31, false));
 
-  // 2. Refuses to start when the bus was busy just before.
+  // 2. Refuses to start when the bus was busy just before or during the silence check.
   reset(serial, hp);
-  hp.aot30EmulatorSetEnabled(false);
-  serial.rx.push_back(0x80);
-  advance(hp, 1);  // not active: pump not called here, so emulate the bus task's own receive path
-  hp.aot30EmulatorSetEnabled(true);
-  serial.rx.push_back(0x80);  // traffic after the start request
+  hp.aot30EmulatorSetDryRun(true);
+  CHECK(hp.aot30RunTest());
+  serial.rx.push_back(0x80);  // traffic arrives right after the button press
   advance(hp, 300);
-  CHECK(log_has("refused, bus traffic seen"));
+  CHECK(log_has("refused: bus traffic seen"));
+  CHECK(!hp.aot30EmulatorActive());
+  advance(hp, 2000);  // the bus has now been quiet for longer than the check
+  CHECK(hp.aot30RunTest());  // can be started again
+  advance(hp, 2000);
+  CHECK(log_has("polling started"));
+  advance(hp, 20000);
   CHECK(!hp.aot30EmulatorActive());
 
   // 3. Live: pulse train equals the encoded message, pin handed back to the UART after each message.
   reset(serial, hp);
   hp.aot30EmulatorSetDryRun(false);
-  hp.aot30EmulatorSetEnabled(true);
-  advance(hp, 1700);
+  CHECK(hp.aot30RunTest());
+  advance(hp, 1600);
   CHECK(log_has("polling started"));
   g_edges.clear();
   g_uart_set_pin_calls = 0;
-  // The next poll slot is within 247 ms; capture the first transmission only.
-  advance(hp, 300);
+  advance(hp, 300);  // the first poll goes out within one poll period
   CHECK(g_uart_set_pin_calls >= 1);
   CHECK(!g_edges.empty());
   uint8_t cells[kSettingCells];
   build_poll(false, false, cells);
-  // Rebuild the expected line-level edge list from the cells and compare timing within 10 us.
   std::vector<Edge> expected;
   int last = 1;
   for (size_t i = 0; i < kPollCells; i++) {
@@ -154,11 +160,9 @@ int main() {
       last = lvl;
     }
   }
-  // g_edges includes the initial high set and the final release; take the ones in between.
-  CHECK(g_edges.size() >= expected.size() + 1);
+  // g_edges starts with the initial idle-high write, then one entry per line change, then the release.
   bool timing_ok = g_edges.size() >= expected.size() + 1;
   if (timing_ok) {
-    // first recorded set is the initial idle-high write before cell 0; the cell-0 edge follows it
     int64_t base = g_edges[1].t;
     for (size_t i = 0; i < expected.size() && timing_ok; i++) {
       const Edge &e = g_edges[1 + i];
@@ -171,20 +175,20 @@ int main() {
     }
   }
   CHECK(timing_ok);
+  g_log.clear();
+  advance(hp, 17000);  // the rest of the test: lead polls, the two-round change, tail polls
+  CHECK(log_count("sent setting (round 1)") == 1);
+  CHECK(log_count("sent setting (round 2)") == 1);
+  CHECK(log_has("test finished"));
+  CHECK(!hp.aot30EmulatorActive());
   CHECK(!g_edges.empty() && g_edges.back().level == 1);  // line released high
-
-  // A full change goes out as setting, 0A poll, setting, 0A poll.
-  CHECK(hp.aot30EmulatorQueueSetting(Mode::HEAT, Fan::FAN_AUTO, 20, false));
-  g_log.clear();
-  advance(hp, 2500);
-  CHECK(log_count("sent setting (round 1)") == 1 && log_count("sent setting (round 2)") == 1);
-  CHECK(hp.aot30EmulatorQueueOff());
-  g_log.clear();
-  advance(hp, 1500);
-  CHECK(log_count("sent power-off") == 1);
-  CHECK(hp.aot30EmulatorActive());
+  CHECK(g_tx_level == 1);
 
   // 4. Read-back mismatch (no loopback, or another device pulling the line) aborts and releases.
+  reset(serial, hp);
+  hp.aot30EmulatorSetDryRun(false);
+  CHECK(hp.aot30RunTest());
+  advance(hp, 1600);
   g_loopback = false;
   g_log.clear();
   advance(hp, 600);
@@ -192,14 +196,12 @@ int main() {
   CHECK(!hp.aot30EmulatorActive());
   CHECK(g_tx_level == 1);
 
-  // 5. Disabling stops everything.
+  // 5. A finished or aborted test can be started again.
   reset(serial, hp);
   hp.aot30EmulatorSetDryRun(true);
-  hp.aot30EmulatorSetEnabled(true);
+  CHECK(hp.aot30RunTest());
   advance(hp, 1600);
-  hp.aot30EmulatorSetEnabled(false);
-  CHECK(!hp.aot30EmulatorActive());
-  CHECK(!hp.aot30EmulatorQueueOff());
+  CHECK(log_has("polling started"));
 
   std::printf(failures ? "%d FAILURES\n" : "ALL PASSED\n", failures);
   return failures ? 1 : 0;
