@@ -327,3 +327,23 @@ COOL 16–30°C at low fan: `84 8C 94 9C A4 AC B4 BC C4 CC D4 DC E4 EC F4`.
 
 The model is a description of 22 observations, not a validated spec. Quiet fan, DRY, and
 any other remote settings are unmodelled.
+
+## Logic-analyser decode of the start-up capture (1 Nov 2026)
+
+`captures/matt-captures/start-up.sr` (1 MHz, 23.3 s) was decoded from raw samples with
+`tools/decode_logic_capture.py` and validated; the full results are in
+[`../captures/matt-captures/start-up-notes.md`](../captures/matt-captures/start-up-notes.md). Headline findings:
+
+- Two transmitters with different bit clocks: the remote at **1980.8 µs** per bit (504.8 baud) and the
+  unit at **2055.6 µs** (486.5 baud), neither 500 baud. The second message byte's high nibble (`2`
+  remote, `1` unit) identifies the sender in all 142 messages.
+- Bytes are 11 cells: start, 8 data, a ninth cell, stop. The ninth cell is not parity (392 of 659 bytes
+  differ from even parity); it follows a fixed per-position sequence `0 0 1 1 0 1 0` for both senders.
+- 22 stop cells are low, exactly bytes 2 and 3 of every setting message (both senders); those bytes are
+  12 and 13 cells long. A fixed 500 baud 8E1 receiver still returns all 659 bytes intact, flagging 392
+  parity and 22 framing errors.
+- Timing: poll every ~247 ms, reply 1.7–10 ms after the poll ends, setting echo 22–28 ms after the setting.
+- A 500 baud 8E1 UART cannot reproduce the remote's waveform, so any transmit experiment needs
+  cell-level control of the line. Do not transmit from this capture's evidence alone.
+- Unexplained: a unit reply that stalled for 1.01 s and ended with a lone `04`; the extra stop-cell low
+  pulse; the `03`/`13` and `08`/`0A` variants.
