@@ -26,8 +26,8 @@
 # day (state-of-play.md's "4A.1" section) after a locking hardening pass following a
 # crash, so this is a considered change, not an oversight. Flip it off in HA/the web
 # UI any time you want read-only monitoring (e.g. while testing new firmware).
-# The "AOT30 Test" button below is an experimental wired-remote emulation test (the wired remote must
-# be disconnected), not a general transmitter or the normal climate-control path.
+# The "AOT30 Test" button and the "AOT30 Remote Emulator" switch below are experimental wired-remote emulation (the wired remote
+# must be fully disconnected), not the normal climate-control path.
 
 esphome:
   name: aircon
@@ -452,6 +452,21 @@ switch:
     turn_off_action:
       - lambda: 'id(fujitsu_hp)->set_control_enabled(false);'
 
+  # EXPERIMENTAL. The ESP takes over the wired remote's role: it polls the unit continuously and the climate
+  # entity's commands (mode, setpoint, fan, ECO preset, off) become remote messages. The wired remote must be
+  # FULLY disconnected (all three wires). The unit shuts down if polling stops, so this switch off = unit off.
+  # It turns itself off again (see the interval below) if the emulator refuses or gives the bus back.
+  - platform: template
+    name: "AOT30 Remote Emulator"
+    id: aot30_remote_emulator
+    icon: "mdi:remote"
+    optimistic: true
+    restore_mode: ALWAYS_OFF
+    turn_on_action:
+      - lambda: 'id(fujitsu_hp)->set_aot30_emulator(true);'
+    turn_off_action:
+      - lambda: 'id(fujitsu_hp)->set_aot30_emulator(false);'
+
   # 4 Oct 2026 (4A.9) -- EXPERIMENTAL. Sets byte 5 bit 7 in our replies to test whether
   # the Thermo Sensor bit is writable from the secondary controller. Never restored on.
   - platform: template
@@ -505,6 +520,13 @@ button:
 
 # Diagnostic interval
 interval:
+  - interval: 1s
+    then:
+      - lambda: |-
+          const bool active = id(fujitsu_hp)->aot30_emulator_active();
+          if (id(aot30_remote_emulator).state != active) {
+            id(aot30_remote_emulator).publish_state(active);
+          }
   # 4A.11 -- lets a finished pulse experiment put the Thermo Sensor Experiment select back to Off.
   - interval: 500ms
     then:

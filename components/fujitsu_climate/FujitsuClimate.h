@@ -78,6 +78,7 @@ class FujitsuClimate : public climate::Climate, public Component {
 
   climate::ClimateTraits traits() override;
   void control(const climate::ClimateCall &call) override;
+  void control_aot30_(const climate::ClimateCall &call);
 
   // Unchanged from the 3B.22 fix -- this component's setup() (which starts the bus
   // task) must run before WiFi association, not after, on the shared 12V rail where
@@ -103,6 +104,10 @@ class FujitsuClimate : public climate::Climate, public Component {
   bool get_control_enabled() const { return control_enabled_; }
   // Experimental: runs the wired-remote emulation test (HEAT 20). The wired remote must be disconnected.
   void request_aot30_test();
+  // Experimental: the ESP takes over the wired remote's role for good (continuous polling, climate commands
+  // become remote messages). The wired remote must be fully disconnected. See FujiHeatPump.h.
+  void set_aot30_emulator(bool enabled);
+  bool aot30_emulator_active() const { return this->heat_pump.aot30ContinuousActive(); }
 
   // Diagnostics (trimmed for this rebuild -- see the .cpp file's top-of-file comment
   // for which of the old exploratory diagnostics were retired and why).

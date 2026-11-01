@@ -218,7 +218,7 @@ class FujiHeatPump {
   // remote's role for a short fixed test and must only be used with the wired remote DISCONNECTED.
   // It refuses to run if bus traffic was seen in the 1.5 s before, and aborts on any read-back mismatch
   // while transmitting. See FujiAot30Scheduler.h for the message script.
-  enum class EmuStage : uint8_t { IDLE, WAIT_QUIET, LEAD, SCRIPT, TAIL };
+  enum class EmuStage : uint8_t { IDLE, WAIT_QUIET, LEAD, SCRIPT, TAIL, RUN };
   int rxPin_ = -1;
   int txPin_ = -1;
   unsigned long lastRxByteMs = 0;
@@ -229,6 +229,16 @@ class FujiHeatPump {
   std::atomic<bool> emuEnabled_{false};
   std::atomic<bool> emuDryRun_{false};
   std::atomic<uint32_t> emuCommand_{0};
+  // Continuous mode (aot30StartEmulator): the ESP keeps polling and sends whatever target Home Assistant asks for.
+  std::atomic<bool> emuContinuous_{false};
+  std::atomic<uint32_t> emuTargetWord_{0};     // last submitted Target::pack()
+  std::atomic<bool> emuTargetDirty_{false};
+  fuji_aot30::Target emuApplied_;              // bus task: what the unit was last told
+  uint32_t emuRemoteBaseline_ = 0;
+  uint32_t remoteMessageCount_ = 0;            // wired-remote messages parsed (our own bytes are discarded)
+  uint32_t emuIgnoreRxUntilMs_ = 0;            // our own transmission comes back on RX; skip it
+  void emuApplyTarget();
+  void emuPublishObserved(const fuji_aot30::Target &t);
   bool unitRunningKnown_ = false;  // run flag of the unit's last status reply (bus task only)
   bool unitRunning_ = false;
   EmuStage emuStage_ = EmuStage::IDLE;
@@ -256,6 +266,15 @@ class FujiHeatPump {
 
   // One-shot remote-emulation test (HEAT 20, auto fan, ECO off). Main thread. False if one is running.
   bool aot30RunTest();
+  // Continuous remote emulation, for Home Assistant control. Main thread. The wired remote must stay disconnected
+  // (all three wires). Start is refused by the bus task if a remote is heard; the emulator stops itself if one
+  // appears later or the bus misbehaves. aot30EmulatorActive() tells whether it is (still) running.
+  bool aot30StartEmulator();
+  void aot30StopEmulator();
+  bool aot30ContinuousActive() const { return emuEnabled_.load() && emuContinuous_.load(); }
+  // Ask for a new state; false if the continuous emulator is not running.
+  bool aot30SubmitTarget(const fuji_aot30::Target &target);
+  fuji_aot30::Target aot30LastTarget() const { return fuji_aot30::Target::unpack(emuTargetWord_.load()); }
   // Test hook for the host tests; the firmware never turns dry run on.
   void aot30EmulatorSetDryRun(bool dry_run) { emuDryRun_.store(dry_run); }
   bool aot30EmulatorActive() const { return emuEnabled_.load(); }

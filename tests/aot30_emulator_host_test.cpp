@@ -228,6 +228,88 @@ int main() {
   CHECK(hp.aot30RunTest());
   advance(hp, 1600);
   CHECK(log_has("polling started"));
+  advance(hp, 20000);
+  CHECK(!hp.aot30EmulatorActive());
+
+  // 6. Continuous emulator: polls forever, turns a submitted target into scripted messages, publishes that state.
+  reset(serial, hp);
+  hp.aot30EmulatorSetDryRun(false);
+  CHECK(!hp.aot30SubmitTarget(Target()));  // not running yet
+  CHECK(hp.aot30StartEmulator());
+  CHECK(!hp.aot30StartEmulator());
+  CHECK(hp.aot30ContinuousActive());
+  advance(hp, 3700);
+  CHECK(log_has("running, polling continuously"));
+  CHECK(hp.getObservedControllerState().valid && !hp.getObservedControllerState().on);
+  // Our own poll comes back on RX; it must neither count as a wired remote nor reach the state decoder.
+  size_t uart_calls = g_uart_set_pin_calls;
+  for (int i = 0; i < 20000; i++) {
+    advance(hp, 1);
+    if (static_cast<size_t>(g_uart_set_pin_calls) != uart_calls) {
+      uart_calls = g_uart_set_pin_calls;
+      for (uint8_t b : {0x80, 0xD7, 0xEC, 0xF7, 0x80}) serial.rx.push_back(b);
+    }
+    if (i == 2000) {
+      Target t;
+      t.on = true;
+      t.mode = Mode::HEAT;
+      t.temp = 20;
+      CHECK(hp.aot30SubmitTarget(t));
+    }
+    if (i == 12000) {
+      Target t = hp.aot30LastTarget();
+      t.on = false;
+      CHECK(hp.aot30SubmitTarget(t));
+    }
+    if (i == 2100) {
+      FujiObservedControllerState st = hp.getObservedControllerState();
+      CHECK(st.on && st.mode == static_cast<byte>(FujiMode::HEAT) && st.temperature == 20 && st.temperature_valid);
+    }
+  }
+  CHECK(hp.aot30ContinuousActive());
+  CHECK(!log_has("giving it back"));
+  CHECK(log_count("sent setting (round 1)") == 1);
+  CHECK(log_count("sent setting (round 2)") == 1);
+  CHECK(log_count("sent power-off") == 1);
+  CHECK(!hp.getObservedControllerState().on);
+  // No target resubmitted: nothing more is sent, polling goes on (about 4 polls a second).
+  g_log.clear();
+  advance(hp, 5000);
+  CHECK(log_count("sent ") == 0);
+  CHECK(hp.aot30ContinuousActive());
+  // Submitting the state it is already in sends nothing.
+  Target off = hp.aot30LastTarget();
+  CHECK(hp.aot30SubmitTarget(off));
+  advance(hp, 500);
+  CHECK(log_count("sent ") == 0);
+  // Stop releases the bus.
+  hp.aot30StopEmulator();
+  advance(hp, 50);
+  CHECK(!hp.aot30ContinuousActive() && !hp.aot30EmulatorActive());
+  CHECK(log_has("emulator stopped"));
+  CHECK(g_tx_level == 1);
+
+  // 6b. A wired remote showing up while emulating makes the emulator give the bus back.
+  reset(serial, hp);
+  hp.aot30EmulatorSetDryRun(true);
+  CHECK(hp.aot30StartEmulator());
+  advance(hp, 4000);
+  CHECK(hp.aot30ContinuousActive());
+  for (int n = 0; n < 3; n++) {
+    for (uint8_t b : {0x80, 0xD7, 0xEC, 0xF7, 0x80}) serial.rx.push_back(b);
+    advance(hp, 250);
+  }
+  CHECK(log_has("giving it back"));
+  CHECK(!hp.aot30EmulatorActive());
+
+  // 6c. A remote already on the bus refuses the continuous start as well.
+  reset(serial, hp);
+  hp.aot30EmulatorSetDryRun(true);
+  CHECK(hp.aot30StartEmulator());
+  for (uint8_t b : {0x80, 0xD7, 0xEC, 0xF7, 0x80}) serial.rx.push_back(b);
+  advance(hp, 300);
+  CHECK(log_has("wired remote messages seen"));
+  CHECK(!hp.aot30EmulatorActive());
 
   std::printf(failures ? "%d FAILURES\n" : "ALL PASSED\n", failures);
   return failures ? 1 : 0;

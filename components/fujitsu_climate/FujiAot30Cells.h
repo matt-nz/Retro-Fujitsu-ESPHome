@@ -91,4 +91,33 @@ inline void build_poll(bool running, bool pending, uint8_t *cells) {
 
 inline void build_off(uint8_t *cells) { load_base_(cells, kOffBase, kOffCells); }
 
+// What the emulated remote is asked to show: power, mode, fan, setpoint and ECO.
+struct Target {
+  bool on = false;
+  Mode mode = Mode::HEAT;
+  Fan fan = Fan::FAN_AUTO;
+  uint8_t temp = 20;
+  bool eco = false;
+
+  bool operator==(const Target &o) const {
+    return on == o.on && mode == o.mode && fan == o.fan && temp == o.temp && eco == o.eco;
+  }
+  bool operator!=(const Target &o) const { return !(*this == o); }
+
+  // One word so the main thread can hand a target to the bus task atomically.
+  uint32_t pack() const {
+    return (on ? 1u : 0u) | (static_cast<uint32_t>(mode) << 1) | (static_cast<uint32_t>(fan) << 4) |
+           (static_cast<uint32_t>(temp & 0x1F) << 7) | ((eco ? 1u : 0u) << 12);
+  }
+  static Target unpack(uint32_t w) {
+    Target t;
+    t.on = (w & 1u) != 0;
+    t.mode = static_cast<Mode>((w >> 1) & 7u);
+    t.fan = static_cast<Fan>((w >> 4) & 7u);
+    t.temp = static_cast<uint8_t>((w >> 7) & 0x1F);
+    t.eco = ((w >> 12) & 1u) != 0;
+    return t;
+  }
+};
+
 }  // namespace fuji_aot30

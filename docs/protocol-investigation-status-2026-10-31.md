@@ -592,3 +592,17 @@ poll. The unit answers the first poll with `7F 12 01`, skips the second reply, a
 accepted (both rounds echoed) and the unit reports running (`18 17`) 1.5 s after the setting started. When polling
 stopped, the unit went silent and shut down by itself with no message. This matches the real remote's start-up
 (`start-up.sr`), so there is no hidden enrolment step to find. Details: `captures/matt-captures/settings-captures-notes.md`.
+
+## Continuous remote emulator (2026-11-02, untested on hardware)
+
+New HA switch **AOT30 Remote Emulator** (`set_aot30_emulator`). Turning it on runs the same checks as the test button
+(1.5 s silent bus, bus idles high, 2 s of polls) and then polls every 247 ms for as long as it stays on. While it runs,
+climate commands (mode, setpoint, fan, ECO preset, off) are folded into one target and sent as the captured two-round
+setting message, or the off message. The climate state shown in HA is the target the emulator last sent, because the
+byte-level decoder cannot decode its own echoes (aliasing, `0x96`). Supported: HEAT 16-30, COOL and AUTO 18-30, FAN,
+fans auto/low/medium/high (quiet maps to low), ECO; DRY is ignored. Safety:
+- The wired remote must be fully disconnected (all three wires). If two wired-remote messages are heard while running,
+  or a transmit read-back fails 3 times, the emulator releases the bus and the switch turns itself off.
+- Turning the switch off stops polling, and the unit shuts down by itself (as seen in `full-run.sr`).
+- The emulator's own transmissions are discarded from the receive path so they are not mistaken for a remote.
+Host tests: `tests/aot30_emulator_host_test.cpp` sections 6, 6b and 6c.

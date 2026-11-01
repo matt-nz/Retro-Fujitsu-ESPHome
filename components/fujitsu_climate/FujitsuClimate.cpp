@@ -717,6 +717,60 @@ void FujitsuClimate::request_aot30_test() {
   }
 }
 
+void FujitsuClimate::set_aot30_emulator(bool enabled) {
+  if (enabled) {
+    if (!this->heat_pump.aot30StartEmulator()) {
+      ESP_LOGW(TAG, "AOT30 emulator or test already running");
+    }
+  } else {
+    this->heat_pump.aot30StopEmulator();
+  }
+}
+
+// Climate command while the emulator is the remote: fold the call into the last requested target.
+void FujitsuClimate::control_aot30_(const climate::ClimateCall &call) {
+  using fuji_aot30::Fan;
+  using fuji_aot30::Mode;
+  fuji_aot30::Target target = this->heat_pump.aot30LastTarget();
+
+  if (call.get_mode().has_value()) {
+    switch (call.get_mode().value()) {
+      case climate::CLIMATE_MODE_OFF: target.on = false; break;
+      case climate::CLIMATE_MODE_HEAT: target.on = true; target.mode = Mode::HEAT; break;
+      case climate::CLIMATE_MODE_COOL: target.on = true; target.mode = Mode::COOL; break;
+      case climate::CLIMATE_MODE_HEAT_COOL:
+      case climate::CLIMATE_MODE_AUTO: target.on = true; target.mode = Mode::AUTO; break;
+      case climate::CLIMATE_MODE_FAN_ONLY: target.on = true; target.mode = Mode::FAN; break;
+      default:
+        ESP_LOGW(TAG, "AOT30 emulator: this unit has no such mode, ignoring the command");
+        return;
+    }
+  }
+  if (call.get_target_temperature().has_value()) {
+    target.temp = static_cast<uint8_t>(lroundf(call.get_target_temperature().value()));
+  }
+  if (call.get_fan_mode().has_value()) {
+    switch (call.get_fan_mode().value()) {
+      case climate::CLIMATE_FAN_HIGH: target.fan = Fan::FAN_HIGH; break;
+      case climate::CLIMATE_FAN_MEDIUM: target.fan = Fan::FAN_MEDIUM; break;
+      case climate::CLIMATE_FAN_LOW:
+      case climate::CLIMATE_FAN_QUIET: target.fan = Fan::FAN_LOW; break;
+      default: target.fan = Fan::FAN_AUTO; break;
+    }
+  }
+  if (call.get_preset().has_value()) {
+    target.eco = call.get_preset().value() == climate::CLIMATE_PRESET_ECO;
+  }
+  if (target.on && target.mode != Mode::FAN && !fuji_aot30::temp_in_range(target.mode, target.temp)) {
+    // HEAT 16-30, COOL and AUTO 18-30 (measured); clamp rather than drop the command.
+    const uint8_t low = target.mode == Mode::HEAT ? 16 : 18;
+    target.temp = target.temp < low ? low : 30;
+  }
+  if (!this->heat_pump.aot30SubmitTarget(target)) {
+    ESP_LOGW(TAG, "AOT30 emulator is not running, command ignored");
+  }
+}
+
 void FujitsuClimate::set_thermo_write_test(bool enabled) {
   this->heat_pump.setThermoWriteTest(enabled);
   ESP_LOGW(TAG, "Thermo Sensor WRITE TEST %s", enabled ? "ENABLED -- replies now set byte 5 bit 7" : "disabled");
@@ -802,6 +856,11 @@ void FujitsuClimate::control(const climate::ClimateCall &call) {
   // starve update_climate_state_()'s own reads) -- so treat this as real hardening, not
   // a confirmed fix. Getting an actual USB-serial capture on the next crash is the only
   // way to know the true cause for certain.
+  if (this->heat_pump.aot30ContinuousActive()) {
+    this->control_aot30_(call);
+    return;
+  }
+
   bool updated = false;
 
   // 2 Sep 2026 -- requested-vs-actual state sync (plan-to-completion.md). Snapshot the
