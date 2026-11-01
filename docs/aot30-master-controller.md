@@ -89,3 +89,14 @@ and slave towards the remote.
   plausible replies), then resume relaying.
 - Open questions: how the real remote reacts to a delayed poll and a synthetic reply, what it sends if its own setting is pressed at the same time,
   and whether the remote's display can be made to follow the ESP's changes (it will not unless the ESP relays them).
+
+## Open question: room temperature
+
+No room temperature has been seen on the bus. Over about 21 min of passive logging (`idle.log`, 5,205 polls and 5,206 replies, unit off) and several
+minutes of running (`cold.log`, `hot-fan-cold-auto.log`, `heat_20_22_18.log`) the poll is always `7F 28 13|17 08|0A` and the reply `7F 18 13|17 48 80`;
+only the run and pending flags vary. The run flag follows on/off commands, not a thermostat. The longest continuous on-stretch is only about 3-4 min,
+so a slowly changing or rare temperature message cannot be ruled out. The unit most likely uses its own return-air sensor.
+
+To confirm: (1) check whether the wired remote's display shows a room temperature, (2) with the master controller running, set HEAT 16 and then
+HEAT 26 in a room at about 21 °C for 20-30 min each and see whether the unit throttles back or stops, and (3) capture 45-60 min of passive logs
+with the real remote and the unit on, then look for any message other than the four poll and two reply patterns.
