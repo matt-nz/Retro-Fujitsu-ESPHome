@@ -45,6 +45,11 @@
 #include <Arduino.h>
 #include <HardwareSerial.h>
 
+#include <atomic>
+#include <cstdint>
+
+#include "FujiAot30Cells.h"
+#include "FujiAot30Scheduler.h"
 #include "FujiAot30Transmit.h"
 #include "FujiPassiveStream.h"
 
@@ -207,6 +212,27 @@ class FujiHeatPump {
   void inspectObservedControllerByte(byte value);
   void setObservedOff();
 
+  // --- AOT30L/ART30RL wired-remote emulation (EXPERIMENTAL, off by default) -------------------
+  // On this bus the wired remote is the master: it polls every ~247 ms and the unit only replies, so
+  // nothing can be sent while a real remote is connected (a setting message is 164 ms long, the free
+  // gap between the unit's reply and the next poll is 30-58 ms). The emulator therefore takes the
+  // remote's role and must only be used with the wired remote DISCONNECTED. It refuses to start if
+  // bus traffic was seen shortly before, and aborts on any read-back mismatch while transmitting.
+  // See FujiAot30Scheduler.h for the message script and docs/protocol-investigation-status-*.md.
+  int rxPin_ = -1;
+  int txPin_ = -1;
+  unsigned long lastRxByteMs = 0;
+  fuji_aot30::Scheduler emuScheduler_;
+  std::atomic<bool> emuEnabled_{false};
+  std::atomic<bool> emuDryRun_{true};
+  std::atomic<uint32_t> emuCommand_{0};
+  bool emuWaitingQuiet_ = false;
+  uint32_t emuStartRequestedMs_ = 0;
+  uint32_t emuTxCount_ = 0;
+  void emuDrainRx();
+  void emuHandleCommand(uint32_t command);
+  bool emuTransmit(const uint8_t *cells, size_t count, const char *what);
+
   // Deviation #1 from upstream -- see the file-header comment above. Upstream hardcodes
   // 50 here; this project's own measured bus timing (3B.23: 0-10.9ms real CTRL->UNIT
   // gap, never 50ms) means the reply has to go out essentially immediately once built,
@@ -225,6 +251,16 @@ class FujiHeatPump {
   void sendPendingFrame();
   bool sendCapturedHeat20OnMessage();
   bool sendCandidateStartupAndHeat20On();
+
+  // Remote emulation (see the private section above). Called from the main thread except Pump().
+  void aot30EmulatorSetEnabled(bool enabled);
+  void aot30EmulatorSetDryRun(bool dry_run) { emuDryRun_.store(dry_run); }
+  bool aot30EmulatorDryRun() const { return emuDryRun_.load(); }
+  bool aot30EmulatorActive() const { return emuEnabled_.load(); }
+  bool aot30EmulatorQueueSetting(fuji_aot30::Mode mode, fuji_aot30::Fan fan, uint8_t temp, bool eco);
+  bool aot30EmulatorQueueOff();
+  // Bus task: reads whatever has arrived without blocking and sends whatever the script says is due.
+  void aot30EmulatorPump();
   bool isBound();
   bool updatePending();
 

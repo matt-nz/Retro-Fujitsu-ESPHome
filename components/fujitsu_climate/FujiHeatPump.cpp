@@ -9,6 +9,14 @@
 #include "esphome/core/log.h"
 #include <cstdio>
 
+#ifdef ESP32
+#include <driver/gpio.h>
+#include <driver/uart.h>
+#include <esp_rom_gpio.h>
+#include <esp_timer.h>
+#include <soc/gpio_sig_map.h>
+#endif
+
 namespace {
 static const char *const TAG = "fujitsu.heatpump";
 
@@ -177,6 +185,9 @@ void FujiHeatPump::connect(HardwareSerial *serial, bool secondary) { return this
 
 void FujiHeatPump::connect(HardwareSerial *serial, bool secondary, int rxPin = -1, int txPin = -1) {
   _serial = serial;
+  rxPin_ = rxPin;
+  txPin_ = txPin;
+  lastRxByteMs = 0;
   if (rxPin != -1 && txPin != -1) {
 #ifdef ESP32
     _serial->begin(500, SERIAL_8E1, rxPin, txPin);
@@ -224,6 +235,260 @@ void FujiHeatPump::sendPendingFrame() {
     updateFields = 0;
 
     _serial->readBytes(writeBuf, 8);  // read back our own frame so we dont process it again
+  }
+}
+
+// ---------------------------------------------------------------------------------------------
+// AOT30L/ART30RL wired-remote emulation. EXPERIMENTAL; read the comment in FujiHeatPump.h first.
+// ---------------------------------------------------------------------------------------------
+namespace {
+// Command mailbox layout (main thread -> bus task): kind in bits 0-3, mode 4-6, fan 7-9, temp 10-14, eco 15.
+constexpr uint32_t kEmuStart = 1;
+constexpr uint32_t kEmuSetting = 2;
+constexpr uint32_t kEmuOff = 3;
+// The bus must have been silent this long before the emulator starts; a connected remote polls every ~247 ms.
+constexpr uint32_t kEmuStartQuietMs = 1500;
+// Do not start a transmission within this long of the last received byte (the unit's reply is still coming).
+constexpr uint32_t kEmuQuietBeforeTxMs = 12;
+// Abort a transmission after this many cells whose read-back differs from what was driven.
+constexpr uint32_t kEmuMaxMismatches = 3;
+}  // namespace
+
+void FujiHeatPump::aot30EmulatorSetEnabled(bool enabled) {
+  if (enabled) {
+    emuCommand_.store(kEmuStart);
+    emuEnabled_.store(true);
+  } else {
+    emuEnabled_.store(false);
+    emuCommand_.store(0);
+  }
+}
+
+bool FujiHeatPump::aot30EmulatorQueueSetting(fuji_aot30::Mode mode, fuji_aot30::Fan fan, uint8_t temp, bool eco) {
+  if (!emuEnabled_.load() || (mode != fuji_aot30::Mode::FAN && !fuji_aot30::temp_in_range(mode, temp))) {
+    return false;
+  }
+  const uint32_t command = kEmuSetting | (static_cast<uint32_t>(mode) << 4) | (static_cast<uint32_t>(fan) << 7) |
+                           (static_cast<uint32_t>(temp & 0x1F) << 10) | (eco ? (1u << 15) : 0u);
+  uint32_t expected = 0;
+  return emuCommand_.compare_exchange_strong(expected, command);
+}
+
+bool FujiHeatPump::aot30EmulatorQueueOff() {
+  if (!emuEnabled_.load()) {
+    return false;
+  }
+  uint32_t expected = 0;
+  return emuCommand_.compare_exchange_strong(expected, kEmuOff);
+}
+
+void FujiHeatPump::emuDrainRx() {
+  if (_serial == nullptr) {
+    return;
+  }
+  uint8_t chunk[8];
+  size_t chunk_len = 0;
+  auto flush_chunk = [&]() {
+    if (debugPrint && chunk_len > 0) {
+      // Same line format as waitForFrame() so tools/decode_timeline.py reads these logs too.
+      char raw[25] = {};
+      for (size_t i = 0; i < chunk_len; i++) {
+        snprintf(raw + i * 3, sizeof(raw) - i * 3, " %02X", static_cast<unsigned>(chunk[i]));
+      }
+      ESP_LOGI(TAG, "RX raw (%u/8, before XOR):%s", static_cast<unsigned>(chunk_len), raw);
+    }
+    chunk_len = 0;
+  };
+  while (_serial->available() > 0) {
+    const int value = _serial->read();
+    if (value < 0) {
+      break;
+    }
+    lastRxByteMs = millis();
+    chunk[chunk_len++] = static_cast<uint8_t>(value);
+    this->inspectObservedControllerByte(static_cast<byte>(value) ^ 0xFF);
+    if (chunk_len == sizeof(chunk)) {
+      flush_chunk();
+    }
+  }
+  flush_chunk();
+}
+
+void FujiHeatPump::emuHandleCommand(uint32_t command) {
+  const uint32_t kind = command & 0xF;
+  if (kind == kEmuStart) {
+    emuScheduler_.stop();
+    emuWaitingQuiet_ = true;
+    emuStartRequestedMs_ = millis();
+    ESP_LOGW(TAG, "AOT30 emulator: start requested (%s); checking that the bus is silent for %u ms",
+             emuDryRun_.load() ? "DRY RUN, nothing will be driven" : "LIVE", static_cast<unsigned>(kEmuStartQuietMs));
+  } else if (kind == kEmuSetting) {
+    const auto mode = static_cast<fuji_aot30::Mode>((command >> 4) & 0x7);
+    const auto fan = static_cast<fuji_aot30::Fan>((command >> 7) & 0x7);
+    const uint8_t temp = (command >> 10) & 0x1F;
+    const bool eco = (command >> 15) & 1;
+    if (emuScheduler_.queue_setting(mode, fan, temp, eco)) {
+      ESP_LOGW(TAG, "AOT30 emulator: setting queued (mode %u, fan %u, %u C, eco %u)", static_cast<unsigned>(mode),
+               static_cast<unsigned>(fan), static_cast<unsigned>(temp), static_cast<unsigned>(eco));
+    } else {
+      ESP_LOGW(TAG, "AOT30 emulator: setting rejected (not running yet, or another change is in progress)");
+    }
+  } else if (kind == kEmuOff) {
+    if (emuScheduler_.queue_off()) {
+      ESP_LOGW(TAG, "AOT30 emulator: power-off queued");
+    } else {
+      ESP_LOGW(TAG, "AOT30 emulator: power-off rejected (not running yet, or another change is in progress)");
+    }
+  }
+}
+
+bool FujiHeatPump::emuTransmit(const uint8_t *cells, size_t count, const char *what) {
+  const unsigned long duration_us = static_cast<unsigned long>(count * fuji_aot30::kRemoteCellTenthsUs / 10);
+  if (emuDryRun_.load()) {
+    ESP_LOGW(TAG, "AOT30 emulator DRY RUN would send %s (%u cells, %lu us)", what, static_cast<unsigned>(count),
+             duration_us);
+    return true;
+  }
+#ifdef ESP32
+  if (rxPin_ < 0 || txPin_ < 0) {
+    ESP_LOGE(TAG, "AOT30 emulator: TX/RX pins unknown");
+    return false;
+  }
+  const gpio_num_t tx = static_cast<gpio_num_t>(txPin_);
+  const gpio_num_t rx = static_cast<gpio_num_t>(rxPin_);
+
+  // Take the TX pin away from the UART and drive it as a plain GPIO, idle high (recessive).
+  esp_rom_gpio_connect_out_signal(tx, SIG_GPIO_OUT_IDX, false, false);
+  gpio_set_direction(tx, GPIO_MODE_OUTPUT);
+  gpio_set_level(tx, 1);
+
+  uint32_t mismatches = 0;
+  int first_bad = -1;
+  int last_level = 1;
+  const int64_t t0 = esp_timer_get_time();
+  for (size_t i = 0; i < count; i++) {
+    const int64_t cell_start = t0 + static_cast<int64_t>(i * fuji_aot30::kRemoteCellTenthsUs / 10);
+    const int64_t cell_mid = cell_start + (fuji_aot30::kRemoteCellTenthsUs / 20);
+    const int level = cells[i] ? 0 : 1;  // line level is the inverse of the bus bit
+    while (esp_timer_get_time() < cell_start) {
+    }
+    if (level != last_level) {
+      gpio_set_level(tx, level);
+      last_level = level;
+    }
+    while (esp_timer_get_time() < cell_mid) {
+    }
+    if (gpio_get_level(rx) != level) {
+      if (first_bad < 0) {
+        first_bad = static_cast<int>(i);
+      }
+      if (++mismatches >= kEmuMaxMismatches) {
+        break;
+      }
+    }
+  }
+  if (mismatches < kEmuMaxMismatches) {
+    const int64_t end = t0 + static_cast<int64_t>(count * fuji_aot30::kRemoteCellTenthsUs / 10);
+    while (esp_timer_get_time() < end) {
+    }
+  }
+  gpio_set_level(tx, 1);
+
+  // Give the pin back to the UART.
+  uart_set_pin(static_cast<uart_port_t>(2), txPin_, rxPin_, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE);
+
+  if (mismatches >= kEmuMaxMismatches) {
+    ESP_LOGE(TAG, "AOT30 emulator: %s aborted, %u read-back mismatches (first at cell %d); line released", what,
+             static_cast<unsigned>(mismatches), first_bad);
+    return false;
+  }
+  if (first_bad >= 0) {
+    ESP_LOGW(TAG, "AOT30 emulator: %s sent with %u read-back mismatch (cell %d)", what,
+             static_cast<unsigned>(mismatches), first_bad);
+  }
+  return true;
+#else
+  (void) cells;
+  ESP_LOGE(TAG, "AOT30 emulator needs an ESP32");
+  return false;
+#endif
+}
+
+void FujiHeatPump::aot30EmulatorPump() {
+  emuDrainRx();
+  const uint32_t command = emuCommand_.exchange(0);
+  if (command != 0) {
+    emuHandleCommand(command);
+  }
+
+  uint32_t now = millis();
+  if (emuWaitingQuiet_) {
+    const bool traffic_before = lastRxByteMs != 0 && static_cast<uint32_t>(emuStartRequestedMs_ - lastRxByteMs) < kEmuStartQuietMs;
+    const bool traffic_since = lastRxByteMs != 0 && static_cast<int32_t>(lastRxByteMs - emuStartRequestedMs_) > 0;
+    if (traffic_before || traffic_since) {
+      ESP_LOGE(TAG, "AOT30 emulator: refused, bus traffic seen within %u ms of starting. Is the wired remote "
+                    "still connected? Disconnect it first.",
+               static_cast<unsigned>(kEmuStartQuietMs));
+      emuWaitingQuiet_ = false;
+      emuEnabled_.store(false);
+      return;
+    }
+    if (now - emuStartRequestedMs_ >= kEmuStartQuietMs) {
+      emuWaitingQuiet_ = false;
+      emuScheduler_.start(now);
+      emuTxCount_ = 0;
+      ESP_LOGW(TAG, "AOT30 emulator: bus silent, polling started (unit assumed OFF)");
+    }
+    return;
+  }
+
+  fuji_aot30::Action action;
+  if (!emuScheduler_.active() || !emuScheduler_.due(now, &action)) {
+    return;
+  }
+  if (_serial->available() > 0 || (lastRxByteMs != 0 && now - lastRxByteMs < kEmuQuietBeforeTxMs)) {
+    return;  // the unit is still talking, try again next time round
+  }
+
+  uint8_t cells[fuji_aot30::kSettingCells];
+  size_t count = 0;
+  const char *what = "poll";
+  switch (action.kind) {
+    case fuji_aot30::Action::Kind::POLL:
+      fuji_aot30::build_poll(action.running, action.pending, cells);
+      count = fuji_aot30::kPollCells;
+      what = action.pending ? "poll (pending)" : (action.running ? "poll (running)" : "poll (idle)");
+      break;
+    case fuji_aot30::Action::Kind::SETTING:
+      if (!fuji_aot30::build_setting(action.mode, action.fan, action.temp, action.eco, action.repeat, cells)) {
+        ESP_LOGE(TAG, "AOT30 emulator: invalid setting, stopping");
+        emuEnabled_.store(false);
+        return;
+      }
+      count = fuji_aot30::kSettingCells;
+      what = action.repeat ? "setting (round 2)" : "setting (round 1)";
+      break;
+    case fuji_aot30::Action::Kind::OFF:
+      fuji_aot30::build_off(cells);
+      count = fuji_aot30::kOffCells;
+      what = "power-off";
+      break;
+    default:
+      return;
+  }
+
+  now = millis();
+  const bool ok = emuTransmit(cells, count, what);
+  if (!ok) {
+    emuEnabled_.store(false);
+    emuScheduler_.stop();
+    ESP_LOGE(TAG, "AOT30 emulator stopped. Reconnect the wired remote.");
+    return;
+  }
+  emuScheduler_.sent(now);
+  emuTxCount_++;
+  if (action.kind != fuji_aot30::Action::Kind::POLL) {
+    ESP_LOGW(TAG, "AOT30 emulator: sent %s", what);
   }
 }
 
@@ -298,6 +563,9 @@ bool FujiHeatPump::waitForFrame() {
   if (_serial->available()) {
     memset(readBuf, 0, 8);
     int bytesRead = _serial->readBytes(readBuf, 8);
+    if (bytesRead > 0) {
+      lastRxByteMs = millis();
+    }
 
     if (debugPrint && bytesRead > 0) {
       char rawBytes[25] = {};

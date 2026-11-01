@@ -90,7 +90,13 @@ static void fujitsu_bus_task(void *pv) {
 
   for (;;) {
     climate->process_aot30_test_tx_request();
-    bool frame_received = climate->heat_pump.waitForFrame();
+    bool frame_received = false;
+    if (climate->heat_pump.aot30EmulatorActive()) {
+      // Wired-remote emulation: non-blocking receive plus the scripted transmissions.
+      climate->heat_pump.aot30EmulatorPump();
+    } else {
+      frame_received = climate->heat_pump.waitForFrame();
+    }
     if (frame_received) {
       // Reply immediately -- see FujiHeatPump.h's Deviation #1 comment for why this
       // project doesn't reproduce upstream's delay(60) here.
@@ -707,7 +713,37 @@ void FujitsuClimate::set_aot30_test_tx_enabled(bool enabled) {
     ESP_LOGW(TAG, "AOT30 experimental TX armed for one test sequence");
   } else {
     this->aot30_test_tx_request_.store(Aot30TestRequest::NONE);
+    this->heat_pump.aot30EmulatorSetEnabled(false);
     ESP_LOGW(TAG, "AOT30 experimental TX disarmed");
+  }
+}
+
+bool FujitsuClimate::set_aot30_emulator_enabled(bool enabled) {
+  if (enabled && !this->aot30_test_tx_enabled_.load()) {
+    ESP_LOGW(TAG, "AOT30 emulator rejected: turn on the separate experimental TX arm switch first");
+    return false;
+  }
+  this->heat_pump.aot30EmulatorSetEnabled(enabled);
+  ESP_LOGW(TAG, "AOT30 remote emulator %s (%s). The wired remote must be disconnected.",
+           enabled ? "enabled" : "disabled", this->heat_pump.aot30EmulatorDryRun() ? "dry run" : "LIVE");
+  return true;
+}
+
+void FujitsuClimate::set_aot30_emulator_dry_run(bool dry_run) {
+  this->heat_pump.aot30EmulatorSetDryRun(dry_run);
+  ESP_LOGW(TAG, "AOT30 emulator dry run %s", dry_run ? "ON (nothing is driven onto the bus)" : "OFF -- LIVE transmission");
+}
+
+void FujitsuClimate::request_aot30_emulator_heat20() {
+  if (!this->aot30_test_tx_enabled_.load() ||
+      !this->heat_pump.aot30EmulatorQueueSetting(fuji_aot30::Mode::HEAT, fuji_aot30::Fan::AUTO, 20, false)) {
+    ESP_LOGW(TAG, "AOT30 emulator HEAT 20 rejected: arm the TX switch, enable the emulator and wait for it to start");
+  }
+}
+
+void FujitsuClimate::request_aot30_emulator_off() {
+  if (!this->aot30_test_tx_enabled_.load() || !this->heat_pump.aot30EmulatorQueueOff()) {
+    ESP_LOGW(TAG, "AOT30 emulator OFF rejected: arm the TX switch, enable the emulator and wait for it to start");
   }
 }
 

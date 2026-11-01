@@ -459,3 +459,59 @@ table. Remote ranges, confirmed by the operator: HEAT 16–30, COOL 18–30, AUT
 AUTO sweeps started at 18, so the lower limits of those two modes rest on the operator, not on the bus.
 Remaining capture needs are small: a logic-analyser confirmation of the extreme setpoints, and a
 running-state idle soak.
+
+## Wired-remote emulator firmware (1 Nov 2026, experimental, not yet run on hardware)
+
+**Why an emulator.** On this bus the wired remote is the master: it polls every ~247 ms and the unit only
+replies. A setting message is 164 ms long, but the free gap between the unit's reply and the next poll is only
+30–58 ms, so nothing can be injected while a real remote is connected (the remote does not wait for a free
+slot). The only way to send a command is to take the remote's place: **disconnect the wired remote**, and let
+the ESP32 poll and send settings exactly as the captures show.
+
+**What was added** (all off by default; dry run is on by default):
+- `FujiAot30Cells.h` builds the 84-cell setting, 44-cell poll and 33-cell off messages (mirrors
+  `tools/fuji_packet.py`; checked against 677 generated vectors in `tests/golden_cells.txt`).
+- `FujiAot30Scheduler.h` is the timing script from the captures: a change goes out in place of a poll
+  (round 1), a poll flagged `0A` 405 ms later, round 2 at 803 ms, another `0A` poll at 1210 ms, then normal polls
+  (run flag set) every 247 ms. Power-off is the off message, a poll still flagged running at +167 ms, then idle polls
+  from +405 ms.
+- `FujiHeatPump::aot30EmulatorPump()` (called from the bus task while the emulator is enabled) reads the UART without
+  blocking, waits for the bus to be quiet, then drives GPIO17 as a plain pin at 1980.8 µs per cell and reads GPIO16
+  back every cell. Three mismatches (the line not following what was driven, or another device pulling it low) abort
+  the message, release the line, give the pin back to the UART and disable the emulator.
+- It refuses to start if any byte was received in the 1.5 s before starting or while waiting, which is what
+  a connected remote (polling every 247 ms) would cause.
+- Entities: the existing "AOT30 Experimental TX Arm" switch must be on; then "AOT30 Emulator Dry Run" (default on),
+  "AOT30 Remote Emulator Enabled", and buttons "AOT30 Emulator: HEAT 20 ON" (HEAT 20 °C, auto fan, ECO off) and
+  "AOT30 Emulator: OFF". Turning the arm off disables the emulator. The old one-shot UART test buttons are unchanged.
+
+**Tests** (`sh tests/run_all.sh`): the cell encoder against the Python model, the scheduler timeline (including
+late sends and millis wrap), and the real `FujiHeatPump.cpp` compiled on a desktop with a fake clock, UART and
+GPIO: dry run, refusal when the bus is busy, the pulse train timing within 10 µs of the encoded cells, a full
+change and power-off, abort on read-back mismatch, and disabling. It could not be compiled for the ESP32 here
+(the ESPHome package is not available from the internal package index), so the ESP-IDF calls
+(`esp_rom_gpio_connect_out_signal`, `gpio_*`, `uart_set_pin`, `esp_timer_get_time`) are unverified until built.
+
+**Suggested first run, in order, stopping at the first surprise:**
+1. Build and flash. With the remote still connected, nothing changes (the emulator is off).
+2. Disconnect the wired remote. Unit powered, ESP32 powered. Arm switch on, dry run left ON, enable the emulator.
+   The log should say "bus silent, polling started"; press the HEAT 20 button and check the log for the
+   dry-run lines (setting round 1, pending poll, setting round 2, pending poll).
+3. Bench check of the waveform: connect the logic analyser to the ESP32's line with the unit disconnected, turn
+   dry run off, and compare the captured polls and setting with `heat.sr` (`tools/decode_logic_capture.py --settings`
+   should print HEAT 20 °C, auto fan). The cells should decode exactly and the bit time should read 1980.8 µs.
+4. Only then connect the unit (still off), dry run off, enable, wait for polling, and check on the analyser that the
+   unit replies `7F 18 13 48 80` (and `7F 12 01` as its first message after power-up). Then press HEAT 20 ON and
+   look for the unit's echoes `7F 12 03 …`.
+
+**Known risks, none tested:**
+- The LIN transceiver's TXD dominant timeout (typically 6–20 ms) may cut off the remote's first byte, whose low
+  pulse is 15.8 ms long. The read-back check would show this as an abort at cell 0–7; if it happens the transmitter
+  hardware, not the protocol, is the limit.
+- The poll's run flag (13/17) is sent as `13` (off) when the emulator starts; with the unit already running, that
+  may command it off. Start with the unit off.
+- If the real remote is reconnected while the emulator runs, the two collide. The read-back abort limits it, but the
+  unit may already have seen a corrupted message. Disable the emulator before reconnecting the remote.
+- Whether the unit accepts commands from the ESP32 is unknown. A failure to respond may also mean the exchange needs
+  something the captures never showed (for example a different start-up sequence); capture it on the analyser and
+  compare with `start-up.sr`.

@@ -1,0 +1,119 @@
+// Checks FujiAot30Scheduler.h against the timing seen in the captures.
+//   g++ -std=c++17 -Wall -Wextra -Icomponents/fujitsu_climate tests/aot30_scheduler_test.cpp -o /tmp/aot30_scheduler_test
+//   /tmp/aot30_scheduler_test
+
+#include <cstdio>
+#include <vector>
+
+#include "FujiAot30Scheduler.h"
+
+using namespace fuji_aot30;
+
+struct Event {
+  uint32_t t;
+  Action a;
+};
+
+static int failures = 0;
+#define CHECK(c)                                                  \
+  do {                                                            \
+    if (!(c)) {                                                   \
+      std::printf("FAIL line %d: %s\n", __LINE__, #c);            \
+      failures++;                                                 \
+    }                                                             \
+  } while (0)
+
+static std::vector<Event> run(Scheduler &s, uint32_t from, uint32_t to, uint32_t step = 1) {
+  std::vector<Event> out;
+  for (uint32_t t = from; t < to; t += step) {
+    Action a;
+    if (s.due(t, &a)) {
+      out.push_back({t, a});
+      s.sent(t);
+    }
+  }
+  return out;
+}
+
+int main() {
+  Scheduler s;
+  Action a;
+  CHECK(!s.due(0, &a));  // inactive: nothing due
+
+  s.start(1000);
+  auto idle = run(s, 1000, 2000);
+  CHECK(idle.size() == 5);  // 1000, 1247, 1494, 1741, 1988
+  for (size_t i = 0; i < idle.size(); i++) {
+    CHECK(idle[i].a.kind == Action::Kind::POLL && !idle[i].a.running && !idle[i].a.pending);
+    if (i) CHECK(idle[i].t - idle[i - 1].t == Scheduler::kPollPeriodMs);
+  }
+
+  // Turn on: setting in the next poll slot, then the captured script.
+  CHECK(s.queue_setting(Mode::HEAT, Fan::AUTO, 20, false));
+  CHECK(!s.queue_setting(Mode::HEAT, Fan::AUTO, 21, false));  // one change at a time
+  CHECK(!s.queue_off());
+  auto ev = run(s, 2000, 6000);
+  CHECK(ev.size() >= 9);
+  uint32_t t0 = ev[0].t;
+  CHECK(t0 == 2235);  // next poll slot after 1988 + 247
+  CHECK(ev[0].a.kind == Action::Kind::SETTING && !ev[0].a.repeat && ev[0].a.temp == 20 && ev[0].a.mode == Mode::HEAT);
+  CHECK(ev[1].t == t0 + 405 && ev[1].a.kind == Action::Kind::POLL && ev[1].a.running && ev[1].a.pending);
+  CHECK(ev[2].t == t0 + 803 && ev[2].a.kind == Action::Kind::SETTING && ev[2].a.repeat);
+  CHECK(ev[3].t == t0 + 1210 && ev[3].a.kind == Action::Kind::POLL && ev[3].a.pending);
+  CHECK(ev[4].t == t0 + 1516 && ev[4].a.kind == Action::Kind::POLL && ev[4].a.running && !ev[4].a.pending);
+  CHECK(ev[5].t == ev[4].t + Scheduler::kPollPeriodMs && ev[5].a.running && !ev[5].a.pending);
+  CHECK(s.running());
+
+  // A late transmission (bus busy) shifts the rest of the script, it does not skip steps.
+  Scheduler late;
+  late.start(0);
+  CHECK(late.queue_setting(Mode::COOL, Fan::LOW, 24, true));
+  Action x;
+  CHECK(late.due(0, &x) && x.kind == Action::Kind::SETTING);
+  late.sent(50);  // went out 50 ms late
+  CHECK(!late.due(50 + 404, &x));
+  CHECK(late.due(50 + 405, &x) && x.kind == Action::Kind::POLL);
+
+  // Turn off: off message, a poll still flagged running, then idle polls.
+  Scheduler off;
+  off.start(0);
+  CHECK(off.queue_setting(Mode::AUTO, Fan::AUTO, 22, false));
+  run(off, 0, 3000);
+  CHECK(off.running());
+  CHECK(off.queue_off());
+  auto o = run(off, 3000, 5000);
+  CHECK(o.size() >= 4);
+  CHECK(o[0].a.kind == Action::Kind::OFF);
+  CHECK(o[1].t == o[0].t + 167 && o[1].a.kind == Action::Kind::POLL && o[1].a.running);
+  CHECK(o[2].t == o[0].t + 405 && o[2].a.kind == Action::Kind::POLL && !o[2].a.running);
+  CHECK(o[3].a.kind == Action::Kind::POLL && !o[3].a.running);
+  CHECK(!off.running());
+
+  // Invalid setpoints are refused; FAN ignores the setpoint.
+  Scheduler bad;
+  bad.start(0);
+  CHECK(!bad.queue_setting(Mode::COOL, Fan::AUTO, 17, false));
+  CHECK(!bad.queue_setting(Mode::HEAT, Fan::AUTO, 31, false));
+  CHECK(bad.queue_setting(Mode::FAN, Fan::AUTO, 0, false));
+
+  // millis() wrap-around.
+  Scheduler wrap;
+  wrap.start(0xFFFFFF00u);
+  size_t polls = 0;
+  for (uint32_t i = 0; i < 600; i++) {
+    const uint32_t t = 0xFFFFFF00u + i;  // wraps past zero
+    Action wa;
+    if (wrap.due(t, &wa)) {
+      polls++;
+      wrap.sent(t);
+    }
+  }
+  CHECK(polls == 3);
+
+  // After stop() nothing is due.
+  s.stop();
+  CHECK(!s.due(100000, &a));
+
+  std::printf(failures ? "%d FAILURES\n" : "ALL PASSED\n", failures);
+  return failures ? 1 : 0;
+}

@@ -95,12 +95,35 @@ def main():
             if enc != bus:
                 mismatches += 1
     expect("encoder reproduces %d captured packets" % count, mismatches == 0, mismatches)
+    # Polls and the off message are reproduced too (remote polls: all captures including idle).
+    polls = offs = bad = 0
+    for name in ("start-up", "heat", "fan-mode", "eco", "idle"):
+        starts, levels, frames, clocks = load(name)
+        import bisect
+        for m in d.split_messages(frames):
+            v = [f["bus"] for f in m]
+            who = m[0]["sender"]
+            t0 = m[0]["t"]
+            def cells_of(n):
+                return [1 - levels[bisect.bisect_right(starts, t0 + (c + 0.5) * clocks[who]) - 1] for c in range(n)]
+            if who == "remote" and len(v) == 4 and v[:2] == [0x7F, 0x28] and v[2] in (0x13, 0x17) and v[3] in (0x08, 0x0A):
+                polls += 1
+                bad += cells_of(44) != fp.encode_poll(v[2] == 0x17, v[3] == 0x0A)
+            if len(v) >= 3 and v[0] == 0x7F and v[1] in (0x24, 0x14) and v[2] == 0x03:
+                offs += 1
+                bad += cells_of(33) != fp.encode_off(who)
+    expect("encoder reproduces %d polls and %d off messages" % (polls, offs), bad == 0 and polls > 1000 and offs >= 8, bad)
     # Predictions for settings not captured yet (HEAT above 23 C sets the setpoint's bits 3 and 4).
     expect("temp 24 sets cell 43", fp.encode("heat", "auto", 24)[43] == 1)
     expect("temp 16 clears cells 40-43 and sets 44",
            fp.encode("heat", "auto", 16)[40:45] == [0, 0, 0, 0, 1])
     expect("runs start from idle high and end high",
            fp.runs(fp.encode("heat", "auto", 18))[0][0] == 0 and fp.runs(fp.encode("heat", "auto", 18))[-1][0] == 1)
+
+    # The C++ test vectors are current.
+    with open(os.path.join(os.path.dirname(__file__), "golden_cells.txt")) as f:
+        expect("tests/golden_cells.txt is current (run: python3 tools/fuji_packet.py --golden tests/golden_cells.txt)",
+               f.read().splitlines() == fp.golden_lines())
 
     if failures:
         print("FAILED:\n  " + "\n  ".join(failures))

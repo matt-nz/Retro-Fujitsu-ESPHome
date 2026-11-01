@@ -480,6 +480,36 @@ switch:
     turn_off_action:
       - lambda: 'id(fujitsu_hp)->set_aot30_test_tx_enabled(false);'
 
+  # AOT30L/ART30RL wired-remote EMULATOR (experimental). On this bus the wired remote is the master and
+  # nothing can be sent while it is connected, so the ESP32 takes its place: DISCONNECT THE WIRED REMOTE
+  # first. Needs the arm switch above. Dry run (default on) only logs what would be sent; turn it off
+  # for live transmission. It refuses to start if the bus was active in the last 1.5 s.
+  - platform: template
+    name: "AOT30 Emulator Dry Run"
+    id: aot30_emulator_dry_run
+    icon: "mdi:test-tube"
+    entity_category: diagnostic
+    optimistic: true
+    restore_mode: ALWAYS_ON
+    turn_on_action:
+      - lambda: 'id(fujitsu_hp)->set_aot30_emulator_dry_run(true);'
+    turn_off_action:
+      - lambda: 'id(fujitsu_hp)->set_aot30_emulator_dry_run(false);'
+  - platform: template
+    name: "AOT30 Remote Emulator Enabled"
+    id: aot30_emulator_enable
+    icon: "mdi:remote"
+    entity_category: diagnostic
+    optimistic: true
+    restore_mode: ALWAYS_OFF
+    turn_on_action:
+      - lambda: |-
+          if (!id(fujitsu_hp)->set_aot30_emulator_enabled(true)) {
+            id(aot30_emulator_enable).publish_state(false);
+          }
+    turn_off_action:
+      - lambda: 'id(fujitsu_hp)->set_aot30_emulator_enabled(false);'
+
   # Economy Mode as a standalone switch -- added 21 Aug 2026. climate.preset already
   # supports CLIMATE_PRESET_ECO (confirmed live-adopted, both directions, same day),
   # but neither the web UI nor a plain HA dashboard surfaces a preset control the same
@@ -516,6 +546,19 @@ button:
     entity_category: diagnostic
     on_press:
       - lambda: 'id(fujitsu_hp)->request_aot30_startup_heat20_on_test();'
+
+  - platform: template
+    name: "AOT30 Emulator: HEAT 20 ON"
+    icon: "mdi:fire"
+    entity_category: diagnostic
+    on_press:
+      - lambda: 'id(fujitsu_hp)->request_aot30_emulator_heat20();'
+  - platform: template
+    name: "AOT30 Emulator: OFF"
+    icon: "mdi:power"
+    entity_category: diagnostic
+    on_press:
+      - lambda: 'id(fujitsu_hp)->request_aot30_emulator_off();'
 
 # Diagnostic interval
 interval:

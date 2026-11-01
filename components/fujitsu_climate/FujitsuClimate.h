@@ -104,6 +104,11 @@ class FujitsuClimate : public climate::Climate, public Component {
   void set_aot30_test_tx_enabled(bool enabled);
   void request_aot30_heat20_on_test();
   void request_aot30_startup_heat20_on_test();
+  // Wired-remote emulation (experimental): the remote must be disconnected. Needs the arm switch.
+  bool set_aot30_emulator_enabled(bool enabled);
+  void set_aot30_emulator_dry_run(bool dry_run);
+  void request_aot30_emulator_heat20();
+  void request_aot30_emulator_off();
   void process_aot30_test_tx_request();
 
   // Diagnostics (trimmed for this rebuild -- see the .cpp file's top-of-file comment
