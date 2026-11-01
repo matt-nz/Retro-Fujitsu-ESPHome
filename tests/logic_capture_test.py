@@ -10,6 +10,7 @@ import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "tools"))
 import decode_logic_capture as d  # noqa: E402
+import fuji_packet as fp  # noqa: E402
 
 CAPTURES = os.path.join(os.path.dirname(__file__), "..", "captures", "matt-captures")
 failures = []
@@ -80,6 +81,26 @@ def main():
     # The unit echoes the setting with only its sender nibble (cells 16 and 17) different.
     expect("echo differs from remote only in cells 16/17",
            {i for i in range(d.PACKET_CELLS) if len({c[i] for c in remote + unit}) > 1} - known == {16, 17})
+
+    # The encoder reproduces every captured packet (remote and unit) cell for cell.
+    mismatches = 0
+    count = 0
+    for name in ("start-up", "heat", "fan-mode", "eco"):
+        starts, levels, frames, clocks = load(name)
+        for m, cells in d.packet_cells(starts, levels, frames, clocks):
+            bus = [1 - c for c in cells]
+            dec = fp.decode(bus)
+            enc = fp.encode(dec["mode"], dec["fan"], dec["temp"], dec["eco"], dec["repeat"], m[0]["sender"])
+            count += 1
+            if enc != bus:
+                mismatches += 1
+    expect("encoder reproduces %d captured packets" % count, mismatches == 0, mismatches)
+    # Predictions for settings not captured yet (HEAT above 23 C sets the setpoint's bits 3 and 4).
+    expect("temp 24 sets cell 43", fp.encode("heat", "auto", 24)[43] == 1)
+    expect("temp 16 clears cells 40-43 and sets 44",
+           fp.encode("heat", "auto", 16)[40:45] == [0, 0, 0, 0, 1])
+    expect("runs start from idle high and end high",
+           fp.runs(fp.encode("heat", "auto", 18))[0][0] == 0 and fp.runs(fp.encode("heat", "auto", 18))[-1][0] == 1)
 
     if failures:
         print("FAILED:\n  " + "\n  ".join(failures))

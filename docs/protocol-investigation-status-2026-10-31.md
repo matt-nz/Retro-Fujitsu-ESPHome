@@ -408,3 +408,37 @@ soak, unit off only) are captured; step 3 (single versus held press) is dropped 
 long press, and the `13` repeat is just the second round of every change; step 4 is done; step 6 is low
 priority. Still to capture, in priority order: HEAT 16–17 and 24–30, the full COOL/AUTO/FAN setpoint
 ranges, DRY mode, and a running-state idle soak.
+
+## Related projects and what they suggest (1 Nov 2026)
+
+No public project was found that documents this bus (searches for the models, remote part number and
+protocol terms returned only this repository). What exists is related, not a decoder:
+- `jaroslawprzybylowicz/fuji-iot` and its port `unreality/FujiHeatPump` (the vendored engine): the
+  modern 3-wire family (UTY-RNNUM and similar), 8-byte frames with source, destination, register type and
+  a 5-byte payload. Its field set matches what this remote sends, so it names the same features:
+  enabled, mode, fan, setpoint, economy (plus swing, which this ducted unit lacks). The encodings differ:
+  its mode values are FAN 1, DRY 2, COOL 3, HEAT 4, AUTO 5 and fan AUTO 0, LOW 1, MEDIUM 2, HIGH 3, setpoint
+  as plain degrees in 7 bits; this bus uses COOL 1, HEAT 2, FAN 4, AUTO 5, fan HIGH 1, MEDIUM 2, LOW 4,
+  AUTO 5 and a 5-bit setpoint (16–31), in a bit-serial packet that is also not 8 bytes. So this remote
+  speaks an older or different variant, and the engine's frame and login logic does not apply.
+- `unreality/FujiHeatPump` issue 8 ("2 wire") reports a ducted unit whose board offers either an
+  older 3-wire LIN-style remote or a newer 2-wire (UTY-RLRY) remote, selected by a jumper. That is a
+  third-party report, not verified here, but it fits the picture of an older remote generation on ducted
+  indoor units, and it points the same way as the capture: nothing existing decodes it.
+- The 2-wire/Homebus projects (Daikin P1P2, Toshiba AB) show that a fixed bit layout with no checksum
+  is plausible for this kind of bus; they are not otherwise applicable.
+
+What the captures say about complexity: the remote's whole state is five fields (power, mode, fan,
+setpoint, ECO), the setting packet has no varying cell outside them across 149 packets, and the exchange
+is a plain poll/reply with a doubled setting round. The encoder in `tools/fuji_packet.py` already
+regenerates every observed packet exactly. What remains unknown is on the transmit side: whether the unit
+accepts a setting from a second sender, and when it is safe to send. A cautious order, none of it done:
+1. Bench: drive the encoder's pulse list from an ESP32 GPIO (timed, 1980.8 µs per cell, open-drain through the
+   same LIN transceiver) with the remote disconnected, and compare the result cell for cell against a
+   captured packet on the logic analyser.
+2. Live, remote connected: send the setting the remote already holds (a no-change write) right after a unit
+   reply, in the 30–57 ms before the next poll, and see whether the unit echoes it and the remote display
+   stays consistent.
+3. Only then change one field at a time, keeping the control-enabled switch and a physical disconnect.
+The unit stalling for a second and replying with `04`, and the one `07` reply byte, show that the unit
+sometimes behaves unexpectedly while running, so step 2 should be watched on the analyser.

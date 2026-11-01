@@ -76,10 +76,21 @@ running. Cause unknown; worth watching for a running-state idle soak.
 
 ## Open items
 
-- DRY mode; setpoints 16, 17 and 24–30 in HEAT; the full COOL, AUTO and FAN (setpoint) ranges; quiet
-  fan, swing and other remote buttons.
+- Setpoints 16, 17 and 24–30 in HEAT and the full COOL and AUTO ranges (FAN carries no setpoint). The
+  installation is ducted with no DRY mode and no vanes, so the remote's whole feature set is power,
+  the modes AUTO/COOL/HEAT/FAN, four fan speeds plus auto, setpoint and ECO, and all of them are now
+  mapped except the untested setpoint range.
 - What makes the repeat round appear or not; whether cells 33–44 contain bits beyond those mapped.
 - The unit reply deviations above. A running-state idle soak would show how often they occur.
 - Whether the unit accepts a message from a second sender, and what the constant cells (including the
   first 33 and last 29 cells) are for; no checksum has been found, which fits with all non-field cells
   being constant.
+
+## Encoder (model of the captures, does not transmit)
+
+[`tools/fuji_packet.py`](../../tools/fuji_packet.py) builds the 84-cell packet from (mode, fan, setpoint,
+ECO, round, sender) and the pulse list at the sender's bit time, e.g.
+`python3 tools/fuji_packet.py heat 22 auto`. `tests/logic_capture_test.py` checks that it reproduces all
+149 captured packets cell for cell, so the field layout above is sufficient to regenerate every observed
+packet. It also predicts untested values (for example HEAT 24 °C sets cell 43); those predictions are
+not verified.
