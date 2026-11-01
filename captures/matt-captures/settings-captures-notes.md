@@ -76,8 +76,8 @@ running. Cause unknown; worth watching for a running-state idle soak.
 
 ## Open items
 
-- AUTO 16–17 and the lower limits of COOL and AUTO: both sweeps were started at 18 and only pressed upward,
-  so the minimum was never shown. Press down to the limit in each mode to find it. Logic-analyser confirmation of the setpoint ranges above (HEAT 16–17 and 24–30, COOL and AUTO 18–30):
+- The lower limits of COOL and AUTO (18, per the operator) were never pressed down to on the bus, since both
+  sweeps started at 18. Logic-analyser confirmation of the setpoint ranges above (HEAT 16–17 and 24–30, COOL and AUTO 18–30):
   they are established from the ESP logs only, at byte level. The installation is ducted with no DRY mode
   and no vanes, so the remote's whole feature set is power, the modes AUTO/COOL/HEAT/FAN, four fan
   speeds plus auto, setpoint and ECO, and all of them are now mapped.
@@ -106,8 +106,8 @@ model, and requires that:
 | Mode | Setpoint range | Byte view for the whole sweep (value byte, auto fan) |
 |---|---|---|
 | HEAT | 16–30 (operator-confirmed) | `16 36 56 76 96 B6 D6 F6` for 16–23, then the same eight again for 24–30 (23's partner is 31) |
-| COOL | 18–30 (operator: "I think 18–30") | `95 9D A5 AD B5 BD C5 CD D5 DD E5 ED F5` (+8 per degree) |
-| AUTO | 18–30 captured; lower limit unknown (operator: similar to HEAT, i.e. probably 16–30) | `2B 3B 4B 5B 6B 7B 8B 9B AB BB CB DB EB` (+0x10 per degree); the model predicts `0B`/`1B` for 16/17 °C |
+| COOL | 18–30 (operator-stated) | `95 9D A5 AD B5 BD C5 CD D5 DD E5 ED F5` (+8 per degree) |
+| AUTO | 18–30 (operator-confirmed) | `2B 3B 4B 5B 6B 7B 8B 9B AB BB CB DB EB` (+0x10 per degree) |
 | FAN | none | `0B` (auto fan), `03`/`05`/`09` for the other speeds |
 
 Two limits of the byte view follow, both consequences of the UART cutting the packet at falling edges:

@@ -27,10 +27,10 @@ SENDER_CELLS = (16, 17)  # remote: 0 1 (second byte 0x22), unit: 1 0 (0x12)
 MODES = {"cool": 1, "heat": 2, "fan": 4, "auto": 5}
 FANS = {"high": 1, "medium": 2, "low": 4, "auto": 5}
 FAN_MODE_TEMP = 16  # what the remote sends in the temperature field in FAN mode
-# Setpoint ranges. The remote clamps at 30 in COOL and AUTO (observed). Operator: HEAT 16-30 and COOL 18-30
-# on the remote, AUTO "similar to heat" (not confirmed). The captured AUTO sweep started at 18, so AUTO
-# 16-17 and the lower COOL limit have not been seen on the bus; the AUTO minimum here is an assumption.
-TEMP_RANGES = {"heat": (16, 30), "cool": (18, 30), "auto": (16, 30)}
+# Setpoint ranges on the remote (operator-stated, consistent with the captures): HEAT 16-30, COOL 18-30,
+# AUTO 18-30. COOL and AUTO clamp at 30 on the bus; the lower limits come from the operator because the
+# captured sweeps started at 18 and only went up.
+TEMP_RANGES = {"heat": (16, 30), "cool": (18, 30), "auto": (18, 30)}
 
 
 def encode(mode, fan, temp=None, eco=False, repeat=False, sender="remote"):
