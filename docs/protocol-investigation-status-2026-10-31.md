@@ -496,6 +496,9 @@ the ESP32 poll and send settings exactly as the captures show.
   transceiver. A message is a clean low pulse of a whole number of 1980.8/2055.6 µs cells; a glitch is irregular.
   The firmware now drives GPIO17 high at the start of setup(); an external pull-up on the transceiver's TXD would cover
   the earlier boot period. Either way nothing else is sent, which fits the remote being the master.
+  **Update:** `test.sr` (2 Nov 2026) settles this: with the remote disconnected the bus RX is simply held low for the
+  whole capture apart from one 62 µs high pulse at 4.27 s, so there was no `00` byte and the line never idles high. See
+  `captures/matt-captures/settings-captures-notes.md`.
   The log lines to watch start with "AOT30 test" and "AOT30 emulator".
 - The earlier one-shot UART test buttons, the arm switch and the dry-run/enable switches were removed. After the test
   ends the ESP32 no longer polls, so reconnect the wired remote (it takes over) or the unit will sit without a master.
@@ -530,3 +533,12 @@ change and power-off, abort on read-back mismatch, and disabling. It could not b
 - Whether the unit accepts commands from the ESP32 is unknown. A failure to respond may also mean the exchange needs
   something the captures never showed (for example a different start-up sequence); capture it on the analyser and
   compare with `start-up.sr`.
+
+## First emulator run on hardware (2 Nov 2026)
+
+`test.sr` shows the transmitter produced correctly timed cells (1980–1981 µs, matching the encoder) and that the
+read-back safety stopped it after 12 cells, because with the wired remote disconnected the bus is held low and never
+idles high. Nothing reached the unit as a valid message. Next: measure the LIN wire voltage with the remote
+disconnected (module connected and not), and if the pull-up is missing add a master-style 1 kΩ pull-up (through a diode)
+to the 12 V supply at the ESP32 module; details are in the settings-captures notes. The firmware now refuses to start the
+test with an explanatory log line when the bus does not idle high.

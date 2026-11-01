@@ -136,3 +136,39 @@ ECO, round, sender) and the pulse list at the sender's bit time, e.g.
 149 captured packets cell for cell, so the field layout above is sufficient to regenerate every observed
 packet. It also predicts untested values (for example HEAT 24 °C sets cell 43); those predictions are
 not verified.
+
+## `test.sr`: first emulator run on hardware (2 Nov 2026, 21.2 s, 1 MHz)
+
+Channels: D0 is the ESP32's TX (GPIO17, the transceiver's TXD input) and D1 is the bus as received (GPIO16).
+The wired remote was disconnected; the ESP32 and transceiver were powered from the bus 12 V.
+
+| Time (s) | D0 (ESP32 TX) | D1 (bus RX) |
+|---|---|---|
+| 0.000 – 4.2665 | high | **low** |
+| 4.2665 | high | a single 62 µs high pulse, then low again |
+| 4.2665 – 21.24 | high until 15.2065 | **low for the whole rest of the capture** |
+| 15.2065 – 15.2302 | first poll starts: low 15.798 ms, then high 1.981, low 1.981, high 1.980, low 1.981 ms, then released high | still low |
+
+What this shows:
+- **The bit-bang transmitter works at the cell level.** The first poll's pulses are 15.798 ms (8 cells, expected
+  15.846), then 1.981, 1.981, 1.980 and 1.981 ms: cell width 1980–1981 µs against the 1980.8 µs target, matching the
+  encoder's pulse list. It stopped after cell 12 and released the line, exactly where the read-back check should: RX
+  was low, so the expected-high cells 8, 10 and 12 were three mismatches. The safety check did its job.
+- **With the remote disconnected the bus never idles high.** D1 is low from the start of the capture to the end.
+  So the "bump at about 5 s" is the 62 µs *high* pulse at 4.27 s in an otherwise low line, far too short to be a
+  byte (a cell is about 2 ms): a transient, not a message. There is no sign of eight zeros or `00`; the eight-zero
+  idea was probably this low level.
+- **Consequence:** nothing can be sent until the line idles high. In every earlier capture the remote was
+  connected and the line idled high, so the remote (or something it switches in) supplies the bus pull-up, as a LIN
+  master does (1 kΩ to the supply). Also, with a LIN transceiver the unit's side only pulls low; if nothing pulls the
+  line up, it reads as dominant/low. Which of these holds is not known yet.
+- This also explains the earlier "no traffic at all with the remote disconnected" result: a bus held low carries no
+  edges. It is not evidence that the unit stays silent.
+
+Unknowns to settle with a multimeter (unit powered, remote disconnected): the DC voltage on the LIN wire
+(1) with the ESP32 module connected, and (2) with only the unit connected. About 12 V means the line does idle high
+(then the low is the transceiver, e.g. its sleep/standby pin or a wake-up latch, not the bus); about 0 V with the
+module connected but ~12 V without it means the module loads the bus; about 0 V either way means the unit pulls it low
+or nothing pulls it up. If it is a missing pull-up, add a master-style pull-up on the ESP32 side (1 kΩ from the LIN
+wire to the 12 V supply through a diode, as the LIN spec shows) and repeat the test. The firmware now refuses to start
+the test, with a message saying this, when the bus is low with no traffic after the 1.5 s silence check.

@@ -21,6 +21,7 @@ static int64_t g_now_us = 0;
 static std::vector<std::string> g_log;
 static int g_tx_level = 1;
 static bool g_loopback = true;
+static bool g_rx_forced_low = false;
 struct Edge {
   int64_t t;
   int level;
@@ -48,7 +49,7 @@ int gpio_set_level(int, uint32_t level) {
   g_edges.push_back({g_now_us, g_tx_level});
   return 0;
 }
-int gpio_get_level(int) { return g_loopback ? g_tx_level : 1; }
+int gpio_get_level(int) { return g_rx_forced_low ? 0 : (g_loopback ? g_tx_level : 1); }
 int uart_set_pin(int, int, int, int, int) {
   g_uart_set_pin_calls++;
   return 0;
@@ -88,6 +89,7 @@ static void reset(HardwareSerial &serial, FujiHeatPump &hp) {
   g_log.clear();
   g_edges.clear();
   g_loopback = true;
+  g_rx_forced_low = false;
   g_tx_level = 1;
   g_uart_set_pin_calls = g_matrix_calls = g_gpio_sets = 0;
   serial.rx.clear();
@@ -209,6 +211,16 @@ int main() {
   CHECK(log_has("aborted"));
   CHECK(!hp.aot30EmulatorActive());
   CHECK(g_tx_level == 1);
+
+  // 4b. A bus held low (no idle-high pull-up, as in test.sr) is refused before anything is sent.
+  reset(serial, hp);
+  hp.aot30EmulatorSetDryRun(false);
+  g_rx_forced_low = true;
+  CHECK(hp.aot30RunTest());
+  advance(hp, 1700);
+  CHECK(log_has("held low with no traffic"));
+  CHECK(!hp.aot30EmulatorActive());
+  CHECK(g_gpio_sets == 0);
 
   // 5. A finished or aborted test can be started again.
   reset(serial, hp);

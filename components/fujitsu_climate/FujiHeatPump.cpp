@@ -415,6 +415,18 @@ void FujiHeatPump::aot30EmulatorPump() {
         return;
       }
       if (now - emuStageStartMs_ >= kEmuStartQuietMs) {
+#ifdef ESP32
+        // A bus that never idles high cannot carry a message. test.sr (2 Nov 2026) showed the RX pin held low for
+        // the whole run with the wired remote disconnected, so the first poll was aborted by the read-back check.
+        if (!emuDryRun_.load() && rxPin_ >= 0 && gpio_get_level(static_cast<gpio_num_t>(rxPin_)) == 0) {
+          ESP_LOGE(TAG, "AOT30 test refused: the bus (GPIO%d) is held low with no traffic, so it does not idle high. "
+                        "The wired remote probably supplies the bus pull-up; measure the LIN wire with the remote "
+                        "disconnected.",
+                   rxPin_);
+          emuFinish(false);
+          return;
+        }
+#endif
         emuScheduler_.start(now);
         emuStage_ = EmuStage::LEAD;
         emuStageStartMs_ = now;
