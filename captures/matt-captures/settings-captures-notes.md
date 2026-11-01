@@ -106,7 +106,7 @@ model, and requires that:
 | Mode | Setpoint range | Byte view for the whole sweep (value byte, auto fan) |
 |---|---|---|
 | HEAT | 16–30 (operator-confirmed) | `16 36 56 76 96 B6 D6 F6` for 16–23, then the same eight again for 24–30 (23's partner is 31) |
-| COOL | 18–30 (operator-stated) | `95 9D A5 AD B5 BD C5 CD D5 DD E5 ED F5` (+8 per degree) |
+| COOL | 18–30 (operator-confirmed) | `95 9D A5 AD B5 BD C5 CD D5 DD E5 ED F5` (+8 per degree) |
 | AUTO | 18–30 (operator-confirmed) | `2B 3B 4B 5B 6B 7B 8B 9B AB BB CB DB EB` (+0x10 per degree) |
 | FAN | none | `0B` (auto fan), `03`/`05`/`09` for the other speeds |
 
