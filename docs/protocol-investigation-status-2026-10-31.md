@@ -455,5 +455,7 @@ Operator labels were used only to locate the sweeps.
 Consequence for the firmware: the ESP's byte-level view cannot tell HEAT 24–30 from 16–22 (and a few bytes are
 shared between modes), so HA currently shows an aliased setpoint for HEAT above 23 °C and ignores unmapped
 COOL/AUTO values. The fix is a cell-level decoder on the ESP32 using GPIO edge timestamps, not a bigger byte
-table. Remaining capture needs are small: a logic-analyser confirmation of the extreme setpoints, and a
-running-state idle soak.
+table. Remote ranges per the operator: HEAT 16–30, COOL about 18–30, AUTO similar to HEAT (probably 16–30), FAN no
+setpoint. The captured COOL and AUTO sweeps started at 18, so the lower limits of those two modes are not
+yet shown on the bus. Remaining capture needs are small: press down to the minimum in COOL and AUTO, a
+logic-analyser confirmation of the extreme setpoints, and a running-state idle soak.
