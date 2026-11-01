@@ -213,10 +213,6 @@ sensor:
     corrected_setpoint:
       name: "Setpoint"
       id: corrected_setpoint
-    corrected_room_temp:
-      name: "Room Temp"
-      entity_category: ""
-      id: corrected_room_temp
 
 # Settable setpoint, independent of the climate entity's own target_temperature.
 # 20 Aug 2026 -- added because Home Assistant's own ESPHome climate integration
@@ -266,7 +262,6 @@ select:
     update_interval: 5s
     options:
       - "Auto"
-      - "Quiet"
       - "Low"
       - "Medium"
       - "High"
@@ -275,7 +270,6 @@ select:
         return {};
       switch (id(fujitsu_hp).fan_mode.value()) {
         case climate::CLIMATE_FAN_AUTO: return std::string("Auto");
-        case climate::CLIMATE_FAN_QUIET: return std::string("Quiet");
         case climate::CLIMATE_FAN_LOW: return std::string("Low");
         case climate::CLIMATE_FAN_MEDIUM: return std::string("Medium");
         case climate::CLIMATE_FAN_HIGH: return std::string("High");
@@ -284,35 +278,10 @@ select:
     set_action:
       - lambda: |-
           climate::ClimateFanMode m = climate::CLIMATE_FAN_AUTO;
-          if (x == "Quiet") m = climate::CLIMATE_FAN_QUIET;
-          else if (x == "Low") m = climate::CLIMATE_FAN_LOW;
+          if (x == "Low") m = climate::CLIMATE_FAN_LOW;
           else if (x == "Medium") m = climate::CLIMATE_FAN_MEDIUM;
           else if (x == "High") m = climate::CLIMATE_FAN_HIGH;
           id(fujitsu_hp).make_call().set_fan_mode(m).perform();
-
-  # 17 Oct 2026 (4A.11) -- EXPERIMENTAL: which value of the updateMagic nibble in our STATUS
-  # replies can turn the wired controller's Thermo Sensor icon ON (the Write Test switch only
-  # turns it OFF). One option at a time; always starts at Off, never restored. Pulse options
-  # reset themselves to Off when finished. Start with the icon OFF, pick an option, watch
-  # "Thermo Sensor Icon", then set back to Off.
-  - platform: template
-    name: "Thermo Sensor Experiment"
-    id: thermo_experiment
-    icon: "mdi:flask-outline"
-    entity_category: diagnostic
-    optimistic: true
-    restore_value: false
-    initial_option: "Off"
-    options:
-      - "Off"
-      - "Pulse x1 (OR 0x8)"
-      - "Pulse x5 (OR 0x8)"
-      - "Held: nibble = 0x8"
-      - "Held: nibble = 0x0"
-      - "Held: OR 0x4"
-      - "Held: OR 0x1"
-    set_action:
-      - lambda: 'id(fujitsu_hp)->set_thermo_experiment(x);'
 
 # Text sensors
 text_sensor:
@@ -350,7 +319,7 @@ text_sensor:
     icon: "mdi:github"
     entity_category: diagnostic
     lambda: |-
-      return std::string("https://github.com/endofthewurst/Retro-Fujitsu-ESPHome");
+      return std::string("https://github.com/matt-nz/Retro-Fujitsu-ESPHome");
 
   # Read-only description of what the Status LED is currently displaying -- added
   # 21 Aug 2026 at James's request. The light entity above is now internal (no
@@ -365,48 +334,14 @@ text_sensor:
     lambda: |-
       return id(status_light).get_effect_name();
 
-  # Trimmed to bus_status in Phase 4 -- see components/fujitsu_climate/text_sensor.py.
-  # 17 Oct 2026 (4A.10): the thermo_sensor / unknown_bit / raw_frame "unconfirmed" sensors
-  # were retired (refuted/noisy). Swing was kept and is now "Swing Icon" (see below).
+  # Bus status follows the messages seen on the bus. The other sensors this component can provide (swing, raw
+  # frames, sync, attribution, thermo icon, defrost, room temperature) belong to the newer units' frame protocol and
+  # are not used on the AOT30L/ART30RL bus.
   - platform: fujitsu_climate
     fujitsu_climate_id: fujitsu_hp
     bus_status:
       name: "Bus Status"
       id: bus_status
-    # 28 Oct 2026 (4A.12b-rc1) -- renamed from "Swing (unconfirmed)" after a live test against
-    # the wired remote's swing icon: HA matches the icon while the unit is running. Known
-    # quirk: with the unit off/standby the remote hides the icon but this still reads On.
-    # Now a primary entity (Sensors group). See docs/session-5C-entity-layout-2026-10-28.md.
-    swing:
-      name: "Swing Icon"
-      id: swing
-    # 4 Oct 2026 (4A.9) -- the two raw frame types, kept separate (see FujiHeatPump.h).
-    raw_frame_to_us:
-      name: "Raw Frame To Us"
-      id: raw_frame_to_us
-    raw_frame_other:
-      name: "Raw Frame Other"
-      id: raw_frame_other
-    # 2 Sep 2026 -- requested-vs-actual state sync (plan-to-completion.md). Empty
-    # string when in sync; human-readable diff (e.g. "power: requested=on,
-    # actual=off") otherwise. out_of_sync_since needs a real time source for its ISO
-    # timestamp -- reuses the homeassistant_time already configured below.
-    sync_mismatch:
-      name: "Sync Mismatch"
-      id: sync_mismatch
-    out_of_sync_since:
-      name: "Out of Sync Since"
-      id: out_of_sync_since
-      time_id: homeassistant_time
-    # 4A.12 -- control-authority attribution (control-authority-attribution.md). Who made
-    # the last state change: "HA" | "Human" | "Boot", plus what changed. Not diagnostic.
-    last_change_source:
-      name: "Last Change Source"
-      id: last_change_source
-    last_change_detail:
-      name: "Last Change Detail"
-      id: last_change_detail
-
 # Binary sensors
 binary_sensor:
   - platform: status
@@ -433,22 +368,6 @@ binary_sensor:
     bus_alive:
       name: "Bus Alive"
       id: bus_alive
-    in_sync:
-      name: "In Sync"
-      id: aircon_in_sync
-    # 4 Oct 2026 (4A.9) -- Thermo Sensor icon, found by a passive button test on 3 Oct
-    # (byte 5 bit 7 of the frame addressed to us). On = icon shown on the wired controller.
-    # 28 Oct 2026 (4A.12b-rc1): live-confirmed -- HA matches the wired display at all times.
-    # Now a primary entity (Sensors group). Read-only; two-way control is a future task.
-    thermo_icon:
-      name: "Thermo Sensor Icon"
-      id: thermo_icon
-    # 17 Oct 2026 (4A.10) -- Defrost / Oil Recovery active (byte 2 bit 3 of the frame not
-    # addressed to us; matched to the wired controller's icon in a live test). Debounced 3 s.
-    defrost_active:
-      name: "Defrost Active"
-      id: defrost_active
-
 # Switches
 switch:
   - platform: restart
@@ -491,20 +410,6 @@ switch:
     turn_off_action:
       - lambda: 'id(fujitsu_hp)->set_master_controller(false);'
 
-  # 4 Oct 2026 (4A.9) -- EXPERIMENTAL. Sets byte 5 bit 7 in our replies to test whether
-  # the Thermo Sensor bit is writable from the secondary controller. Never restored on.
-  - platform: template
-    name: "Thermo Sensor Write Test"
-    id: thermo_write_test
-    icon: "mdi:flask-outline"
-    entity_category: diagnostic
-    optimistic: true
-    restore_mode: ALWAYS_OFF
-    turn_on_action:
-      - lambda: 'id(fujitsu_hp)->set_thermo_write_test(true);'
-    turn_off_action:
-      - lambda: 'id(fujitsu_hp)->set_thermo_write_test(false);'
-
   # Economy Mode as a standalone switch -- added 21 Aug 2026. climate.preset already
   # supports CLIMATE_PRESET_ECO (confirmed live-adopted, both directions, same day),
   # but neither the web UI nor a plain HA dashboard surfaces a preset control the same
@@ -524,12 +429,6 @@ switch:
       - lambda: |-
           id(fujitsu_hp).make_call().set_preset(climate::CLIMATE_PRESET_NONE).perform();
 
-# Buttons
-button:
-  - platform: safe_mode
-    name: "Safe Mode Boot"
-    entity_category: diagnostic
-
 # Diagnostic interval
 interval:
   # Keep the Master Controller switch in step with the firmware (it turns itself off on a refusal or a fault).
@@ -539,13 +438,6 @@ interval:
           const bool active = id(fujitsu_hp)->master_controller_active();
           if (id(master_controller).state != active) {
             id(master_controller).publish_state(active);
-          }
-  # 4A.11 -- lets a finished pulse experiment put the Thermo Sensor Experiment select back to Off.
-  - interval: 500ms
-    then:
-      - lambda: |-
-          if (id(fujitsu_hp)->take_thermo_exp_finished()) {
-            id(thermo_experiment)->publish_state("Off");
           }
   - interval: 300s
     then:

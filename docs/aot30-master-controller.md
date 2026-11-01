@@ -31,11 +31,11 @@ setting sent even 20 % faster (speed-ladder test, 2 Nov 2026). Keeping the remot
 | **Master Controller** (switch) | On: the ESP takes over the remote's role. Remembered across reboots. It turns itself off if the controller refuses to start or has to stop. |
 | **Master Controller Status** (text) | `Off`, `Checking bus`, `Running`, or why it refused or stopped (see below). |
 | **Unit Running** (binary sensor) | The run flag in the unit's own replies. Unknown until the unit has answered a poll. |
-| **Aircon** (climate) | Modes Off/Auto/Cool/Heat/Fan (Dry is offered by HA but ignored), setpoint, fan Auto/Low/Medium/High, preset ECO. While the master controller runs, the climate state is the last state the ESP commanded. |
+| **Aircon** (climate) | Modes Off/Auto/Cool/Heat/Fan, setpoint, fan Auto/Low/Medium/High, preset ECO. While the master controller runs, the climate state is the last state the ESP commanded. |
 | **Aircon Control Enabled** (switch) | Existing kill switch. It must be on for climate commands to be sent. |
 
-Supported: HEAT 16-30 °C, COOL 18-30 °C, AUTO 18-30 °C, FAN (no setpoint), fans auto/low/medium/high (quiet is sent as low), ECO.
-Not available on this unit: DRY, vane control. Out-of-range setpoints are clamped. The room temperature is not on the bus.
+Supported: HEAT 16-30 °C, COOL 18-30 °C, AUTO 18-30 °C, FAN (no setpoint), fans auto/low/medium/high, ECO.
+Not available on this unit: DRY, quiet fan, vane control (so no swing entity), room temperature. Out-of-range setpoints are clamped. The room temperature is not on the bus.
 
 ## Starting it
 
@@ -142,3 +142,10 @@ action:
 ```
 
 The climate entity's temperature is the last setpoint the ESP sent, so it is the right value to offset from.
+
+## Entities removed for this unit
+
+The YAML no longer exposes entities that belong to the newer units' 8-byte frame protocol and can never be populated on this bus: Room Temp, Swing Icon,
+Raw Frame To Us/Other, Sync Mismatch, Out of Sync Since, In Sync, Last Change Source/Detail, Thermo Sensor Icon, Defrost Active, the Thermo Sensor
+experiment select and write-test switch, and the Safe Mode Boot button (ESPHome's own safe mode still works for recovery). Dry mode and the Quiet fan
+speed are no longer offered. The component code and `text_sensor.py`/`binary_sensor.py`/`sensor.py` still support them as optional, unused hooks.
