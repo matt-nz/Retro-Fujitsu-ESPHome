@@ -484,8 +484,11 @@ the ESP32 poll and send settings exactly as the captures show.
   controls: it waits for 1.5 s of bus silence, polls for 2 s (unit assumed off), sends HEAT 20 °C, auto fan, ECO off
   as the remote does, keeps polling for 10 s, then stops and releases the bus. While running it drives GPIO17 as a
   plain pin at 1980.8 µs per cell and reads GPIO16 back every cell; three mismatches (the line not following what was
-  driven, or another device pulling it low) abort, release the line and end the test. It refuses to run if any byte was
-  received in the 1.5 s before pressing or during the silence check, which is what a connected remote would cause.
+  driven, or another device pulling it low) abort, release the line and end the test. It refuses to run if a message from
+  the wired remote was seen in the 1.5 s before pressing or during the silence check, which a connected remote would
+  cause. Stray bytes from the unit itself do not block it: the operator reports that with no remote connected the unit
+  sends something like eight zeros or `00` about 5.2 s after power-up (not yet captured; this corrects the earlier
+  statement that the unit puts no traffic at all on RX without the remote).
   The log lines to watch start with "AOT30 test" and "AOT30 emulator".
 - The earlier one-shot UART test buttons, the arm switch and the dry-run/enable switches were removed. After the test
   ends the ESP32 no longer polls, so reconnect the wired remote (it takes over) or the unit will sit without a master.

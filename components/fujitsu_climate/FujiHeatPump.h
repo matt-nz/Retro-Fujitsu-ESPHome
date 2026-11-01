@@ -222,6 +222,9 @@ class FujiHeatPump {
   int rxPin_ = -1;
   int txPin_ = -1;
   unsigned long lastRxByteMs = 0;
+  // Time the parser last completed a message from the wired remote (second byte high nibble 2). Unlike
+  // lastRxByteMs this ignores bytes the unit sends by itself, so it is what shows that a remote is connected.
+  unsigned long lastRemoteMessageMs = 0;
   fuji_aot30::Scheduler emuScheduler_;
   std::atomic<bool> emuEnabled_{false};
   std::atomic<bool> emuDryRun_{false};

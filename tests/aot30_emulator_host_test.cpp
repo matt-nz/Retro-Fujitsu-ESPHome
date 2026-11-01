@@ -127,9 +127,10 @@ int main() {
   reset(serial, hp);
   hp.aot30EmulatorSetDryRun(true);
   CHECK(hp.aot30RunTest());
-  serial.rx.push_back(0x80);  // traffic arrives right after the button press
+  // A real remote poll `7F 28 13 08` followed by the unit's next start byte, right after the button press.
+  for (uint8_t b : {0x80, 0xD7, 0xEC, 0xF7, 0x80}) serial.rx.push_back(b);
   advance(hp, 300);
-  CHECK(log_has("refused: bus traffic seen"));
+  CHECK(log_has("wired remote messages seen"));
   CHECK(!hp.aot30EmulatorActive());
   advance(hp, 2000);  // the bus has now been quiet for longer than the check
   CHECK(hp.aot30RunTest());  // can be started again
@@ -137,6 +138,19 @@ int main() {
   CHECK(log_has("polling started"));
   advance(hp, 20000);
   CHECK(!hp.aot30EmulatorActive());
+
+  // 2b. Stray bytes from the unit itself (no remote) do not block the test.
+  reset(serial, hp);
+  hp.aot30EmulatorSetDryRun(true);
+  serial.rx.push_back(0xFF);
+  serial.rx.push_back(0xFF);
+  CHECK(hp.aot30RunTest());
+  advance(hp, 100);
+  serial.rx.push_back(0xFF);
+  advance(hp, 1700);
+  CHECK(log_has("polling started"));
+  CHECK(!log_has("refused"));
+  advance(hp, 20000);
 
   // 3. Live: pulse train equals the encoded message, pin handed back to the UART after each message.
   reset(serial, hp);

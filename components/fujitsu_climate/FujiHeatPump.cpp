@@ -45,6 +45,9 @@ void FujiHeatPump::inspectObservedControllerByte(byte value) {
     return;
   }
 
+  if (message.direction == fuji_passive::Direction::REMOTE_TO_UNIT) {
+    lastRemoteMessageMs = millis();
+  }
   if (message.kind != fuji_passive::Kind::UNKNOWN) {
     lastPassiveMessage = millis();
   }
@@ -192,6 +195,7 @@ void FujiHeatPump::connect(HardwareSerial *serial, bool secondary, int rxPin = -
   rxPin_ = rxPin;
   txPin_ = txPin;
   lastRxByteMs = 0;
+  lastRemoteMessageMs = 0;
   if (rxPin != -1 && txPin != -1) {
 #ifdef ESP32
     _serial->begin(500, SERIAL_8E1, rxPin, txPin);
@@ -398,12 +402,14 @@ void FujiHeatPump::aot30EmulatorPump() {
     case EmuStage::IDLE:
       return;
     case EmuStage::WAIT_QUIET: {
-      const bool traffic_before =
-          lastRxByteMs != 0 && static_cast<uint32_t>(emuStageStartMs_ - lastRxByteMs) < kEmuStartQuietMs;
-      const bool traffic_since = lastRxByteMs != 0 && static_cast<int32_t>(lastRxByteMs - emuStageStartMs_) > 0;
+      // Only messages from the wired remote count: the unit is seen sending a stray byte by itself about 5 s after
+      // power-up with no remote connected, which must not block the test.
+      const bool traffic_before = lastRemoteMessageMs != 0 &&
+                                  static_cast<uint32_t>(emuStageStartMs_ - lastRemoteMessageMs) < kEmuStartQuietMs;
+      const bool traffic_since = lastRemoteMessageMs != 0 && static_cast<int32_t>(lastRemoteMessageMs - emuStageStartMs_) > 0;
       if (traffic_before || traffic_since) {
-        ESP_LOGE(TAG, "AOT30 test refused: bus traffic seen within %u ms of starting. Is the wired remote still "
-                      "connected? Disconnect it and press the button again.",
+        ESP_LOGE(TAG, "AOT30 test refused: wired remote messages seen within %u ms of starting. Is the wired remote "
+                      "still connected? Disconnect it and press the button again.",
                  static_cast<unsigned>(kEmuStartQuietMs));
         emuFinish(false);
         return;
