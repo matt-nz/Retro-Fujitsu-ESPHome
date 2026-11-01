@@ -584,3 +584,11 @@ Open choices for permanent use (HA control):
    expects when it is polled by the ESP32 instead of the unit), so it is a larger step.
 3. Unanswered: what happens to the unit if the ESP32 stops polling for a long time (it shut down here), and whether
    reconnecting the remote resumes normal operation (it should, as the remote rejoins after a power cycle).
+
+## Cold start under ESP control (full-run.sr, 2026-11-02)
+
+With the real remote disconnected and the unit powered up first, the bus stays silent for 9.3 s until the ESP's first
+poll. The unit answers the first poll with `7F 12 01`, skips the second reply, and then replies normally. HEAT 20 was
+accepted (both rounds echoed) and the unit reports running (`18 17`) 1.5 s after the setting started. When polling
+stopped, the unit went silent and shut down by itself with no message. This matches the real remote's start-up
+(`start-up.sr`), so there is no hidden enrolment step to find. Details: `captures/matt-captures/settings-captures-notes.md`.

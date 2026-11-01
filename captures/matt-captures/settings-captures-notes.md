@@ -202,3 +202,37 @@ With the wired remote disconnected completely (all three wires removed), the LIN
 remote's circuitry still being attached to the LIN wire while unpowered, loading it toward ground. The pull-up
 resistor suggested above is **not needed**; ignore that suggestion. For any emulator test, remove all three of the
 remote's wires (at least LIN and its 12 V), not just its power.
+
+## full-run.sr: cold start under ESP control (2026-11-02)
+
+Capture: 1 MHz, 50 s, both channels on the LIN side (D0 and D1 show the same edges). ESP on 5 V, remote fully
+disconnected, heat pump powered on, one press of the AOT30 test button, test ended by the firmware. ESP log:
+`esphome-web-e4b13c-logs-7.txt`.
+
+| Time (s) | Event |
+|---|---|
+| 0 - 4.22 | Line low (transceiver 12 V not up yet / unit unpowered) |
+| 4.22 | Line goes high: unit powered, LIN recessive |
+| 4.22 - 13.48 | **9.26 s of complete silence.** No edges at all. The unit does not announce itself, and there is no enrolment or beacon traffic. |
+| 13.48 | First ESP poll, run flag off (`7F 28 20`). The unit answers with the one-shot `7F 12 01`. |
+| 13.73 | Second poll gets **no reply** (reply window is empty). |
+| 13.98 - 15.46 | Normal polls, unit replies `7F 18 13 48 80` (idle) |
+| 15.70 | Setting round 1 HEAT 20, 16.51 round 2, each echoed twice by the unit (`7F 12 03/13 96 02 5F 7E`) |
+| 17.22 | First normal poll after the setting. The unit now replies `7F 18 17 48 80` (running) |
+| 17.22 - 27.10 | Polls every 247.0 ms (max deviation 1 ms) with replies `18 17` |
+| 27.10 | Last poll and reply. After this the bus is silent for the remaining 23 s, and the unit shuts down by itself with no off message on the bus. |
+
+Findings:
+- The cold start needs no handshake beyond polling. The unit is silent until it is polled, the same as with the real
+  remote (`start-up.sr`: 3.3 s of silence, first poll, `12 01` reply). The earlier "5.2 s bump" was a power-up artefact.
+  There is no sign of a second-remote enrolment step.
+- The first-poll sequence is `poll` -> `12 01`, `poll` -> nothing, then normal replies. The ESP reproduced it exactly.
+- Setting rounds 1 and 2 were both accepted and echoed twice (so the earlier 3-in-50 missing round 2 did not happen).
+- Running flag in the unit's replies flips from 13 to 17 no later than 1.5 s after round 1 started.
+- Two further polls got no reply (19.44 s and 22.41 s), 3 of 52 polls in total. Together with the earlier `07` and
+  stalled replies this suggests the unit occasionally skips a reply, and the master must tolerate that. The firmware
+  already did.
+- The ESP's poll period is 247.0 ms (the real remote's median is 246.6 ms), so our timing is as good as the remote's.
+- The unit stops by itself when polling stops. It is not told to turn off, so any ESP-as-remote design needs
+  continuous polling for as long as the unit should run.
+- HA still shows `Unmapped controller state byte: 0x96` (known; the byte table lacks it).
