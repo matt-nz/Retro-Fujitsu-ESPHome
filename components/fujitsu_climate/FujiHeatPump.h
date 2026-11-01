@@ -226,6 +226,8 @@ class FujiHeatPump {
   std::atomic<bool> emuEnabled_{false};
   std::atomic<bool> emuDryRun_{false};
   std::atomic<uint32_t> emuCommand_{0};
+  bool unitRunningKnown_ = false;  // run flag of the unit's last status reply (bus task only)
+  bool unitRunning_ = false;
   EmuStage emuStage_ = EmuStage::IDLE;
   uint32_t emuStageStartMs_ = 0;
   void emuDrainRx();

@@ -502,7 +502,7 @@ change and power-off, abort on read-back mismatch, and disabling. It could not b
 2. Bench first if you can: unit disconnected, wired remote disconnected, logic analyser on the ESP32 line. Press
    the button and decode the capture with `tools/decode_logic_capture.py --settings` (it should show HEAT 20 °C, auto
    fan, both rounds); the bit time should read 1980.8 µs.
-3. Live: unit powered and OFF, wired remote disconnected, press the button. On the analyser look for the unit's
+3. Live: unit powered (off or on), wired remote disconnected, press the button. On the analyser look for the unit's
    replies `7F 18 13 48 80` (and `7F 12 01` as its first message after power-up), then its echoes `7F 12 03 …`
    after the setting. Reconnect the wired remote when the log says the test has finished.
 
@@ -510,8 +510,11 @@ change and power-off, abort on read-back mismatch, and disabling. It could not b
 - The LIN transceiver's TXD dominant timeout (typically 6–20 ms) may cut off the remote's first byte, whose low
   pulse is 15.8 ms long. The read-back check would show this as an abort at cell 0–7; if it happens the transmitter
   hardware, not the protocol, is the limit.
-- The poll's run flag (13/17) is sent as `13` (off) when the test starts; with the unit already running, that
-  may command it off. Start with the unit off.
+- The first poll goes out with the run flag off (`13`) because nothing has been heard from the unit yet; after its first
+  reply the poll flag follows the unit's, as the real remote's does (1,592 of 1,600 captured polls repeated the unit's
+  last reply flag; the exceptions are the polls right after the remote itself sent a change). A real remote that is
+  power-cycled while the unit runs rejoins, which suggests the flag is informational, but a capture of that rejoin
+  (unit running, remote's power removed and restored) would show exactly what the remote sends first.
 - If the real remote is reconnected while the emulator runs, the two collide. The read-back abort limits it, but the
   unit may already have seen a corrupted message. Reconnect the remote only after the test has finished.
 - Whether the unit accepts commands from the ESP32 is unknown. A failure to respond may also mean the exchange needs

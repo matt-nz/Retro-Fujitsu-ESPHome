@@ -34,6 +34,7 @@ class Scheduler {
   void start(uint32_t now_ms) {
     active_ = true;
     running_ = false;
+    awaiting_confirm_ = false;
     script_len_ = 0;
     script_pos_ = 0;
     next_poll_ms_ = now_ms;
@@ -43,6 +44,19 @@ class Scheduler {
     script_len_ = 0;
     script_pos_ = 0;
   }
+  // The remote's poll run flag mirrors the unit's last status reply (1,592 of the 1,600 captured polls that
+  // followed a reply); the exceptions are the polls right after the remote itself commanded on. So idle polls
+  // follow the unit, and after a queued on/off change the commanded value is kept until the unit's reply agrees.
+  void observe_unit_running(bool running) {
+    if (awaiting_confirm_) {
+      if (running == running_) {
+        awaiting_confirm_ = false;
+      }
+      return;
+    }
+    running_ = running;
+  }
+
   bool active() const { return active_; }
   bool running() const { return running_; }
   bool busy() const { return script_pos_ < script_len_; }
@@ -76,6 +90,7 @@ class Scheduler {
     script_pos_ = 0;
     t0_set_ = false;
     after_running_ = true;
+    awaiting_confirm_ = true;
     return true;
   }
 
@@ -97,6 +112,7 @@ class Scheduler {
     script_pos_ = 0;
     t0_set_ = false;
     after_running_ = false;
+    awaiting_confirm_ = true;
     return true;
   }
 
@@ -156,6 +172,7 @@ class Scheduler {
   bool active_ = false;
   bool running_ = false;
   bool after_running_ = false;
+  bool awaiting_confirm_ = false;
   bool t0_set_ = false;
   uint32_t t0_ms_ = 0;
   uint32_t next_poll_ms_ = 0;

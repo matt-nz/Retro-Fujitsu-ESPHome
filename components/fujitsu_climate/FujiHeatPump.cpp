@@ -84,6 +84,10 @@ void FujiHeatPump::inspectObservedControllerByte(byte value) {
       setObservedOff();
       break;
     case fuji_passive::Kind::STATUS:
+      if (message.direction == fuji_passive::Direction::UNIT_TO_REMOTE) {
+        unitRunningKnown_ = true;
+        unitRunning_ = message.running;
+      }
       // A running -> idle change also means off; this covers a missed power-off message.
       // The idle -> running change is ignored because the setting message already set On.
       if (passiveRunningKnown && passiveRunning && !message.running) {
@@ -382,6 +386,7 @@ void FujiHeatPump::aot30EmulatorPump() {
   uint32_t now = millis();
   if (emuCommand_.exchange(0) == kEmuTestCommand) {
     emuScheduler_.stop();
+    unitRunningKnown_ = false;  // learn it from the unit's replies once polling starts
     emuStage_ = EmuStage::WAIT_QUIET;
     emuStageStartMs_ = now;
     ESP_LOGW(TAG, "AOT30 test started%s: checking that the bus is silent for %u ms. The wired remote must be "
@@ -407,7 +412,7 @@ void FujiHeatPump::aot30EmulatorPump() {
         emuScheduler_.start(now);
         emuStage_ = EmuStage::LEAD;
         emuStageStartMs_ = now;
-        ESP_LOGW(TAG, "AOT30 test: bus silent, polling started (unit assumed OFF)");
+        ESP_LOGW(TAG, "AOT30 test: bus silent, polling started (first poll has the run flag off, then it follows the unit)");
       }
       return;
     }
@@ -436,6 +441,9 @@ void FujiHeatPump::aot30EmulatorPump() {
       break;
   }
 
+  if (unitRunningKnown_) {
+    emuScheduler_.observe_unit_running(unitRunning_);
+  }
   fuji_aot30::Action action;
   if (!emuScheduler_.due(now, &action)) {
     return;

@@ -110,6 +110,24 @@ int main() {
   }
   CHECK(polls == 3);
 
+  // Idle polls follow the unit's run flag; after a queued change the commanded flag holds until the unit agrees.
+  Scheduler mirror;
+  mirror.start(0);
+  Action m;
+  CHECK(mirror.due(0, &m) && !m.running);
+  mirror.sent(0);
+  mirror.observe_unit_running(true);  // unit already running: the next poll says so
+  CHECK(mirror.due(247, &m) && m.running);
+  mirror.sent(247);
+  CHECK(mirror.queue_off());
+  mirror.observe_unit_running(true);  // still reports running while the off command goes out
+  auto go = run(mirror, 494, 1500);
+  CHECK(go.size() >= 3 && go[0].a.kind == Action::Kind::OFF);
+  CHECK(!mirror.running());
+  mirror.observe_unit_running(false);  // unit confirms off
+  mirror.observe_unit_running(true);   // and later follows it back on (a person used a remote)
+  CHECK(mirror.running());
+
   // After stop() nothing is due.
   s.stop();
   CHECK(!s.due(100000, &a));
