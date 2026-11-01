@@ -113,8 +113,7 @@ Two limits of the byte view follow, both consequences of the UART cutting the pa
 - **HEAT repeats:** in HEAT the value byte keeps only the setpoint's low three bits, so 24–30 °C produce the same bytes as
   16–22 °C. Only the cell positions (setpoint bits 3 and 4, cells 43–44) tell them apart.
 - **Cross-mode repeats:** some bytes occur in more than one mode, for example `A5` is COOL 20 °C or
-  AUTO 26 °C at medium fan, `95` COOL 18 or AUTO 25 at medium, and `8A`/`92` are HEAT 20 (28) medium/low or
-  COOL medium at 17/18. The remote's own state tells these apart in practice, the byte alone does not.
+  AUTO 26 °C at medium fan, `95` COOL 18 or AUTO 25 at medium. The remote's own state tells these apart in practice, the byte alone does not.
 
 The firmware's byte table (`FujiPassiveStream.h`) only maps values from the first captures, so for
 HEAT setpoints above 23 °C it shows the aliased lower setpoint (for example 26 °C appears as 18 °C), and
