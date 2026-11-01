@@ -6,123 +6,6 @@
 // ---------------------------------------------------------------------------
 
 #include "FujiHeatPump.h"
-#include "esphome/core/log.h"
-#include <cstdio>
-
-#ifdef ESP32
-#include <driver/gpio.h>
-#include <driver/uart.h>
-#include <esp_rom_gpio.h>
-#include <esp_timer.h>
-#include <soc/gpio_sig_map.h>
-#endif
-
-namespace {
-static const char *const TAG = "fujitsu.heatpump";
-
-static_assert(fuji_passive::kModeFan == static_cast<byte>(FujiMode::FAN), "passive mode codes must match FujiMode");
-static_assert(fuji_passive::kModeCool == static_cast<byte>(FujiMode::COOL), "passive mode codes must match FujiMode");
-static_assert(fuji_passive::kModeHeat == static_cast<byte>(FujiMode::HEAT), "passive mode codes must match FujiMode");
-static_assert(fuji_passive::kModeAuto == static_cast<byte>(FujiMode::AUTO), "passive mode codes must match FujiMode");
-static_assert(fuji_passive::kFanAuto == static_cast<byte>(FujiFanMode::FAN_AUTO), "fan codes must match FujiFanMode");
-static_assert(fuji_passive::kFanLow == static_cast<byte>(FujiFanMode::FAN_LOW), "fan codes must match FujiFanMode");
-static_assert(fuji_passive::kFanMedium == static_cast<byte>(FujiFanMode::FAN_MEDIUM), "fan codes must match FujiFanMode");
-static_assert(fuji_passive::kFanHigh == static_cast<byte>(FujiFanMode::FAN_HIGH), "fan codes must match FujiFanMode");
-
-bool same_observed_state(const FujiObservedControllerState &a, const FujiObservedControllerState &b) {
-  return a.valid == b.valid && a.on == b.on && a.mode_valid == b.mode_valid && a.mode == b.mode &&
-         a.fan_valid == b.fan_valid && a.fan_mode == b.fan_mode && a.temperature_valid == b.temperature_valid &&
-         a.temperature == b.temperature && a.eco_valid == b.eco_valid && a.eco == b.eco;
-}
-}  // namespace
-
-// The AOT30L observer reads 0x7F-delimited messages (see FujiPassiveStream.h), not the
-// 8-byte frames the secondary-controller engine below assumes. The observer remains passive;
-// a separately gated, one-shot captured-frame experiment is implemented below.
-void FujiHeatPump::inspectObservedControllerByte(byte value) {
-  fuji_passive::Message message;
-  if (!passiveParser.feed(value, &message)) {
-    return;
-  }
-
-  if (message.direction == fuji_passive::Direction::REMOTE_TO_UNIT) {
-    lastRemoteMessageMs = millis();
-    remoteMessageCount_++;
-  }
-  if (message.kind != fuji_passive::Kind::UNKNOWN) {
-    lastPassiveMessage = millis();
-  }
-
-  switch (message.kind) {
-    case fuji_passive::Kind::SETTING: {
-      if (emuEnabled_.load()) {
-        return;  // the byte view aliases settings; the master controller publishes the state it commanded itself
-      }
-      fuji_passive::Setting setting;
-      if (!fuji_passive::decode_setting(message.value, &setting)) {
-        if (debugPrint) {
-          ESP_LOGD(TAG, "Unmapped controller state byte: 0x%02X", message.value);
-        }
-        return;
-      }
-      FujiObservedControllerState decoded;
-      decoded.valid = true;
-      decoded.on = true;
-      decoded.mode_valid = true;
-      decoded.mode = setting.mode;
-      decoded.fan_valid = setting.fan_valid;
-      decoded.fan_mode = setting.fan;
-      decoded.temperature_valid = setting.temperature_valid;
-      decoded.temperature = setting.temperature;
-      // The remote's message and the unit's echo carry the same state; publish once.
-      if (!same_observed_state(decoded, observedControllerState)) {
-        observedControllerState = decoded;
-        observedControllerStateRevision++;
-        if (debugPrint) {
-          ESP_LOGD(TAG, "Observed controller ON state: value=0x%02X mode=%u fan_valid=%u fan=%u temp_valid=%u temp=%u",
-                   message.value, static_cast<unsigned>(decoded.mode), static_cast<unsigned>(decoded.fan_valid),
-                   static_cast<unsigned>(decoded.fan_mode), static_cast<unsigned>(decoded.temperature_valid),
-                   static_cast<unsigned>(decoded.temperature));
-        }
-      }
-      break;
-    }
-    case fuji_passive::Kind::POWER_OFF:
-      setObservedOff();
-      break;
-    case fuji_passive::Kind::STATUS:
-      if (message.direction == fuji_passive::Direction::UNIT_TO_REMOTE) {
-        unitRunningKnown_ = true;
-        unitRunning_ = message.running;
-        unitRunState_.store(message.running ? 1 : 0);
-      }
-      // A running -> idle change also means off; this covers a missed power-off message.
-      // The idle -> running change is ignored because the setting message already set On.
-      if (passiveRunningKnown && passiveRunning && !message.running) {
-        setObservedOff();
-      }
-      passiveRunningKnown = true;
-      passiveRunning = message.running;
-      break;
-    default:
-      break;
-  }
-}
-
-void FujiHeatPump::setObservedOff() {
-  if (observedControllerState.valid && !observedControllerState.on) {
-    return;
-  }
-  observedControllerState.valid = true;
-  observedControllerState.on = false;
-  observedControllerState.mode_valid = false;
-  observedControllerState.fan_valid = false;
-  observedControllerState.temperature_valid = false;
-  observedControllerStateRevision++;
-  if (debugPrint) {
-    ESP_LOGD(TAG, "Observed controller OFF");
-  }
-}
 
 FujiFrame FujiHeatPump::decodeFrame() {
   FujiFrame ff;
@@ -197,10 +80,6 @@ void FujiHeatPump::connect(HardwareSerial *serial, bool secondary) { return this
 
 void FujiHeatPump::connect(HardwareSerial *serial, bool secondary, int rxPin = -1, int txPin = -1) {
   _serial = serial;
-  rxPin_ = rxPin;
-  txPin_ = txPin;
-  lastRxByteMs = 0;
-  lastRemoteMessageMs = 0;
   if (rxPin != -1 && txPin != -1) {
 #ifdef ESP32
     _serial->begin(500, SERIAL_8E1, rxPin, txPin);
@@ -224,18 +103,11 @@ void FujiHeatPump::connect(HardwareSerial *serial, bool secondary, int rxPin = -
   lastFrameReceived = 0;
 }
 
-void FujiHeatPump::printFrame(const char *prefix, byte buf[8], FujiFrame ff) {
-  ESP_LOGI(TAG,
-           "%s %02X %02X %02X %02X %02X %02X %02X %02X  mSrc:%u mDst:%u mType:%u write:%u login:%u "
-           "unknown:%u onOff:%u temp:%u mode:%u cP:%u uM:%u cTemp:%u acError:%u",
-           prefix, static_cast<unsigned>(buf[0]), static_cast<unsigned>(buf[1]), static_cast<unsigned>(buf[2]),
-           static_cast<unsigned>(buf[3]), static_cast<unsigned>(buf[4]), static_cast<unsigned>(buf[5]),
-           static_cast<unsigned>(buf[6]), static_cast<unsigned>(buf[7]), static_cast<unsigned>(ff.messageSource),
-           static_cast<unsigned>(ff.messageDest), static_cast<unsigned>(ff.messageType),
-           static_cast<unsigned>(ff.writeBit), static_cast<unsigned>(ff.loginBit), static_cast<unsigned>(ff.unknownBit),
-           static_cast<unsigned>(ff.onOff), static_cast<unsigned>(ff.temperature), static_cast<unsigned>(ff.acMode),
-           static_cast<unsigned>(ff.controllerPresent), static_cast<unsigned>(ff.updateMagic),
-           static_cast<unsigned>(ff.controllerTemp), static_cast<unsigned>(ff.acError));
+void FujiHeatPump::printFrame(byte buf[8], FujiFrame ff) {
+  Serial.printf("%X %X %X %X %X %X %X %X  ", buf[0], buf[1], buf[2], buf[3], buf[4], buf[5], buf[6], buf[7]);
+  Serial.printf(" mSrc: %d mDst: %d mType: %d write: %d login: %d unknown: %d onOff: %d temp: %d, mode: %d cP:%d uM:%d cTemp:%d acError:%d \n",
+                ff.messageSource, ff.messageDest, ff.messageType, ff.writeBit, ff.loginBit, ff.unknownBit, ff.onOff,
+                ff.temperature, ff.acMode, ff.controllerPresent, ff.updateMagic, ff.controllerTemp, ff.acError);
 }
 
 void FujiHeatPump::sendPendingFrame() {
@@ -251,392 +123,15 @@ void FujiHeatPump::sendPendingFrame() {
   }
 }
 
-// ---------------------------------------------------------------------------------------------
-// AOT30L/ART30RL master controller. EXPERIMENTAL; read the comment in FujiHeatPump.h first.
-// Flow: start -> bus must be silent and idle high -> poll for a while -> run: poll continuously and send the
-// latest submitted target as the captured setting / off messages -> stop (the unit shuts down without polls).
-// ---------------------------------------------------------------------------------------------
-namespace {
-constexpr uint32_t kCmdStart = 1;
-constexpr uint32_t kCmdStop = 2;
-// The bus must have been silent this long before starting; a connected remote polls every ~247 ms.
-constexpr uint32_t kQuietMs = 1500;
-// Polling time before the first command, so the unit sees a normal cycle first.
-constexpr uint32_t kLeadMs = 2000;
-// Our own transmission comes back on RX and takes up to this long to finish arriving. The unit never replies
-// sooner than 30 ms after the end of a message.
-constexpr uint32_t kOwnEchoMs = 25;
-// Wired-remote messages heard while running before the master controller gives the bus back.
-constexpr uint32_t kRemoteMessagesToStop = 2;
-// Do not start a transmission within this long of the last received byte (the unit's reply is still coming).
-constexpr uint32_t kQuietBeforeTxMs = 12;
-// Abort a transmission after this many cells whose read-back differs from what was driven.
-constexpr uint32_t kMaxMismatches = 3;
-}  // namespace
-
-using MasterState = FujiHeatPump::MasterState;
-
-const char *FujiHeatPump::aot30MasterStateText(MasterState state) {
-  switch (state) {
-    case MasterState::OFF: return "Off";
-    case MasterState::CHECKING_BUS: return "Checking bus";
-    case MasterState::RUNNING: return "Running";
-    case MasterState::REFUSED_REMOTE_PRESENT: return "Refused: wired remote is on the bus";
-    case MasterState::REFUSED_BUS_LOW: return "Refused: bus held low";
-    case MasterState::STOPPED_REMOTE_PRESENT: return "Stopped: wired remote detected";
-    case MasterState::STOPPED_TX_FAILED: return "Stopped: bus fault while sending";
-  }
-  return "Unknown";
-}
-
-bool FujiHeatPump::aot30StartMaster() {
-  if (emuEnabled_.exchange(true)) {
-    return false;
-  }
-  emuState_.store(static_cast<uint8_t>(MasterState::CHECKING_BUS));
-  emuCommand_.store(kCmdStart);
-  return true;
-}
-
-void FujiHeatPump::aot30StopMaster() {
-  if (emuEnabled_.load()) {
-    emuCommand_.store(kCmdStop);
-  }
-}
-
-bool FujiHeatPump::aot30SubmitTarget(const fuji_aot30::Target &target) {
-  if (!emuEnabled_.load()) {
-    return false;
-  }
-  emuTargetWord_.store(target.pack());
-  emuTargetDirty_.store(true);
-  return true;
-}
-
-void FujiHeatPump::emuPublishObserved(const fuji_aot30::Target &t) {
-  FujiObservedControllerState state;
-  state.valid = true;
-  state.on = t.on;
-  if (t.on) {
-    state.mode_valid = true;
-    state.mode = static_cast<byte>(t.mode == fuji_aot30::Mode::COOL   ? FujiMode::COOL
-                                   : t.mode == fuji_aot30::Mode::HEAT ? FujiMode::HEAT
-                                   : t.mode == fuji_aot30::Mode::FAN  ? FujiMode::FAN
-                                                                       : FujiMode::AUTO);
-    state.fan_valid = true;
-    state.fan_mode = static_cast<byte>(t.fan == fuji_aot30::Fan::FAN_HIGH     ? FujiFanMode::FAN_HIGH
-                                       : t.fan == fuji_aot30::Fan::FAN_MEDIUM ? FujiFanMode::FAN_MEDIUM
-                                       : t.fan == fuji_aot30::Fan::FAN_LOW    ? FujiFanMode::FAN_LOW
-                                                                               : FujiFanMode::FAN_AUTO);
-    state.temperature_valid = t.mode != fuji_aot30::Mode::FAN;
-    state.temperature = t.temp;
-    state.eco_valid = true;
-    state.eco = t.eco;
-  }
-  if (!same_observed_state(state, observedControllerState)) {
-    observedControllerState = state;
-    observedControllerStateRevision++;
-  }
-}
-
-// Bus task: turns the latest submitted target into a scripted change once the previous one has been sent.
-void FujiHeatPump::emuApplyTarget() {
-  if (emuScheduler_.busy() || !emuTargetDirty_.exchange(false)) {
-    return;
-  }
-  const fuji_aot30::Target target = fuji_aot30::Target::unpack(emuTargetWord_.load());
-  if (target.on) {
-    if (target == emuApplied_) {
-      return;
-    }
-    if (!emuScheduler_.queue_setting(target.mode, target.fan, target.temp, target.eco)) {
-      ESP_LOGW(TAG, "AOT30 master: refused target mode=%u temp=%u", static_cast<unsigned>(target.mode),
-               static_cast<unsigned>(target.temp));
-      return;
-    }
-    ESP_LOGW(TAG, "AOT30 master: sending mode=%u fan=%u temp=%u eco=%u", static_cast<unsigned>(target.mode),
-             static_cast<unsigned>(target.fan), static_cast<unsigned>(target.temp), static_cast<unsigned>(target.eco));
-  } else {
-    if (!emuApplied_.on && !(unitRunningKnown_ && unitRunning_)) {
-      return;  // already off
-    }
-    emuScheduler_.queue_off();
-    ESP_LOGW(TAG, "AOT30 master: sending power-off");
-  }
-  emuApplied_ = target;
-  emuPublishObserved(target);
-}
-
-void FujiHeatPump::emuFinish(uint8_t state) {
-  emuScheduler_.stop();
-  emuStage_ = EmuStage::IDLE;
-  emuTargetDirty_.store(false);
-  emuState_.store(state);
-  emuEnabled_.store(false);
-  setObservedOff();  // the unit shuts down by itself once polling stops
-  ESP_LOGW(TAG, "AOT30 master controller: %s. The bus is released; the unit stops without polling.",
-           aot30MasterStateText(static_cast<MasterState>(state)));
-}
-
-void FujiHeatPump::emuDrainRx() {
-  if (_serial == nullptr) {
-    return;
-  }
-  uint8_t chunk[8];
-  size_t chunk_len = 0;
-  auto flush_chunk = [&]() {
-    if (debugPrint && chunk_len > 0) {
-      // Same line format as waitForFrame() so tools/decode_timeline.py reads these logs too.
-      char raw[25] = {};
-      for (size_t i = 0; i < chunk_len; i++) {
-        snprintf(raw + i * 3, sizeof(raw) - i * 3, " %02X", static_cast<unsigned>(chunk[i]));
-      }
-      ESP_LOGI(TAG, "RX raw (%u/8, before XOR):%s", static_cast<unsigned>(chunk_len), raw);
-    }
-    chunk_len = 0;
-  };
-  while (_serial->available() > 0) {
-    const int value = _serial->read();
-    if (value < 0) {
-      break;
-    }
-    lastRxByteMs = millis();
-    if (static_cast<int32_t>(lastRxByteMs - emuIgnoreRxUntilMs_) < 0) {
-      continue;  // our own transmission, read back
-    }
-    chunk[chunk_len++] = static_cast<uint8_t>(value);
-    this->inspectObservedControllerByte(static_cast<byte>(value) ^ 0xFF);
-    if (chunk_len == sizeof(chunk)) {
-      flush_chunk();
-    }
-  }
-  flush_chunk();
-}
-
-bool FujiHeatPump::emuTransmit(const uint8_t *cells, size_t count, const char *what) {
-  const unsigned long duration_us = static_cast<unsigned long>(count * fuji_aot30::kRemoteCellTenthsUs / 10);
-  if (emuDryRun_.load()) {
-    ESP_LOGW(TAG, "AOT30 master DRY RUN would send %s (%u cells, %lu us)", what, static_cast<unsigned>(count),
-             duration_us);
-    return true;
-  }
-#ifdef ESP32
-  if (rxPin_ < 0 || txPin_ < 0) {
-    ESP_LOGE(TAG, "AOT30 master: TX/RX pins unknown");
-    return false;
-  }
-  const gpio_num_t tx = static_cast<gpio_num_t>(txPin_);
-  const gpio_num_t rx = static_cast<gpio_num_t>(rxPin_);
-
-  // Take the TX pin away from the UART and drive it as a plain GPIO, idle high (recessive).
-  esp_rom_gpio_connect_out_signal(tx, SIG_GPIO_OUT_IDX, false, false);
-  gpio_set_direction(tx, GPIO_MODE_OUTPUT);
-  gpio_set_level(tx, 1);
-
-  uint32_t mismatches = 0;
-  int first_bad = -1;
-  int last_level = 1;
-  const int64_t t0 = esp_timer_get_time();
-  for (size_t i = 0; i < count; i++) {
-    const int64_t cell_start = t0 + static_cast<int64_t>(i * fuji_aot30::kRemoteCellTenthsUs / 10);
-    const int64_t cell_mid = cell_start + (fuji_aot30::kRemoteCellTenthsUs / 20);
-    const int level = cells[i] ? 0 : 1;  // line level is the inverse of the bus bit
-    while (esp_timer_get_time() < cell_start) {
-    }
-    if (level != last_level) {
-      gpio_set_level(tx, level);
-      last_level = level;
-    }
-    while (esp_timer_get_time() < cell_mid) {
-    }
-    if (gpio_get_level(rx) != level) {
-      if (first_bad < 0) {
-        first_bad = static_cast<int>(i);
-      }
-      if (++mismatches >= kMaxMismatches) {
-        break;
-      }
-    }
-  }
-  if (mismatches < kMaxMismatches) {
-    const int64_t end = t0 + static_cast<int64_t>(count * fuji_aot30::kRemoteCellTenthsUs / 10);
-    while (esp_timer_get_time() < end) {
-    }
-  }
-  gpio_set_level(tx, 1);
-
-  // Give the pin back to the UART.
-  uart_set_pin(static_cast<uart_port_t>(2), txPin_, rxPin_, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE);
-
-  if (mismatches >= kMaxMismatches) {
-    ESP_LOGE(TAG, "AOT30 master: %s aborted, %u read-back mismatches (first at cell %d); line released", what,
-             static_cast<unsigned>(mismatches), first_bad);
-    return false;
-  }
-  if (first_bad >= 0) {
-    ESP_LOGW(TAG, "AOT30 master: %s sent with %u read-back mismatch (cell %d)", what,
-             static_cast<unsigned>(mismatches), first_bad);
-  }
-  return true;
-#else
-  (void) cells;
-  ESP_LOGE(TAG, "AOT30 master needs an ESP32");
-  return false;
-#endif
-}
-
-void FujiHeatPump::aot30MasterPump() {
-  emuDrainRx();
-  uint32_t now = millis();
-
-  const uint32_t command = emuCommand_.exchange(0);
-  if (command == kCmdStop) {
-    if (emuEnabled_.load()) {
-      emuFinish(static_cast<uint8_t>(MasterState::OFF));
-    }
-    return;
-  }
-  if (command == kCmdStart) {
-    emuApplied_ = fuji_aot30::Target();
-    emuIgnoreRxUntilMs_ = now;
-    unitRunningKnown_ = false;  // learn it from the unit's replies once polling starts
-    unitRunState_.store(-1);
-    emuScheduler_.stop();
-    emuStage_ = EmuStage::WAIT_QUIET;
-    emuStageStartMs_ = now;
-    ESP_LOGW(TAG, "AOT30 master%s: checking that the bus is silent for %u ms. The wired remote must be disconnected.",
-             emuDryRun_.load() ? " (DRY RUN)" : "", static_cast<unsigned>(kQuietMs));
-  }
-
-  switch (emuStage_) {
-    case EmuStage::IDLE:
-      return;
-    case EmuStage::WAIT_QUIET: {
-      // Only messages from the wired remote count: the unit is seen sending a stray byte by itself about 5 s after
-      // power-up with no remote connected, which must not block the start.
-      const bool traffic_before =
-          lastRemoteMessageMs != 0 && static_cast<uint32_t>(emuStageStartMs_ - lastRemoteMessageMs) < kQuietMs;
-      const bool traffic_since =
-          lastRemoteMessageMs != 0 && static_cast<int32_t>(lastRemoteMessageMs - emuStageStartMs_) > 0;
-      if (traffic_before || traffic_since) {
-        ESP_LOGE(TAG, "AOT30 master refused: wired remote messages seen within %u ms of starting. Fully disconnect "
-                      "the wired remote (all three wires) and start again.",
-                 static_cast<unsigned>(kQuietMs));
-        emuFinish(static_cast<uint8_t>(MasterState::REFUSED_REMOTE_PRESENT));
-        return;
-      }
-      if (now - emuStageStartMs_ >= kQuietMs) {
-#ifdef ESP32
-        // A bus that never idles high cannot carry a message (test.sr: an unpowered remote left attached clamped the
-        // line low).
-        if (!emuDryRun_.load() && rxPin_ >= 0 && gpio_get_level(static_cast<gpio_num_t>(rxPin_)) == 0) {
-          ESP_LOGE(TAG, "AOT30 master refused: the bus (GPIO%d) is held low with no traffic, so it does not idle high. "
-                        "Disconnect the wired remote completely (all three wires) and check the LIN wire reads 12 V.",
-                   rxPin_);
-          emuFinish(static_cast<uint8_t>(MasterState::REFUSED_BUS_LOW));
-          return;
-        }
-#endif
-        emuScheduler_.start(now);
-        emuRemoteBaseline_ = remoteMessageCount_;
-        emuStage_ = EmuStage::LEAD;
-        emuStageStartMs_ = now;
-        ESP_LOGW(TAG, "AOT30 master: bus silent, polling started (first poll has the run flag off, then it follows "
-                      "the unit)");
-      }
-      return;
-    }
-    case EmuStage::LEAD:
-      if (now - emuStageStartMs_ >= kLeadMs) {
-        emuStage_ = EmuStage::RUN;
-        emuState_.store(static_cast<uint8_t>(MasterState::RUNNING));
-        emuPublishObserved(emuApplied_);
-        ESP_LOGW(TAG, "AOT30 master: running, polling continuously. Waiting for a command.");
-      }
-      break;
-    case EmuStage::RUN:
-      emuApplyTarget();
-      break;
-  }
-  if (remoteMessageCount_ - emuRemoteBaseline_ >= kRemoteMessagesToStop) {
-    ESP_LOGE(TAG, "AOT30 master: a wired remote is talking on the bus, giving it back.");
-    emuFinish(static_cast<uint8_t>(MasterState::STOPPED_REMOTE_PRESENT));
-    return;
-  }
-
-  if (unitRunningKnown_) {
-    emuScheduler_.observe_unit_running(unitRunning_);
-  }
-  fuji_aot30::Action action;
-  if (!emuScheduler_.due(now, &action)) {
-    return;
-  }
-  if (_serial->available() > 0 || (lastRxByteMs != 0 && now - lastRxByteMs < kQuietBeforeTxMs)) {
-    return;  // the unit is still talking, try again next time round
-  }
-
-  uint8_t cells[fuji_aot30::kSettingCells];
-  size_t count = 0;
-  const char *what = "poll";
-  switch (action.kind) {
-    case fuji_aot30::Action::Kind::POLL:
-      fuji_aot30::build_poll(action.running, action.pending, cells);
-      count = fuji_aot30::kPollCells;
-      what = action.pending ? "poll (pending)" : (action.running ? "poll (running)" : "poll (idle)");
-      break;
-    case fuji_aot30::Action::Kind::SETTING:
-      if (!fuji_aot30::build_setting(action.mode, action.fan, action.temp, action.eco, action.repeat, cells)) {
-        ESP_LOGE(TAG, "AOT30 master: invalid setting, stopping");
-        emuFinish(static_cast<uint8_t>(MasterState::STOPPED_TX_FAILED));
-        return;
-      }
-      count = fuji_aot30::kSettingCells;
-      what = action.repeat ? "setting (round 2)" : "setting (round 1)";
-      break;
-    case fuji_aot30::Action::Kind::OFF:
-      fuji_aot30::build_off(cells);
-      count = fuji_aot30::kOffCells;
-      what = "power-off";
-      break;
-    default:
-      return;
-  }
-
-  now = millis();
-  if (!emuTransmit(cells, count, what)) {
-    emuFinish(static_cast<uint8_t>(MasterState::STOPPED_TX_FAILED));
-    return;
-  }
-  emuScheduler_.sent(now);
-  emuIgnoreRxUntilMs_ = millis() + kOwnEchoMs;
-  if (action.kind != fuji_aot30::Action::Kind::POLL) {
-    ESP_LOGW(TAG, "AOT30 master: sent %s", what);
-  }
-}
-
 bool FujiHeatPump::waitForFrame() {
   FujiFrame ff;
 
   if (_serial->available()) {
     memset(readBuf, 0, 8);
     int bytesRead = _serial->readBytes(readBuf, 8);
-    if (bytesRead > 0) {
-      lastRxByteMs = millis();
-    }
-
-    if (debugPrint && bytesRead > 0) {
-      char rawBytes[25] = {};
-      for (int i = 0; i < bytesRead; i++) {
-        snprintf(rawBytes + i * 3, sizeof(rawBytes) - i * 3, " %02X", static_cast<unsigned>(readBuf[i]));
-      }
-      ESP_LOGI(TAG, "RX raw (%d/8, before XOR):%s", bytesRead, rawBytes);
-    }
-
-    for (int i = 0; i < bytesRead; i++) {
-      this->inspectObservedControllerByte(readBuf[i] ^ 0xFF);
-    }
 
     if (bytesRead < 8) {
+      // skip incomplete frame
       return false;
     }
 
@@ -670,7 +165,8 @@ bool FujiHeatPump::waitForFrame() {
     }
 
     if (debugPrint) {
-      printFrame("<--", readBuf, ff);
+      Serial.printf("<-- ");
+      printFrame(readBuf, ff);
     }
 
     if (ff.messageDest == controllerAddress) {
@@ -784,7 +280,8 @@ bool FujiHeatPump::waitForFrame() {
         ff.swingStep = currentState.swingStep;
         ff.acError = currentState.acError;
       } else if (ff.messageType == static_cast<byte>(FujiMessageType::ERROR)) {
-        printFrame("AC ERROR RECV:", readBuf, ff);
+        Serial.printf("AC ERROR RECV: ");
+        printFrame(readBuf, ff);
         // handle errors here
         return false;
       }
@@ -820,7 +317,8 @@ bool FujiHeatPump::waitForFrame() {
       encodeFrame(ff);
 
       if (debugPrint) {
-        printFrame("-->", writeBuf, ff);
+        Serial.printf("--> ");
+        printFrame(writeBuf, ff);
       }
 
       for (int i = 0; i < 8; i++) {

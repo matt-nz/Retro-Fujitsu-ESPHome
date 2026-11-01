@@ -13,10 +13,21 @@ has been confirmed live against the real unit, gated behind the "Aircon Control 
 The transmit path is younger than decode — see [Protocol](#protocol) and
 [Project History & Phases](#project-history--phases) below before relying on it.
 
-> **Older ducted units (ART30RL indoor / AOT30L outdoor, 3-wire LIN wired remote):** these use a different bus protocol and
-> the wired remote is the bus master, so nothing below about being a secondary controller applies. The ESP32 can instead
-> **replace the wired remote** as a "Master Controller" that Home Assistant drives (experimental, remote fully disconnected).
-> See [docs/aot30-master-controller.md](docs/aot30-master-controller.md).
+## Which component for which unit
+
+This repository holds two independent ESPHome components. Pick by the bus your unit speaks:
+
+| | `fujitsu_climate` | `fujitsu_aot30` |
+|---|---|---|
+| Units | Newer units with the 8-byte frame protocol (for example ART30LUAK) | Older ducted units with a 3-wire LIN wired remote (ART30RL indoor, AOT30L outdoor) |
+| ESP32 role | Secondary controller next to the wired remote, which stays connected | **Replaces the wired remote** as the bus master (remote fully disconnected) |
+| Config | [`retrofujitsu.yaml`](retrofujitsu.yaml) | [`aot30.yaml`](aot30.yaml) |
+| Docs | The rest of this README, [PROTOCOL.md](PROTOCOL.md) | [docs/aot30-master-controller.md](docs/aot30-master-controller.md) |
+| Status | Upstream design, unchanged here | Experimental, protocol verified on one real run |
+
+They do not share code and cannot run in the same firmware (one UART, one bus). `components/fujitsu_climate/` and `retrofujitsu.yaml` are back to their state before the AOT30L work (upstream plus two small
+compile fixes for current ESPHome). Everything from here down describes `fujitsu_climate`. The AOT30L analysis
+lives in [docs/](docs/) and `captures/matt-captures/`; its host tests run with `sh tests/run_all.sh`.
 
 ---
 

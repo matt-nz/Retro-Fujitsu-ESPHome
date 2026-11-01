@@ -1,11 +1,11 @@
-// Checks FujiAot30Scheduler.h against the timing seen in the captures.
-//   g++ -std=c++17 -Wall -Wextra -Icomponents/fujitsu_climate tests/aot30_scheduler_test.cpp -o /tmp/aot30_scheduler_test
+// Checks Aot30Scheduler.h against the timing seen in the captures.
+//   g++ -std=c++17 -Wall -Wextra -Icomponents/fujitsu_aot30 tests/aot30_scheduler_test.cpp -o /tmp/aot30_scheduler_test
 //   /tmp/aot30_scheduler_test
 
 #include <cstdio>
 #include <vector>
 
-#include "FujiAot30Scheduler.h"
+#include "Aot30Scheduler.h"
 
 using namespace fuji_aot30;
 

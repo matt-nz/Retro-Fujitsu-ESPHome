@@ -1,7 +1,7 @@
-// Checks FujiAot30Cells.h against the Python model's output (tests/golden_cells.txt).
+// Checks Aot30Cells.h against the Python model's output (tests/golden_cells.txt).
 // Build and run from the repository root:
 //   python3 tools/fuji_packet.py --golden tests/golden_cells.txt
-//   g++ -std=c++17 -Wall -Wextra -Icomponents/fujitsu_climate tests/aot30_cells_test.cpp -o /tmp/aot30_cells_test
+//   g++ -std=c++17 -Wall -Wextra -Icomponents/fujitsu_aot30 tests/aot30_cells_test.cpp -o /tmp/aot30_cells_test
 //   /tmp/aot30_cells_test tests/golden_cells.txt
 
 #include <cstdio>
@@ -10,7 +10,7 @@
 #include <sstream>
 #include <string>
 
-#include "FujiAot30Cells.h"
+#include "Aot30Cells.h"
 
 using namespace fuji_aot30;
 

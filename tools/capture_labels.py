@@ -3,7 +3,7 @@
 
 Usage (run from the repo root, in a terminal you can type in):
 
-    esphome logs retrofujitsu.yaml 2>&1 | python3 tools/capture_labels.py captures/matt-captures/my-test.log
+    esphome logs aot30.yaml 2>&1 | python3 tools/capture_labels.py captures/matt-captures/my-test.log
 
 Press the remote button, then type a short label and Enter, e.g. "heat 24" or "fan high".
 Each label is written into the log as a line "[HH:MM:SS.mmm][LABEL] heat 24" using the same

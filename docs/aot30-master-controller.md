@@ -1,8 +1,11 @@
 # AOT30L / ART30RL master controller
 
 Status: **experimental**. The protocol work is based on logic-analyser captures and one successful run on real hardware (2 Nov 2026, remote
-disconnected, unit started from the ESP). The "Master Controller" switch itself, with the climate entity driving it, has passed the
-host tests but has **not yet run on the ESP32**.
+disconnected, unit started from the ESP). The `fujitsu_aot30` component (Master Controller switch, climate entity) has passed the host tests but has
+**not yet been built or run on the ESP32**.
+
+This is a separate component from the original `fujitsu_climate` (the newer units' 8-byte frame protocol, unchanged from upstream): see the
+[README](../README.md#which-component-for-which-unit).
 
 ## What it does
 
@@ -19,7 +22,7 @@ setting sent even 20 % faster (speed-ladder test, 2 Nov 2026). Keeping the remot
 
 ## Hardware
 
-- ESP32 with a LIN transceiver (TJA1021, "linttl3"). RX is GPIO16, TX is GPIO17 (see `retrofujitsu.yaml`).
+- ESP32 with a LIN transceiver (TJA1021, "linttl3"). RX is GPIO16, TX is GPIO17 (see `aot30.yaml`).
 - Transceiver powered from 12 V. Power the ESP32 from 5 V or from the 12 V rail through a regulator.
 - **Disconnect the wired remote completely: LIN, power and ground.** An attached but unpowered remote clamps the LIN line low (measured 2.6 V);
   with all three wires removed the LIN idles at 12 V.
@@ -31,11 +34,28 @@ setting sent even 20 % faster (speed-ladder test, 2 Nov 2026). Keeping the remot
 | **Master Controller** (switch) | On: the ESP takes over the remote's role. Remembered across reboots. It turns itself off if the controller refuses to start or has to stop. |
 | **Master Controller Status** (text) | `Off`, `Checking bus`, `Running`, or why it refused or stopped (see below). |
 | **Unit Running** (binary sensor) | The run flag in the unit's own replies. Unknown until the unit has answered a poll. |
-| **Aircon** (climate) | Modes Off/Auto/Cool/Heat/Fan, setpoint, fan Auto/Low/Medium/High, preset ECO. While the master controller runs, the climate state is the last state the ESP commanded. |
-| **Aircon Control Enabled** (switch) | Existing kill switch. It must be on for climate commands to be sent. |
+| **Bus Alive** / **Bus Status** | Recognised messages are arriving (`Bus OK`, `No Signal`, `Never Seen`). Works with the Master Controller off and the real remote connected. |
+| **Fujitsu Heat Pump** (climate) | Modes Off/Auto/Cool/Heat/Fan, setpoint, fan Auto/Low/Medium/High, preset ECO. While the master controller runs, the climate state is the last state the ESP commanded. With the Master Controller off, commands are ignored and the state is a best-effort view of a connected remote (see Known limits). |
+| **Set Temperature**, **Fan Speed**, **Economy Mode** | Duplicates of the climate controls for the ESPHome web UI and for Auto mode, where HA hides the target temperature. |
 
 Supported: HEAT 16-30 °C, COOL 18-30 °C, AUTO 18-30 °C, FAN (no setpoint), fans auto/low/medium/high, ECO.
 Not available on this unit: DRY, quiet fan, vane control (so no swing entity), room temperature. Out-of-range setpoints are clamped. The room temperature is not on the bus.
+
+## Installing
+
+Use [`aot30.yaml`](../aot30.yaml) (rename the device if you like) and keep `components/fujitsu_aot30/` next to it, or point `external_components` at the
+repository instead of the local path:
+
+```yaml
+external_components:
+  - source:
+      type: git
+      url: https://github.com/matt-nz/Retro-Fujitsu-ESPHome
+      ref: <branch>
+    components: [ fujitsu_aot30 ]
+```
+
+`debug: true` on the climate platform logs every received byte as `RX raw` lines (what `tools/decode_timeline.py` reads); set it to `false` for quieter logs.
 
 ## Starting it
 
@@ -72,7 +92,7 @@ The full analysis is in [protocol-investigation-status-2026-10-31.md](protocol-i
 - Poll `7F 28 13|17 08|0A`: run flag, pending flag. Reply `7F 18 13|17 48 80`.
 - Setting: an 84-cell bit-serial packet sent twice (rounds `03` and `13`). Mode is cells 33-35, fan 37-39, setpoint 40-44, ECO 54.
 - Off `7F 24 03`. A change goes out 397 ms after the last poll, then `0A` poll +405 ms, round 2 +803 ms, `0A` poll +1210 ms, normal poll +1516 ms.
-- Code: `FujiAot30Cells.h` (message cells), `FujiAot30Scheduler.h` (timing script), `FujiHeatPump.cpp` (bus task side), `FujitsuClimate.cpp` (HA side).
+- Code, all in `components/fujitsu_aot30/`: `Aot30Cells.h` (message cells), `Aot30Scheduler.h` (timing script), `Aot30Passive.h` (message parser), `Aot30Bus.cpp` (bus task: reading, master controller, bit-banged transmit), `Aot30Climate.cpp` (HA climate entity).
 
 ## Tests
 
@@ -145,7 +165,7 @@ The climate entity's temperature is the last setpoint the ESP sent, so it is the
 
 ## Entities removed for this unit
 
-The YAML no longer exposes entities that belong to the newer units' 8-byte frame protocol and can never be populated on this bus: Room Temp, Swing Icon,
+`aot30.yaml` does not carry the entities of the newer units' 8-byte frame protocol, which can never be populated on this bus: Room Temp, Swing Icon,
 Raw Frame To Us/Other, Sync Mismatch, Out of Sync Since, In Sync, Last Change Source/Detail, Thermo Sensor Icon, Defrost Active, the Thermo Sensor
 experiment select and write-test switch, and the Safe Mode Boot button (ESPHome's own safe mode still works for recovery). Dry mode and the Quiet fan
-speed are no longer offered. The component code and `text_sensor.py`/`binary_sensor.py`/`sensor.py` still support them as optional, unused hooks.
+speed are not offered. The `Aot30Climate` component is a separate, self-contained component, so none of that code is carried.

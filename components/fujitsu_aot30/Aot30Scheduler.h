@@ -11,7 +11,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "FujiAot30Cells.h"
+#include "Aot30Cells.h"
 
 namespace fuji_aot30 {
 

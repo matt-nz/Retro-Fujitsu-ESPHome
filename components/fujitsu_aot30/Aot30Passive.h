@@ -28,8 +28,8 @@ namespace fuji_passive {
 constexpr uint8_t kStartByte = 0x7F;
 constexpr size_t kMaxMessageLen = 16;
 
-// Numeric values match FujiMode / FujiFanMode in FujiHeatPump.h (checked by static_assert
-// in FujiHeatPump.cpp).
+// Numeric values are the ones the legacy fujitsu_climate component uses for FujiMode / FujiFanMode. The byte-view
+// decode below was written against them, so they are kept.
 constexpr uint8_t kModeFan = 1;
 constexpr uint8_t kModeCool = 3;
 constexpr uint8_t kModeHeat = 4;

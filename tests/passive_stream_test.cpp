@@ -1,7 +1,7 @@
-// Desktop test for components/fujitsu_climate/FujiPassiveStream.h.
+// Desktop test for components/fujitsu_aot30/Aot30Passive.h.
 //
 // Build and run from the repository root:
-//   g++ -std=c++17 -Wall -Wextra -Icomponents/fujitsu_climate tests/passive_stream_test.cpp -o /tmp/passive_stream_test
+//   g++ -std=c++17 -Wall -Wextra -Icomponents/fujitsu_aot30 tests/passive_stream_test.cpp -o /tmp/passive_stream_test
 //   /tmp/passive_stream_test captures/matt-captures
 
 #include <cstdio>
@@ -10,7 +10,7 @@
 #include <string>
 #include <vector>
 
-#include "FujiPassiveStream.h"
+#include "Aot30Passive.h"
 
 using namespace fuji_passive;
 

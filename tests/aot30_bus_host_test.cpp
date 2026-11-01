@@ -1,6 +1,6 @@
-// Exercises the master-controller code in FujiHeatPump.cpp on a desktop compiler with fake time, GPIO and UART.
-//   g++ -std=c++17 -w -DESP32 -Itests/stubs -Icomponents/fujitsu_climate tests/aot30_emulator_host_test.cpp \
-//       components/fujitsu_climate/FujiHeatPump.cpp -o /tmp/aot30_emulator_host_test && /tmp/aot30_emulator_host_test
+// Exercises the master-controller code in Aot30Bus.cpp on a desktop compiler with fake time, GPIO and UART.
+//   g++ -std=c++17 -w -DESP32 -Itests/stubs -Icomponents/fujitsu_aot30 tests/aot30_bus_host_test.cpp \
+//       components/fujitsu_aot30/Aot30Bus.cpp -o /tmp/aot30_bus_host_test && /tmp/aot30_bus_host_test
 // Nothing here touches hardware. The fake GPIO loops the driven level back to the RX pin, like the transceiver.
 
 #include <cstdarg>
@@ -14,7 +14,9 @@
 #include <esp_rom_gpio.h>
 #include <esp_timer.h>
 
-#include "FujiHeatPump.h"
+#include "Aot30Bus.h"
+
+using namespace fuji_aot30;
 
 // ---- fakes ---------------------------------------------------------------------------------------
 static int64_t g_now_us = 0;
@@ -78,14 +80,14 @@ static size_t log_count(const char *needle) {
   return n;
 }
 
-static void advance(FujiHeatPump &hp, uint32_t ms) {
+static void advance(Bus &hp, uint32_t ms) {
   for (uint32_t i = 0; i < ms; i++) {
     g_now_us += 1000;
-    hp.aot30MasterPump();
+    hp.pump();
   }
 }
 
-static void reset(HardwareSerial &serial, FujiHeatPump &hp) {
+static void reset(HardwareSerial &serial, Bus &hp) {
   g_log.clear();
   g_edges.clear();
   g_loopback = true;
@@ -93,34 +95,33 @@ static void reset(HardwareSerial &serial, FujiHeatPump &hp) {
   g_tx_level = 1;
   g_uart_set_pin_calls = g_matrix_calls = g_gpio_sets = 0;
   serial.rx.clear();
-  hp.connect(&serial, true, 16, 17);
+  hp.connect(&serial, 16, 17);
 }
 
 int main() {
-  using namespace fuji_aot30;
-  using MS = FujiHeatPump::MasterState;
+  using MS = MasterState;
   static HardwareSerial serial;
-  static FujiHeatPump hp;
+  static Bus hp;
   g_now_us = 10 * 1000 * 1000;
   const uint8_t kRemotePoll[] = {0x80, 0xD7, 0xEC, 0xF7, 0x80};  // 7F 28 13 08 plus the next start byte
 
   // 1. Dry run: starts after 1.5 s of silence, polls, then runs and waits for a command.
   reset(serial, hp);
-  hp.aot30SetDryRun(true);
-  CHECK(!hp.aot30MasterActive() && hp.aot30MasterState() == MS::OFF);
-  CHECK(!hp.aot30SubmitTarget(Target()));  // not running yet
-  CHECK(hp.aot30StartMaster());
-  CHECK(!hp.aot30StartMaster());  // already running
-  CHECK(hp.aot30MasterActive() && hp.aot30MasterState() == MS::CHECKING_BUS);
+  hp.set_dry_run(true);
+  CHECK(!hp.master_active() && hp.master_state() == MS::OFF);
+  CHECK(!hp.submit_target(Target()));  // not running yet
+  CHECK(hp.start_master());
+  CHECK(!hp.start_master());  // already running
+  CHECK(hp.master_active() && hp.master_state() == MS::CHECKING_BUS);
   advance(hp, 1000);
   CHECK(!log_has("polling started"));
   advance(hp, 700);
   CHECK(log_has("polling started"));
-  CHECK(hp.aot30MasterState() == MS::CHECKING_BUS);
+  CHECK(hp.master_state() == MS::CHECKING_BUS);
   advance(hp, 2000);
   CHECK(log_has("running, polling continuously"));
-  CHECK(hp.aot30MasterState() == MS::RUNNING);
-  CHECK(hp.getObservedControllerState().valid && !hp.getObservedControllerState().on);
+  CHECK(hp.master_state() == MS::RUNNING);
+  CHECK(hp.observed().valid && !hp.observed().on);
   CHECK(g_gpio_sets == 0 && g_matrix_calls == 0);  // dry run touches no pins
   CHECK(log_count("DRY RUN would send poll") >= 8);
 
@@ -132,11 +133,11 @@ int main() {
   heat.mode = Mode::HEAT;
   heat.temp = 20;
   heat.eco = true;
-  CHECK(hp.aot30SubmitTarget(heat));
+  CHECK(hp.submit_target(heat));
   advance(hp, 100);
-  FujiObservedControllerState st = hp.getObservedControllerState();
-  CHECK(st.on && st.mode == static_cast<byte>(FujiMode::HEAT) && st.temperature == 20 && st.temperature_valid);
-  CHECK(st.eco_valid && st.eco && st.fan_valid && st.fan_mode == static_cast<byte>(FujiFanMode::FAN_AUTO));
+  Observed st = hp.observed();
+  CHECK(st.on && st.mode == fuji_passive::kModeHeat && st.temp == 20 && st.temp_valid);
+  CHECK(st.eco_valid && st.eco && st.fan_valid && st.fan == fuji_passive::kFanAuto);
   advance(hp, 3000);
   CHECK(log_count("DRY RUN would send setting (round 1)") == 1);
   CHECK(log_count("DRY RUN would send setting (round 2)") == 1);
@@ -144,58 +145,58 @@ int main() {
   g_log.clear();
   advance(hp, 5000);
   CHECK(log_count("would send setting") == 0 && log_count("would send poll") >= 15);
-  CHECK(hp.aot30SubmitTarget(heat));  // same state again: nothing is sent
+  CHECK(hp.submit_target(heat));  // same state again: nothing is sent
   advance(hp, 1000);
   CHECK(log_count("would send setting") == 0);
   Target off = heat;
   off.on = false;
-  CHECK(hp.aot30SubmitTarget(off));
+  CHECK(hp.submit_target(off));
   advance(hp, 1500);
   CHECK(log_count("DRY RUN would send power-off") == 1);
-  CHECK(!hp.getObservedControllerState().on);
-  CHECK(hp.aot30SubmitTarget(off));  // already off: nothing sent
+  CHECK(!hp.observed().on);
+  CHECK(hp.submit_target(off));  // already off: nothing sent
   advance(hp, 1500);
   CHECK(log_count("would send power-off") == 1);
-  hp.aot30StopMaster();
+  hp.stop_master();
   advance(hp, 50);
-  CHECK(!hp.aot30MasterActive() && hp.aot30MasterState() == MS::OFF);
+  CHECK(!hp.master_active() && hp.master_state() == MS::OFF);
   CHECK(log_has("Off. The bus is released"));
-  CHECK(!hp.aot30SubmitTarget(heat));
+  CHECK(!hp.submit_target(heat));
 
   // 2. Refuses to start when a wired remote was heard just before or during the silence check.
   reset(serial, hp);
-  hp.aot30SetDryRun(true);
-  CHECK(hp.aot30StartMaster());
+  hp.set_dry_run(true);
+  CHECK(hp.start_master());
   for (uint8_t b : kRemotePoll) serial.rx.push_back(b);
   advance(hp, 300);
   CHECK(log_has("wired remote messages seen"));
-  CHECK(!hp.aot30MasterActive() && hp.aot30MasterState() == MS::REFUSED_REMOTE_PRESENT);
+  CHECK(!hp.master_active() && hp.master_state() == MS::REFUSED_REMOTE_PRESENT);
   advance(hp, 2000);  // the bus has now been quiet for longer than the check
-  CHECK(hp.aot30StartMaster());
+  CHECK(hp.start_master());
   advance(hp, 2000);
   CHECK(log_has("polling started"));
-  hp.aot30StopMaster();
+  hp.stop_master();
   advance(hp, 10);
-  CHECK(!hp.aot30MasterActive());
+  CHECK(!hp.master_active());
 
   // 2b. Stray bytes from the unit itself (no remote) do not block the start.
   reset(serial, hp);
-  hp.aot30SetDryRun(true);
+  hp.set_dry_run(true);
   serial.rx.push_back(0xFF);
   serial.rx.push_back(0xFF);
-  CHECK(hp.aot30StartMaster());
+  CHECK(hp.start_master());
   advance(hp, 100);
   serial.rx.push_back(0xFF);
   advance(hp, 1700);
   CHECK(log_has("polling started"));
   CHECK(!log_has("refused"));
-  hp.aot30StopMaster();
+  hp.stop_master();
   advance(hp, 10);
 
   // 3. Live: pulse train equals the encoded message, pin handed back to the UART after each message.
   reset(serial, hp);
-  hp.aot30SetDryRun(false);
-  CHECK(hp.aot30StartMaster());
+  hp.set_dry_run(false);
+  CHECK(hp.start_master());
   advance(hp, 1600);
   CHECK(log_has("polling started"));
   g_edges.clear();
@@ -241,74 +242,90 @@ int main() {
       uart_calls = g_uart_set_pin_calls;
       for (uint8_t b : kRemotePoll) serial.rx.push_back(b);
     }
-    if (i == 1000) CHECK(hp.aot30SubmitTarget(heat));
-    if (i == 9000) CHECK(hp.aot30SubmitTarget(off));
+    if (i == 1000) CHECK(hp.submit_target(heat));
+    if (i == 9000) CHECK(hp.submit_target(off));
   }
-  CHECK(hp.aot30MasterActive() && hp.aot30MasterState() == MS::RUNNING);
+  CHECK(hp.master_active() && hp.master_state() == MS::RUNNING);
   CHECK(!log_has("giving it back"));
   CHECK(log_count("sent setting (round 1)") == 1);
   CHECK(log_count("sent setting (round 2)") == 1);
   CHECK(log_count("sent power-off") == 1);
-  CHECK(!hp.getObservedControllerState().on);
-  hp.aot30StopMaster();
+  CHECK(!hp.observed().on);
+  hp.stop_master();
   advance(hp, 50);
-  CHECK(!hp.aot30MasterActive());
+  CHECK(!hp.master_active());
   CHECK(!g_edges.empty() && g_edges.back().level == 1 && g_tx_level == 1);  // line released high
 
   // 4. Read-back mismatch (no loopback, or another device pulling the line) stops it and releases the line.
   reset(serial, hp);
-  hp.aot30SetDryRun(false);
-  CHECK(hp.aot30StartMaster());
+  hp.set_dry_run(false);
+  CHECK(hp.start_master());
   advance(hp, 1600);
   g_loopback = false;
   g_log.clear();
   advance(hp, 600);
   CHECK(log_has("aborted"));
-  CHECK(!hp.aot30MasterActive() && hp.aot30MasterState() == MS::STOPPED_TX_FAILED);
+  CHECK(!hp.master_active() && hp.master_state() == MS::STOPPED_TX_FAILED);
   CHECK(g_tx_level == 1);
 
   // 4b. A bus held low (no idle-high, as in test.sr) is refused before anything is sent.
   reset(serial, hp);
-  hp.aot30SetDryRun(false);
+  hp.set_dry_run(false);
   g_rx_forced_low = true;
-  CHECK(hp.aot30StartMaster());
+  CHECK(hp.start_master());
   advance(hp, 1700);
   CHECK(log_has("held low with no traffic"));
-  CHECK(!hp.aot30MasterActive() && hp.aot30MasterState() == MS::REFUSED_BUS_LOW);
+  CHECK(!hp.master_active() && hp.master_state() == MS::REFUSED_BUS_LOW);
   CHECK(g_gpio_sets == 0);
 
   // 5. A wired remote showing up while running makes the master controller give the bus back.
   reset(serial, hp);
-  hp.aot30SetDryRun(true);
-  CHECK(hp.aot30StartMaster());
+  hp.set_dry_run(true);
+  CHECK(hp.start_master());
   advance(hp, 4000);
-  CHECK(hp.aot30MasterActive());
+  CHECK(hp.master_active());
   for (int n = 0; n < 3; n++) {
     for (uint8_t b : kRemotePoll) serial.rx.push_back(b);
     advance(hp, 250);
   }
   CHECK(log_has("giving it back"));
-  CHECK(!hp.aot30MasterActive() && hp.aot30MasterState() == MS::STOPPED_REMOTE_PRESENT);
+  CHECK(!hp.master_active() && hp.master_state() == MS::STOPPED_REMOTE_PRESENT);
 
   // 6. A stop before the bus task handled the start leaves it off, and the unit run flag follows the unit's replies.
   reset(serial, hp);
-  hp.aot30SetDryRun(true);
-  CHECK(hp.aot30UnitRunState() == -1);
-  CHECK(hp.aot30StartMaster());
-  hp.aot30StopMaster();
+  hp.set_dry_run(true);
+  CHECK(hp.unit_run_state() == -1);
+  CHECK(hp.start_master());
+  hp.stop_master();
   advance(hp, 20);
-  CHECK(!hp.aot30MasterActive() && hp.aot30MasterState() == MS::OFF);
-  CHECK(std::string(FujiHeatPump::aot30MasterStateText(MS::REFUSED_BUS_LOW)).find("held low") != std::string::npos);
-  CHECK(hp.aot30StartMaster());
+  CHECK(!hp.master_active() && hp.master_state() == MS::OFF);
+  CHECK(std::string(Bus::master_state_text(MS::REFUSED_BUS_LOW)).find("held low") != std::string::npos);
+  CHECK(hp.start_master());
   advance(hp, 1600);
   for (uint8_t b : {0x80, 0xE7, 0xEC, 0xB7, 0x7F, 0x80}) serial.rx.push_back(b);  // unit reply 7F 18 13 48 80, idle
   advance(hp, 100);
-  CHECK(hp.aot30UnitRunState() == 0);
+  CHECK(hp.unit_run_state() == 0);
   for (uint8_t b : {0x80, 0xE7, 0xE8, 0xB7, 0x7F, 0x80}) serial.rx.push_back(b);  // same with the run flag 17
   advance(hp, 100);
-  CHECK(hp.aot30UnitRunState() == 1);
-  hp.aot30StopMaster();
+  CHECK(hp.unit_run_state() == 1);
+  hp.stop_master();
   advance(hp, 10);
+
+  // 7. Monitor mode (master controller off, real remote connected): messages are parsed into a best-effort state.
+  static Bus hp2;
+  reset(serial, hp2);
+  CHECK(hp2.last_message_ms() == 0 && !hp2.observed().valid);
+  for (uint8_t b : {0x80, 0xDD, 0xFC, 0x43, 0xFD, 0xA0, 0x81, 0x80}) serial.rx.push_back(b);  // 7F 22 03 BC 02 5F 7E: COOL low 23
+  advance(hp2, 50);
+  CHECK(hp2.last_message_ms() != 0);
+  Observed mon = hp2.observed();
+  CHECK(mon.valid && mon.on && mon.mode == fuji_passive::kModeCool && mon.fan == fuji_passive::kFanLow &&
+        mon.temp_valid && mon.temp == 23);
+  uint32_t rev = hp2.observed_revision();
+  for (uint8_t b : {0xDB, 0xFC, 0x80}) serial.rx.push_back(b);  // 7F 24 03: power off
+  advance(hp2, 50);
+  CHECK(hp2.observed().valid && !hp2.observed().on && hp2.observed_revision() != rev);
+  CHECK(Observed::unpack(mon.pack()) == mon);
 
   std::printf(failures ? "%d FAILURES\n" : "ALL PASSED\n", failures);
   return failures ? 1 : 0;

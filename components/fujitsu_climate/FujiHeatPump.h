@@ -45,13 +45,6 @@
 #include <Arduino.h>
 #include <HardwareSerial.h>
 
-#include <atomic>
-#include <cstdint>
-
-#include "FujiAot30Cells.h"
-#include "FujiAot30Scheduler.h"
-#include "FujiPassiveStream.h"
-
 const byte kModeIndex = 3;
 const byte kModeMask = 0b00001110;
 const byte kModeOffset = 1;
@@ -118,30 +111,11 @@ typedef struct FujiFrames {
   byte messageDest = 0;
 } FujiFrame;
 
-struct FujiObservedControllerState {
-  bool valid = false;
-  bool on = false;
-  bool mode_valid = false;
-  byte mode = 0;
-  bool fan_valid = false;
-  byte fan_mode = 0;
-  bool temperature_valid = false;
-  byte temperature = 0;
-  bool eco_valid = false;
-  bool eco = false;
-};
-
 class FujiHeatPump {
  private:
-  HardwareSerial *_serial{nullptr};
+  HardwareSerial *_serial;
   byte readBuf[8];
   byte writeBuf[8];
-  fuji_passive::Parser passiveParser;
-  unsigned long lastPassiveMessage = 0;
-  bool passiveRunningKnown = false;
-  bool passiveRunning = false;
-  FujiObservedControllerState observedControllerState;
-  uint32_t observedControllerStateRevision = 0;
 
   byte controllerAddress;
   bool controllerIsPrimary = true;
@@ -206,48 +180,9 @@ class FujiHeatPump {
 
   FujiFrame decodeFrame();
   void encodeFrame(FujiFrame ff);
-  void printFrame(const char *prefix, byte buf[8], FujiFrame ff);
+  void printFrame(byte buf[8], FujiFrame ff);
 
   bool pendingFrame = false;
-
-  void inspectObservedControllerByte(byte value);
-  void setObservedOff();
-
-  // --- AOT30L/ART30RL master controller (EXPERIMENTAL) ------------------------------------------
-  // On this bus the wired remote is the master: it polls every ~247 ms and the unit only replies, and a setting
-  // message (164 ms) cannot be fitted into the 30-58 ms free gap next to a live remote (a faster message is
-  // rejected by the unit, see docs/). So the ESP takes over the remote's role while the wired remote is DISCONNECTED
-  // (all three wires). It first checks that the bus is silent and idles high, polls continuously, and turns the
-  // targets submitted from Home Assistant into the captured setting and off messages. It stops itself if a wired
-  // remote is heard or a transmission does not read back correctly. See FujiAot30Scheduler.h for the message script.
-  enum class EmuStage : uint8_t { IDLE, WAIT_QUIET, LEAD, RUN };
-  int rxPin_ = -1;
-  int txPin_ = -1;
-  unsigned long lastRxByteMs = 0;
-  // Time the parser last completed a message from the wired remote (second byte high nibble 2). Unlike
-  // lastRxByteMs this ignores bytes the unit sends by itself, so it is what shows that a remote is connected.
-  unsigned long lastRemoteMessageMs = 0;
-  fuji_aot30::Scheduler emuScheduler_;
-  std::atomic<bool> emuEnabled_{false};
-  std::atomic<bool> emuDryRun_{false};
-  std::atomic<uint32_t> emuCommand_{0};
-  std::atomic<uint8_t> emuState_{0};            // MasterState, for the main thread
-  std::atomic<int8_t> unitRunState_{-1};        // run flag of the unit's last reply: -1 unknown, 0 idle, 1 running
-  std::atomic<uint32_t> emuTargetWord_{0};      // last submitted Target::pack()
-  std::atomic<bool> emuTargetDirty_{false};
-  fuji_aot30::Target emuApplied_;               // bus task: what the unit was last told
-  uint32_t emuRemoteBaseline_ = 0;
-  uint32_t remoteMessageCount_ = 0;             // wired-remote messages parsed (our own bytes are discarded)
-  uint32_t emuIgnoreRxUntilMs_ = 0;             // our own transmission comes back on RX; skip it
-  bool unitRunningKnown_ = false;               // bus task only
-  bool unitRunning_ = false;
-  EmuStage emuStage_ = EmuStage::IDLE;
-  uint32_t emuStageStartMs_ = 0;
-  void emuDrainRx();
-  void emuApplyTarget();
-  void emuPublishObserved(const fuji_aot30::Target &t);
-  void emuFinish(uint8_t state);
-  bool emuTransmit(const uint8_t *cells, size_t count, const char *what);
 
   // Deviation #1 from upstream -- see the file-header comment above. Upstream hardcodes
   // 50 here; this project's own measured bus timing (3B.23: 0-10.9ms real CTRL->UNIT
@@ -265,34 +200,6 @@ class FujiHeatPump {
 
   bool waitForFrame();
   void sendPendingFrame();
-
-  // What the master controller is doing, for the status entity. Set by the bus task.
-  enum class MasterState : uint8_t {
-    OFF,
-    CHECKING_BUS,
-    RUNNING,
-    REFUSED_REMOTE_PRESENT,
-    REFUSED_BUS_LOW,
-    STOPPED_REMOTE_PRESENT,
-    STOPPED_TX_FAILED,
-  };
-
-  // Main thread. Start returns false if the master controller is already running or starting; the bus task then
-  // checks the bus and may still refuse (see aot30MasterState()).
-  bool aot30StartMaster();
-  void aot30StopMaster();
-  bool aot30MasterActive() const { return emuEnabled_.load(); }
-  MasterState aot30MasterState() const { return static_cast<MasterState>(emuState_.load()); }
-  static const char *aot30MasterStateText(MasterState state);
-  // Run flag from the unit's last status reply: -1 unknown, 0 idle, 1 running.
-  int aot30UnitRunState() const { return unitRunState_.load(); }
-  // Ask for a new state; false if the master controller is not running.
-  bool aot30SubmitTarget(const fuji_aot30::Target &target);
-  fuji_aot30::Target aot30LastTarget() const { return fuji_aot30::Target::unpack(emuTargetWord_.load()); }
-  // Test hook for the host tests; the firmware never turns dry run on.
-  void aot30SetDryRun(bool dry_run) { emuDryRun_.store(dry_run); }
-  // Bus task: reads whatever has arrived without blocking and sends whatever the script says is due.
-  void aot30MasterPump();
   bool isBound();
   bool updatePending();
 
@@ -319,11 +226,6 @@ class FujiHeatPump {
   // 1000ms-or-less threshold flickers on them. Read-only; doesn't change isBound()'s
   // own behaviour or anything upstream.
   unsigned long getLastFrameReceived() { return lastFrameReceived; }
-
-  // Time of the last recognised passive-parser message (0 = none yet). Unlike
-  // getLastFrameReceived() this does not depend on traffic addressed to 0x21, so it shows
-  // that the bus is alive on AOT30L/ART30RL installations.
-  unsigned long getLastPassiveMessage() { return lastPassiveMessage; }
 
   // Deviation #3 -- see the file-header comment above. Raw, passive, unconfirmed --
   // NOT the same as FujiFrame::controllerPresent on currentState (which, for a
@@ -365,8 +267,6 @@ class FujiHeatPump {
   FujiFrame *getCurrentState();
   FujiFrame *getUpdateState();
   byte getUpdateFields();
-  FujiObservedControllerState getObservedControllerState() { return observedControllerState; }
-  uint32_t getObservedControllerStateRevision() { return observedControllerStateRevision; }
 
   bool debugPrint = false;
 };

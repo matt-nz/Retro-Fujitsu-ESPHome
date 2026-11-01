@@ -16,12 +16,11 @@
 // vendored FujiHeatPump engine (see FujiHeatPump.h) -- completely decoupled from
 // ESPHome's own loop budget, WiFi, and the HA API connection. FujiHeatPump itself now
 // owns the automatic reply loop (waitForFrame() replies to every addressed frame
-// unconditionally), so the prior upstream-protocol one-shot machinery is retired --
+// unconditionally), so all the one-shot arm/test machinery is retired along with it --
 // see FujitsuClimate.cpp's control() for how real HA commands reach it now, gated
 // behind a kill switch (control_enabled_) per hardware-and-protocol.md's "ESP32 is
 // never the boss" design principle, since command adoption under continuous presence
-// has not yet been tested live. A separate experimental button can send one captured
-// AOT30L setting frame; it is not part of the upstream reply/control path.
+// has not yet been tested live.
 //
 // 20 Aug 2026 update: added set_thermo_sensor_text_sensor()/update_thermo_sensor_() --
 // a passive, clearly-labelled-unconfirmed diagnostic for the raw controllerPresent
@@ -58,9 +57,6 @@
 
 #include "FujiHeatPump.h"
 
-#include <atomic>
-#include <cstdint>
-
 #ifdef ESP32
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
@@ -78,7 +74,6 @@ class FujitsuClimate : public climate::Climate, public Component {
 
   climate::ClimateTraits traits() override;
   void control(const climate::ClimateCall &call) override;
-  void control_master_(const climate::ClimateCall &call);
 
   // Unchanged from the 3B.22 fix -- this component's setup() (which starts the bus
   // task) must run before WiFi association, not after, on the shared 12V rail where
@@ -93,7 +88,6 @@ class FujitsuClimate : public climate::Climate, public Component {
   // (hardware-and-protocol.md): GPIO16 = RX (from the LIN3TL transceiver), GPIO17 = TX.
   void set_rx_pin(int pin) { rx_pin_ = pin; }
   void set_tx_pin(int pin) { tx_pin_ = pin; }
-  void set_debug(bool enabled) { debug_ = enabled; }
 
   // Kill switch (added for this rebuild) -- hardware-and-protocol.md's "ESP32 is
   // never the boss" design principle calls for exactly this: a way to put the system
@@ -102,16 +96,6 @@ class FujitsuClimate : public climate::Climate, public Component {
   // retrofujitsu.yaml).
   void set_control_enabled(bool enabled);
   bool get_control_enabled() const { return control_enabled_; }
-  // Experimental master controller for the AOT30L/ART30RL bus: the ESP takes over the wired remote's role
-  // (continuous polling; climate commands become remote messages). The wired remote must be fully disconnected.
-  // See FujiHeatPump.h and docs/aot30-master-controller.md.
-  void set_master_controller(bool enabled);
-  bool master_controller_active() const { return this->heat_pump.aot30MasterActive(); }
-  std::string master_controller_status() const {
-    return FujiHeatPump::aot30MasterStateText(this->heat_pump.aot30MasterState());
-  }
-  // Run flag from the unit's replies: -1 unknown, 0 idle, 1 running.
-  int unit_run_state() const { return this->heat_pump.aot30UnitRunState(); }
 
   // Diagnostics (trimmed for this rebuild -- see the .cpp file's top-of-file comment
   // for which of the old exploratory diagnostics were retired and why).
@@ -151,8 +135,6 @@ class FujitsuClimate : public climate::Climate, public Component {
   // FreeRTOS task function isn't a member function and needs a pointer to work with).
   FujiHeatPump heat_pump;
   FujiFrame shared_state;
-  FujiObservedControllerState shared_observed_state;
-  uint32_t copied_observed_state_revision{0};
 #ifdef ESP32
   SemaphoreHandle_t lock{nullptr};
   TaskHandle_t task_handle{nullptr};
@@ -166,7 +148,6 @@ class FujitsuClimate : public climate::Climate, public Component {
  protected:
   bool hardware_present_{false};
   bool control_enabled_{false};
-  bool debug_{false};
   int rx_pin_{16};
   int tx_pin_{17};
 

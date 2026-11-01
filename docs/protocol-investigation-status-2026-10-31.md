@@ -259,20 +259,12 @@ remote press can be matched to the messages it produced. Two helper scripts in
 [`../tools/`](../tools/) make this easy:
 
 ```
-esphome logs retrofujitsu.yaml 2>&1 | python3 tools/capture_labels.py captures/matt-captures/my-test.log
+esphome logs aot30.yaml 2>&1 | python3 tools/capture_labels.py captures/matt-captures/my-test.log
 python3 tools/decode_timeline.py captures/matt-captures/my-test.log
 ```
 
 Without the `esphome` CLI installed (for example when ESPHome only runs as a Home Assistant
-add-on), `pip install aioesphomeapi` and use `tools/api_log_capture.py` instead; it reads the
-device's logs from the native API and applies the same labels. It is untested against a real
-device so far:
-
-```
-python3 tools/api_log_capture.py <device-ip> captures/matt-captures/my-test.log [--key API_KEY]
-```
-
-If neither is possible, copy the add-on's log view into a file and add label lines by hand,
+add-on), copy the add-on's log view into a file and add label lines by hand,
 in the form `[HH:MM:SS.mmm][LABEL] heat 24`, using the same clock as the log's timestamps
 (note the HA host's clock may differ from yours). `decode_timeline.py` accepts those.
 
@@ -638,3 +630,12 @@ YAML: the one-shot **AOT30 Test** button, the **AOT30 Speed Ladder** button, the
 (results recorded above). Replaced by: the **Master Controller** switch, **Master Controller Status** text sensor and **Unit Running**
 binary sensor. Section names and log lines in the older sections above ("AOT30 test", "AOT30 emulator") refer to the earlier names;
 current log lines start with "AOT30 master". The ECO preset is now also shown in HA while the master controller runs.
+
+## Split into two components (2026-11-02)
+
+All AOT30L code moved out of `components/fujitsu_climate/` into a new, self-contained `components/fujitsu_aot30/` (`Aot30Bus`, `Aot30Climate`,
+`Aot30Cells.h`, `Aot30Scheduler.h`, `Aot30Passive.h`) with its own `aot30.yaml`. The old component and `retrofujitsu.yaml` are back to their
+pre-AOT30L state: of the original engine only the UART setup idea (500 baud 8E1, RX pull-up, a dedicated bus task) carried over; the 8-byte frame
+engine, secondary-controller login, sync/attribution/defrost/thermo features and their entities have no use on this bus. The passive parser,
+the master controller and the host tests now live under the new names (`tests/aot30_bus_host_test.cpp`). `tools/api_log_capture.py` (never tested) and `compile.txt`
+were removed. Log lines now use the tags `aot30.bus` and `aot30.climate`.

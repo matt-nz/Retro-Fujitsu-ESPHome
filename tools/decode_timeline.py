@@ -9,7 +9,7 @@ every message except the routine poll/reply pairs (use --all to include those). 
 between log lines is shown as a discontinuity, since concatenated sessions are not contiguous.
 
 This only shows raw values; it does not interpret them. The values mapped to mode, fan and
-setpoint are in components/fujitsu_climate/FujiPassiveStream.h.
+setpoint are in components/fujitsu_aot30/Aot30Passive.h.
 """
 
 import re
