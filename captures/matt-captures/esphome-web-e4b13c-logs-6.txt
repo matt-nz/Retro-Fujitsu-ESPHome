@@ -1,0 +1,618 @@
+INFO ESPHome 2026.9.0
+INFO Loaded validated config cache for esphome-web-e4b13c.yaml, skipping validation.
+INFO Starting log output from 192.168.2.204 using esphome API
+INFO Successfully resolved heatpump @ 192.168.2.204 in 0.000s
+INFO Successfully connected to heatpump @ 192.168.2.204 in 0.114s
+INFO Successful handshake with heatpump @ 192.168.2.204 in 0.011s
+[10:32:14.171][I][app:151]: ESPHome version 2026.9.0 compiled on 2026-11-01 22:13:11 +1300
+[10:32:14.172][I][app:153]: Project james.retro-fujitsu version 4A.12b-rc1
+[10:32:14.172][I][app:158]: ESP32 Chip: ESP32 rev3.1, 2 core(s)
+[10:32:14.172][W][app:171]: Chip rev >= 3.0 detected. Set minimum_chip_revision: "3.1" under esp32 > framework > advanced to reduce binary size
+[10:32:14.175][W][app:198]: Bootloader supports SRAM1 as IRAM (+40KB). Set sram1_as_iram: true under esp32 > framework > advanced
+[10:32:14.201][C][logger:216]: Logger:
+[10:32:14.201][C][logger:216]:   Max Level: DEBUG
+[10:32:14.201][C][logger:216]:   Initial Level: DEBUG
+[10:32:14.202][C][logger:223]:   Log Baud Rate: 115200
+[10:32:14.202][C][logger:223]:   Hardware UART: UART0
+[10:32:14.202][C][logger:232]:   Task Log Buffer Size: 768 bytes
+[10:32:14.204][C][logger:238]:   Level for 'fujitsu.climate': DEBUG
+[10:32:14.240][C][fujitsu.climate:695]: Fujitsu Heat Pump Climate (Phase 4 -- vendored unreality/FujiHeatPump engine):
+[10:32:14.241][C][fujitsu.climate:696]:   RX pin: GPIO16  TX pin: GPIO17
+[10:32:14.241][C][fujitsu.climate:697]:   Role: SECONDARY controller (continuous reply loop, dedicated FreeRTOS task)
+[10:32:14.249][C][fujitsu.climate:698]:   Control enabled: no -- read-only (see the "Aircon Control Enabled" switch)
+[10:32:14.275][C][status_led:062]: Status Led Light:
+[10:32:14.276][C][status_led:131]:   Pin: GPIO2
+[10:32:14.286][C][uptime.sensor:017]: Uptime Sensor 'Uptime'
+[10:32:14.286][C][uptime.sensor:017]:   State Class: 'total_increasing'
+[10:32:14.286][C][uptime.sensor:017]:   Unit of Measurement: 's'
+[10:32:14.286][C][uptime.sensor:017]:   Accuracy Decimals: 0
+[10:32:14.287][C][uptime.sensor:165]:   Device Class: 'duration'
+[10:32:14.287][C][uptime.sensor:156]:   Icon: 'mdi:timer-outline'
+[10:32:14.287][C][uptime.sensor:019]:   Type: Seconds
+[10:32:14.299][C][template.sensor:017]: Template Sensor 'Free Heap Memory'
+[10:32:14.299][C][template.sensor:017]:   State Class: ''
+[10:32:14.299][C][template.sensor:017]:   Unit of Measurement: 'bytes'
+[10:32:14.299][C][template.sensor:017]:   Accuracy Decimals: 1
+[10:32:14.320][C][template.sensor:340]:   Update Interval: 60.000s
+[10:32:14.321][C][template.number:016]: Template Number 'Set Temperature'
+[10:32:14.321][C][template.number:156]:   Icon: 'mdi:thermometer'
+[10:32:14.323][C][template.number:049]:   Optimistic: NO
+[10:32:14.344][C][template.number:340]:   Update Interval: 5.000s
+[10:32:14.344][C][template.select:010]: Template Select 'Fan Speed'
+[10:32:14.344][C][template.select:156]:   Icon: 'mdi:fan'
+[10:32:14.349][C][template.select:340]:   Update Interval: 5.000s
+[10:32:14.364][C][template.select:010]: Template Select 'Thermo Sensor Experiment'
+[10:32:14.364][C][template.select:156]:   Icon: 'mdi:flask-outline'
+[10:32:14.364][C][template.select:014]:   Optimistic: YES
+[10:32:14.364][C][template.select:014]:   Initial Option: Off
+[10:32:14.364][C][template.select:014]:   Restore Value: NO
+[10:32:14.404][C][template.text_sensor:016]: Template Sensor 'GitHub Repository'
+[10:32:14.405][C][template.text_sensor:156]:   Icon: 'mdi:github'
+[10:32:14.405][C][template.text_sensor:016]: Template Sensor 'Status LED Pattern'
+[10:32:14.405][C][template.text_sensor:156]:   Icon: 'mdi:led-outline'
+[10:32:14.423][C][light:101]: Light 'Status LED'
+[10:32:14.445][C][template.switch:086]: Template Switch 'Aircon Control Enabled'
+[10:32:14.445][C][template.switch:086]:   Restore Mode: always ON
+[10:32:14.446][C][template.switch:156]:   Icon: 'mdi:lock-open-alert-outline'
+[10:32:14.446][C][template.switch:055]:   Optimistic: YES
+[10:32:14.461][C][template.switch:086]: Template Switch 'Thermo Sensor Write Test'
+[10:32:14.461][C][template.switch:086]:   Restore Mode: always OFF
+[10:32:14.481][C][template.switch:156]:   Icon: 'mdi:flask-outline'
+[10:32:14.481][C][template.switch:055]:   Optimistic: YES
+[10:32:14.481][C][template.switch:086]: Template Switch 'Economy Mode'
+[10:32:14.481][C][template.switch:086]:   Restore Mode: always OFF
+[10:32:14.492][C][template.switch:156]:   Icon: 'mdi:leaf'
+[10:32:14.539][C][template.switch:055]:   Optimistic: NO
+[10:32:14.539][C][wifi_info:016]: SSID 'WiFi SSID'
+[10:32:14.540][C][wifi_info:016]: MAC Address 'MAC Address'
+[10:32:14.555][C][wifi_info:016]: IP Address 'IP Address'
+[10:32:14.573][C][version.text_sensor:016]: Version Text Sensor 'ESPHome Version'
+[10:32:14.576][C][version.text_sensor:156]:   Icon: 'mdi:new-box'
+[10:32:14.596][C][status:016]: Status Binary Sensor 'Status'
+[10:32:14.602][C][status:165]:   Device Class: 'connectivity'
+[10:32:14.616][C][restart:086]: Restart Switch 'Restart'
+[10:32:14.616][C][restart:086]:   Restore Mode: always OFF
+[10:32:14.631][C][restart:156]:   Icon: 'mdi:restart'
+[10:32:14.644][C][safe_mode.button:014]: Safe Mode Button 'Safe Mode Boot'
+[10:32:14.647][C][safe_mode.button:156]:   Icon: 'mdi:restart-alert'
+[10:32:14.656][D][status_led:049]: 'Status LED': Setting state OFF
+[10:32:14.696][C][homeassistant.time:009]: Home Assistant Time
+[10:32:14.697][C][time:049]: Timezone: UTC+12:00 (DST UTC+13:00)
+[10:32:14.704][C][time:055]: Current time: 2026-11-02 10:32:14
+[10:32:14.710][C][network:050]: Network:
+[10:32:14.710][C][network:050]:   TCP send buffer: 5760 bytes
+[10:32:14.713][C][captive_portal:162]: Captive Portal:
+[10:32:14.733][C][wifi:1582]: WiFi:
+[10:32:14.733][C][wifi:1582]:   Local MAC: D4:D4:DA:E4:B1:3C
+[10:32:14.733][C][wifi:1582]:   Connected: YES
+[10:32:14.741][C][wifi:1286]:   IP Address: 192.168.2.204
+[10:32:14.745][C][wifi:1297]:   SSID: 'ASUS_08_2G'
+[10:32:14.745][C][wifi:1297]:   BSSID: 58:EA:1F:9F:71:92
+[10:32:14.745][C][wifi:1297]:   Hostname: 'heatpump'
+[10:32:14.745][C][wifi:1297]:   Signal strength: -40 dB ▂▄▆█
+[10:32:14.745][C][wifi:1297]:   Channel: 1
+[10:32:14.745][C][wifi:1297]:   Subnet: 255.255.255.0
+[10:32:14.745][C][wifi:1297]:   Gateway: 192.168.2.1
+[10:32:14.745][C][wifi:1297]:   DNS1: 192.168.2.1
+[10:32:14.745][C][wifi:1297]:   DNS2: 0.0.0.0
+[10:32:14.755][C][web_server:418]: Web Server:
+[10:32:14.755][C][web_server:418]:   Address: heatpump.local:80
+[10:32:14.758][C][esphome.ota:113]: Over-The-Air updates:
+[10:32:14.758][C][esphome.ota:113]:   Address: heatpump.local:3232
+[10:32:14.758][C][esphome.ota:113]:   Version: 2
+[10:32:14.780][C][safe_mode:058]: Safe Mode:
+[10:32:14.780][C][safe_mode:058]:   Successful after: 60s
+[10:32:14.780][C][safe_mode:058]:   Invoke after: 10 attempts
+[10:32:14.780][C][safe_mode:058]:   Duration: 600s
+[10:32:14.784][C][safe_mode:079]:   Bootloader rollback: support unknown
+[10:32:14.791][W][safe_mode:085]: Last reset too quick; invoke in 6 restarts
+[10:32:14.809][C][web_server.ota:256]: Web Server OTA
+[10:32:14.829][C][api:271]: Server:
+[10:32:14.829][C][api:271]:   Address: heatpump.local:6053
+[10:32:14.829][C][api:271]:   Listen backlog: 4
+[10:32:14.829][C][api:271]:   Max connections: 5
+[10:32:14.833][C][api:283]:   Noise encryption: NO
+[10:32:14.849][C][wifi_signal.sensor:017]: WiFi Signal 'WiFi Signal'
+[10:32:14.849][C][wifi_signal.sensor:017]:   State Class: 'measurement'
+[10:32:14.849][C][wifi_signal.sensor:017]:   Unit of Measurement: 'dBm'
+[10:32:14.849][C][wifi_signal.sensor:017]:   Accuracy Decimals: 0
+[10:32:14.858][C][wifi_signal.sensor:165]:   Device Class: 'signal_strength'
+[10:32:14.872][C][mdns:259]: mDNS:
+[10:32:14.872][C][mdns:259]:   Hostname: heatpump
+[10:32:16.179][D][status_led:049]: 'Status LED': Setting state ON
+[10:32:16.673][D][status_led:049]: 'Status LED': Setting state OFF
+[10:32:17.690][S][select]: 'Fan Speed' >> Auto
+[10:32:18.176][D][status_led:049]: 'Status LED': Setting state ON
+[10:32:18.258][S][sensor]: 'WiFi Signal' >> -40 dBm
+[10:32:18.520][S][text_sensor]: 'Status LED Pattern' >> 'HA Connected'
+[10:32:18.687][D][status_led:049]: 'Status LED': Setting state OFF
+[10:32:20.190][D][status_led:049]: 'Status LED': Setting state ON
+[10:32:20.690][D][status_led:049]: 'Status LED': Setting state OFF
+[10:32:22.198][D][status_led:049]: 'Status LED': Setting state ON
+[10:32:22.701][S][select]: 'Fan Speed' >> Auto
+[10:32:22.705][D][status_led:049]: 'Status LED': Setting state OFF
+[10:32:23.527][S][text_sensor]: 'Status LED Pattern' >> 'HA Connected'
+[10:32:24.203][D][status_led:049]: 'Status LED': Setting state ON
+[10:32:24.703][D][status_led:049]: 'Status LED': Setting state OFF
+[10:32:26.135][W][fujitsu.heatpump:392][FujiTask]: AOT30 test started: checking that the bus is silent for 1500 ms. The wired remote must be disconnected.
+[10:32:26.206][D][status_led:049]: 'Status LED': Setting state ON
+[10:32:26.710][D][status_led:049]: 'Status LED': Setting state OFF
+[10:32:27.631][W][fujitsu.heatpump:415][FujiTask]: AOT30 test: bus silent, polling started (first poll has the run flag off, then it follows the unit)
+[10:32:27.725][S][select]: 'Fan Speed' >> Auto
+[10:32:27.729][I][fujitsu.heatpump:293][FujiTask]: RX raw (4/8, before XOR): 80 D7 EC F7
+[10:32:27.760][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 80
+[10:32:27.781][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E7
+[10:32:27.796][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E8
+[10:32:27.819][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): B7
+[10:32:27.850][S][binary_sensor]: 'Bus Alive' >> ON
+[10:32:27.850][S][text_sensor]: 'Bus Status' >> 'Bus OK'
+[10:32:27.853][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 7F
+[10:32:27.977][I][fujitsu.heatpump:293][FujiTask]: RX raw (4/8, before XOR): 80 D7 E8 F7
+[10:32:28.000][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 80
+[10:32:28.022][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E7
+[10:32:28.046][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E8
+[10:32:28.066][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): B7
+[10:32:28.086][S][binary_sensor]: 'Bus Alive' >> ON
+[10:32:28.087][S][text_sensor]: 'Bus Status' >> 'Bus OK'
+[10:32:28.093][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 7F
+[10:32:28.226][D][status_led:049]: 'Status LED': Setting state ON
+[10:32:28.229][I][fujitsu.heatpump:293][FujiTask]: RX raw (4/8, before XOR): 80 D7 E8 F7
+[10:32:28.239][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 80
+[10:32:28.266][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E7
+[10:32:28.287][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E8
+[10:32:28.313][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): B7
+[10:32:28.334][S][binary_sensor]: 'Bus Alive' >> ON
+[10:32:28.335][S][text_sensor]: 'Bus Status' >> 'Bus OK'
+[10:32:28.339][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 7F
+[10:32:28.468][I][fujitsu.heatpump:293][FujiTask]: RX raw (4/8, before XOR): 80 D7 E8 F7
+[10:32:28.489][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 80
+[10:32:28.511][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E7
+[10:32:28.532][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E8
+[10:32:28.554][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): B7
+[10:32:28.577][S][text_sensor]: 'Status LED Pattern' >> 'HA Connected'
+[10:32:28.577][S][binary_sensor]: 'Bus Alive' >> ON
+[10:32:28.578][S][text_sensor]: 'Bus Status' >> 'Bus OK'
+[10:32:28.582][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 7F
+[10:32:28.724][D][status_led:049]: 'Status LED': Setting state OFF
+[10:32:28.727][I][fujitsu.heatpump:293][FujiTask]: RX raw (4/8, before XOR): 80 D7 E8 F7
+[10:32:28.735][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 80
+[10:32:28.759][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E7
+[10:32:28.780][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E8
+[10:32:28.803][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): B7
+[10:32:28.827][S][binary_sensor]: 'Bus Alive' >> ON
+[10:32:28.827][S][text_sensor]: 'Bus Status' >> 'Bus OK'
+[10:32:28.831][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 7F
+[10:32:28.963][I][fujitsu.heatpump:293][FujiTask]: RX raw (4/8, before XOR): 80 D7 E8 F7
+[10:32:28.983][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 80
+[10:32:29.007][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E7
+[10:32:29.032][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E8
+[10:32:29.050][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): B7
+[10:32:29.073][S][binary_sensor]: 'Bus Alive' >> ON
+[10:32:29.073][S][text_sensor]: 'Bus Status' >> 'Bus OK'
+[10:32:29.080][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 7F
+[10:32:29.210][I][fujitsu.heatpump:293][FujiTask]: RX raw (4/8, before XOR): 80 D7 E8 F7
+[10:32:29.229][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 80
+[10:32:29.252][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E7
+[10:32:29.274][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E8
+[10:32:29.297][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): B7
+[10:32:29.317][S][binary_sensor]: 'Bus Alive' >> ON
+[10:32:29.318][S][text_sensor]: 'Bus Status' >> 'Bus OK'
+[10:32:29.324][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 7F
+[10:32:29.458][I][fujitsu.heatpump:293][FujiTask]: RX raw (4/8, before XOR): 80 D7 E8 F7
+[10:32:29.492][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 80
+[10:32:29.501][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E7
+[10:32:29.523][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E8
+[10:32:29.546][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): B7
+[10:32:29.567][S][binary_sensor]: 'Bus Alive' >> ON
+[10:32:29.567][S][text_sensor]: 'Bus Status' >> 'Bus OK'
+[10:32:29.573][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 7F
+[10:32:29.704][I][fujitsu.heatpump:293][FujiTask]: RX raw (4/8, before XOR): 80 D7 E8 F7
+[10:32:29.708][W][fujitsu.heatpump:427][FujiTask]: AOT30 test: sending HEAT 20, fan auto, ECO off
+[10:32:29.726][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 80
+[10:32:29.748][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E7
+[10:32:29.770][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E8
+[10:32:29.797][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): B7
+[10:32:29.814][S][binary_sensor]: 'Bus Alive' >> ON
+[10:32:29.814][S][text_sensor]: 'Bus Status' >> 'Bus OK'
+[10:32:29.820][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 7F
+[10:32:30.031][W][fujitsu.heatpump:490][FujiTask]: AOT30 emulator: sent setting (round 1)
+[10:32:30.035][I][fujitsu.heatpump:293][FujiTask]: RX raw (7/8, before XOR): 80 DD FC 69 FD A0 81
+[10:32:30.070][D][fujitsu.heatpump:057][FujiTask]: Unmapped controller state byte: 0x96
+[10:32:30.073][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 80
+[10:32:30.092][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): ED
+[10:32:30.112][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): FC
+[10:32:30.133][S][binary_sensor]: 'Bus Alive' >> ON
+[10:32:30.133][S][text_sensor]: 'Bus Status' >> 'Bus OK'
+[10:32:30.138][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 69
+[10:32:30.164][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): FD
+[10:32:30.186][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): A0
+[10:32:30.215][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 81
+[10:32:30.236][D][status_led:049]: 'Status LED': Setting state ON
+[10:32:30.363][D][fujitsu.heatpump:057][FujiTask]: Unmapped controller state byte: 0x96
+[10:32:30.366][I][fujitsu.heatpump:293][FujiTask]: RX raw (4/8, before XOR): 80 D7 E8 F5
+[10:32:30.382][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 80
+[10:32:30.403][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): ED
+[10:32:30.424][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): FC
+[10:32:30.449][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 69
+[10:32:30.470][S][binary_sensor]: 'Bus Alive' >> ON
+[10:32:30.470][S][text_sensor]: 'Bus Status' >> 'Bus OK'
+[10:32:30.476][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): FD
+[10:32:30.498][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): A0
+[10:32:30.527][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 81
+[10:32:30.831][D][status_led:049]: 'Status LED': Setting state OFF
+[10:32:30.835][W][fujitsu.heatpump:490][FujiTask]: AOT30 emulator: sent setting (round 2)
+[10:32:30.835][D][fujitsu.heatpump:057][FujiTask]: Unmapped controller state byte: 0x96
+[10:32:30.835][I][fujitsu.heatpump:293][FujiTask]: RX raw (7/8, before XOR): 80 DD EC 69 FD A0 81
+[10:32:30.877][D][fujitsu.heatpump:057][FujiTask]: Unmapped controller state byte: 0x96
+[10:32:30.882][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 80
+[10:32:30.894][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): ED
+[10:32:30.913][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): EC
+[10:32:30.938][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 69
+[10:32:30.965][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): FD
+[10:32:30.990][S][binary_sensor]: 'Bus Alive' >> ON
+[10:32:30.990][S][text_sensor]: 'Bus Status' >> 'Bus OK'
+[10:32:30.993][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): A0
+[10:32:31.017][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 81
+[10:32:31.161][D][fujitsu.heatpump:057][FujiTask]: Unmapped controller state byte: 0x96
+[10:32:31.163][I][fujitsu.heatpump:293][FujiTask]: RX raw (4/8, before XOR): 80 D7 E8 F5
+[10:32:31.182][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 80
+[10:32:31.201][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): ED
+[10:32:31.223][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): EC
+[10:32:31.248][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 69
+[10:32:31.269][S][binary_sensor]: 'Bus Alive' >> ON
+[10:32:31.269][S][text_sensor]: 'Bus Status' >> 'Bus OK'
+[10:32:31.275][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): FD
+[10:32:31.297][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): A0
+[10:32:31.330][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 81
+[10:32:31.468][D][fujitsu.heatpump:057][FujiTask]: Unmapped controller state byte: 0x96
+[10:32:31.473][I][fujitsu.heatpump:293][FujiTask]: RX raw (4/8, before XOR): 80 D7 E8 F7
+[10:32:31.492][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 80
+[10:32:31.514][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E7
+[10:32:31.535][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E8
+[10:32:31.558][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): B7
+[10:32:31.579][S][binary_sensor]: 'Bus Alive' >> ON
+[10:32:31.579][S][text_sensor]: 'Bus Status' >> 'Bus OK'
+[10:32:31.590][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 7F
+[10:32:31.714][I][fujitsu.heatpump:293][FujiTask]: RX raw (4/8, before XOR): 80 D7 E8 F7
+[10:32:31.734][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 80
+[10:32:31.760][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E7
+[10:32:31.778][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E8
+[10:32:31.803][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): B7
+[10:32:31.821][S][binary_sensor]: 'Bus Alive' >> ON
+[10:32:31.822][S][text_sensor]: 'Bus Status' >> 'Bus OK'
+[10:32:31.829][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 7F
+[10:32:31.961][I][fujitsu.heatpump:293][FujiTask]: RX raw (4/8, before XOR): 80 D7 E8 F7
+[10:32:31.980][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 80
+[10:32:32.002][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E7
+[10:32:32.025][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E8
+[10:32:32.052][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): B7
+[10:32:32.070][S][binary_sensor]: 'Bus Alive' >> ON
+[10:32:32.070][S][text_sensor]: 'Bus Status' >> 'Bus OK'
+[10:32:32.075][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 7F
+[10:32:32.208][I][fujitsu.heatpump:293][FujiTask]: RX raw (4/8, before XOR): 80 D7 E8 F7
+[10:32:32.230][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 80
+[10:32:32.251][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E7
+[10:32:32.279][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E8
+[10:32:32.297][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): B7
+[10:32:32.318][S][binary_sensor]: 'Bus Alive' >> ON
+[10:32:32.318][S][text_sensor]: 'Bus Status' >> 'Bus OK'
+[10:32:32.324][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 7F
+[10:32:32.343][D][status_led:049]: 'Status LED': Setting state ON
+[10:32:32.458][I][fujitsu.heatpump:293][FujiTask]: RX raw (4/8, before XOR): 80 D7 E8 F7
+[10:32:32.481][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 80
+[10:32:32.498][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E7
+[10:32:32.521][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E8
+[10:32:32.545][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): B7
+[10:32:32.568][S][binary_sensor]: 'Bus Alive' >> ON
+[10:32:32.569][S][text_sensor]: 'Bus Status' >> 'Bus OK'
+[10:32:32.572][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 7F
+[10:32:32.699][S][select]: 'Fan Speed' >> Auto
+[10:32:32.703][I][fujitsu.heatpump:293][FujiTask]: RX raw (4/8, before XOR): 80 D7 E8 F7
+[10:32:32.727][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 80
+[10:32:32.747][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E7
+[10:32:32.768][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E8
+[10:32:32.791][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): B7
+[10:32:32.820][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 7F
+[10:32:32.836][S][binary_sensor]: 'Bus Alive' >> ON
+[10:32:32.837][S][text_sensor]: 'Bus Status' >> 'Bus OK'
+[10:32:32.946][D][status_led:049]: 'Status LED': Setting state OFF
+[10:32:32.958][I][fujitsu.heatpump:293][FujiTask]: RX raw (4/8, before XOR): 80 D7 E8 F7
+[10:32:32.973][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 80
+[10:32:32.999][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E7
+[10:32:33.023][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E8
+[10:32:33.040][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): B7
+[10:32:33.065][S][binary_sensor]: 'Bus Alive' >> ON
+[10:32:33.065][S][text_sensor]: 'Bus Status' >> 'Bus OK'
+[10:32:33.071][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 7F
+[10:32:33.196][I][fujitsu.heatpump:293][FujiTask]: RX raw (4/8, before XOR): 80 D7 E8 F7
+[10:32:33.219][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 80
+[10:32:33.241][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E7
+[10:32:33.264][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E8
+[10:32:33.287][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): B7
+[10:32:33.308][S][binary_sensor]: 'Bus Alive' >> ON
+[10:32:33.308][S][text_sensor]: 'Bus Status' >> 'Bus OK'
+[10:32:33.314][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 7F
+[10:32:33.444][I][fujitsu.heatpump:293][FujiTask]: RX raw (4/8, before XOR): 80 D7 E8 F7
+[10:32:33.460][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 80
+[10:32:33.485][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E7
+[10:32:33.509][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E8
+[10:32:33.528][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): B7
+[10:32:33.549][S][binary_sensor]: 'Bus Alive' >> ON
+[10:32:33.549][S][text_sensor]: 'Bus Status' >> 'Bus OK'
+[10:32:33.549][S][text_sensor]: 'Status LED Pattern' >> 'HA Connected'
+[10:32:33.555][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 7F
+[10:32:33.691][I][fujitsu.heatpump:293][FujiTask]: RX raw (4/8, before XOR): 80 D7 E8 F7
+[10:32:33.712][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 80
+[10:32:33.732][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E7
+[10:32:33.754][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E8
+[10:32:33.778][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): B7
+[10:32:33.799][S][binary_sensor]: 'Bus Alive' >> ON
+[10:32:33.799][S][text_sensor]: 'Bus Status' >> 'Bus OK'
+[10:32:33.804][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 7F
+[10:32:33.937][I][fujitsu.heatpump:293][FujiTask]: RX raw (4/8, before XOR): 80 D7 E8 F7
+[10:32:33.958][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 80
+[10:32:33.979][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E7
+[10:32:34.002][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E8
+[10:32:34.024][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): B7
+[10:32:34.047][S][binary_sensor]: 'Bus Alive' >> ON
+[10:32:34.048][S][text_sensor]: 'Bus Status' >> 'Bus OK'
+[10:32:34.052][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 7F
+[10:32:34.186][I][fujitsu.heatpump:293][FujiTask]: RX raw (4/8, before XOR): 80 D7 E8 F7
+[10:32:34.212][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 80
+[10:32:34.227][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E7
+[10:32:34.256][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E8
+[10:32:34.273][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): B7
+[10:32:34.292][S][binary_sensor]: 'Bus Alive' >> ON
+[10:32:34.293][S][text_sensor]: 'Bus Status' >> 'Bus OK'
+[10:32:34.299][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 7F
+[10:32:34.431][I][fujitsu.heatpump:293][FujiTask]: RX raw (4/8, before XOR): 80 D7 E8 F7
+[10:32:34.457][D][status_led:049]: 'Status LED': Setting state ON
+[10:32:34.458][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 80
+[10:32:34.475][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E7
+[10:32:34.497][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E8
+[10:32:34.520][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): B7
+[10:32:34.540][S][binary_sensor]: 'Bus Alive' >> ON
+[10:32:34.541][S][text_sensor]: 'Bus Status' >> 'Bus OK'
+[10:32:34.546][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 7F
+[10:32:34.678][I][fujitsu.heatpump:293][FujiTask]: RX raw (4/8, before XOR): 80 D7 E8 F7
+[10:32:34.701][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 80
+[10:32:34.721][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E7
+[10:32:34.744][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E8
+[10:32:34.767][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): B7
+[10:32:34.788][S][binary_sensor]: 'Bus Alive' >> ON
+[10:32:34.788][S][text_sensor]: 'Bus Status' >> 'Bus OK'
+[10:32:34.794][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 7F
+[10:32:34.925][I][fujitsu.heatpump:293][FujiTask]: RX raw (4/8, before XOR): 80 D7 E8 F7
+[10:32:34.950][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 80
+[10:32:34.973][D][status_led:049]: 'Status LED': Setting state OFF
+[10:32:34.976][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E7
+[10:32:34.994][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E8
+[10:32:35.016][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): B7
+[10:32:35.037][S][binary_sensor]: 'Bus Alive' >> ON
+[10:32:35.037][S][text_sensor]: 'Bus Status' >> 'Bus OK'
+[10:32:35.043][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 7F
+[10:32:35.177][I][fujitsu.heatpump:293][FujiTask]: RX raw (4/8, before XOR): 80 D7 E8 F7
+[10:32:35.197][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 80
+[10:32:35.221][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E7
+[10:32:35.240][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E8
+[10:32:35.263][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): B7
+[10:32:35.285][S][binary_sensor]: 'Bus Alive' >> ON
+[10:32:35.286][S][text_sensor]: 'Bus Status' >> 'Bus OK'
+[10:32:35.292][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 7F
+[10:32:35.419][I][fujitsu.heatpump:293][FujiTask]: RX raw (4/8, before XOR): 80 D7 E8 F7
+[10:32:35.445][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 80
+[10:32:35.464][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E7
+[10:32:35.487][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E8
+[10:32:35.510][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): B7
+[10:32:35.531][S][binary_sensor]: 'Bus Alive' >> ON
+[10:32:35.531][S][text_sensor]: 'Bus Status' >> 'Bus OK'
+[10:32:35.536][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 7F
+[10:32:35.666][I][fujitsu.heatpump:293][FujiTask]: RX raw (4/8, before XOR): 80 D7 E8 F7
+[10:32:35.685][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 80
+[10:32:35.707][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E7
+[10:32:35.733][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E8
+[10:32:35.753][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): B7
+[10:32:35.773][S][binary_sensor]: 'Bus Alive' >> ON
+[10:32:35.774][S][text_sensor]: 'Bus Status' >> 'Bus OK'
+[10:32:35.779][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 7F
+[10:32:35.913][I][fujitsu.heatpump:293][FujiTask]: RX raw (4/8, before XOR): 80 D7 E8 F7
+[10:32:35.933][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 80
+[10:32:35.959][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E7
+[10:32:35.979][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E8
+[10:32:36.003][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): B7
+[10:32:36.020][S][binary_sensor]: 'Bus Alive' >> ON
+[10:32:36.021][S][text_sensor]: 'Bus Status' >> 'Bus OK'
+[10:32:36.027][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 7F
+[10:32:36.160][I][fujitsu.heatpump:293][FujiTask]: RX raw (4/8, before XOR): 80 D7 E8 F7
+[10:32:36.182][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 80
+[10:32:36.203][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E7
+[10:32:36.226][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E8
+[10:32:36.253][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): B7
+[10:32:36.276][S][binary_sensor]: 'Bus Alive' >> ON
+[10:32:36.276][S][text_sensor]: 'Bus Status' >> 'Bus OK'
+[10:32:36.279][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 7F
+[10:32:36.407][I][fujitsu.heatpump:293][FujiTask]: RX raw (4/8, before XOR): 80 D7 E8 F7
+[10:32:36.430][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 80
+[10:32:36.450][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E7
+[10:32:36.474][D][status_led:049]: 'Status LED': Setting state ON
+[10:32:36.477][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E8
+[10:32:36.496][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): B7
+[10:32:36.519][S][binary_sensor]: 'Bus Alive' >> ON
+[10:32:36.519][S][text_sensor]: 'Bus Status' >> 'Bus OK'
+[10:32:36.524][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 7F
+[10:32:36.656][I][fujitsu.heatpump:293][FujiTask]: RX raw (4/8, before XOR): 80 D7 E8 F7
+[10:32:36.679][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 80
+[10:32:36.700][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E7
+[10:32:36.724][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E8
+[10:32:36.745][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): B7
+[10:32:36.765][S][binary_sensor]: 'Bus Alive' >> ON
+[10:32:36.765][S][text_sensor]: 'Bus Status' >> 'Bus OK'
+[10:32:36.772][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 7F
+[10:32:36.900][I][fujitsu.heatpump:293][FujiTask]: RX raw (4/8, before XOR): 80 D7 E8 F7
+[10:32:36.926][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 80
+[10:32:36.949][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E7
+[10:32:36.969][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E8
+[10:32:36.989][D][status_led:049]: 'Status LED': Setting state OFF
+[10:32:36.993][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): B7
+[10:32:36.998][S][binary_sensor]: 'Bus Alive' >> ON
+[10:32:36.998][S][text_sensor]: 'Bus Status' >> 'Bus OK'
+[10:32:37.018][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 7F
+[10:32:37.147][I][fujitsu.heatpump:293][FujiTask]: RX raw (4/8, before XOR): 80 D7 E8 F7
+[10:32:37.174][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 80
+[10:32:37.195][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E7
+[10:32:37.221][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E8
+[10:32:37.239][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): B7
+[10:32:37.261][S][binary_sensor]: 'Bus Alive' >> ON
+[10:32:37.262][S][text_sensor]: 'Bus Status' >> 'Bus OK'
+[10:32:37.269][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 7F
+[10:32:37.394][I][fujitsu.heatpump:293][FujiTask]: RX raw (4/8, before XOR): 80 D7 E8 F7
+[10:32:37.413][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 80
+[10:32:37.438][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E7
+[10:32:37.457][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E8
+[10:32:37.480][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): B7
+[10:32:37.500][S][binary_sensor]: 'Bus Alive' >> ON
+[10:32:37.500][S][text_sensor]: 'Bus Status' >> 'Bus OK'
+[10:32:37.506][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 7F
+[10:32:37.645][I][fujitsu.heatpump:293][FujiTask]: RX raw (4/8, before XOR): 80 D7 E8 F7
+[10:32:37.661][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 80
+[10:32:37.687][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E7
+[10:32:37.706][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E8
+[10:32:37.729][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): B7
+[10:32:37.749][S][select]: 'Fan Speed' >> Auto
+[10:32:37.750][S][binary_sensor]: 'Bus Alive' >> ON
+[10:32:37.750][S][text_sensor]: 'Bus Status' >> 'Bus OK'
+[10:32:37.756][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 7F
+[10:32:37.890][I][fujitsu.heatpump:293][FujiTask]: RX raw (4/8, before XOR): 80 D7 E8 F7
+[10:32:37.908][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 80
+[10:32:37.930][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E7
+[10:32:37.953][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E8
+[10:32:37.976][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): B7
+[10:32:37.996][S][binary_sensor]: 'Bus Alive' >> ON
+[10:32:37.996][S][text_sensor]: 'Bus Status' >> 'Bus OK'
+[10:32:38.002][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 7F
+[10:32:38.136][I][fujitsu.heatpump:293][FujiTask]: RX raw (4/8, before XOR): 80 D7 E8 F7
+[10:32:38.158][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 80
+[10:32:38.179][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E7
+[10:32:38.202][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E8
+[10:32:38.225][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): B7
+[10:32:38.248][S][binary_sensor]: 'Bus Alive' >> ON
+[10:32:38.249][S][text_sensor]: 'Bus Status' >> 'Bus OK'
+[10:32:38.254][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 7F
+[10:32:38.383][I][fujitsu.heatpump:293][FujiTask]: RX raw (4/8, before XOR): 80 D7 E8 F7
+[10:32:38.410][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 80
+[10:32:38.427][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E7
+[10:32:38.453][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E8
+[10:32:38.472][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): B7
+[10:32:38.493][S][binary_sensor]: 'Bus Alive' >> ON
+[10:32:38.494][S][text_sensor]: 'Bus Status' >> 'Bus OK'
+[10:32:38.494][S][text_sensor]: 'Status LED Pattern' >> 'HA Connected'
+[10:32:38.498][D][status_led:049]: 'Status LED': Setting state ON
+[10:32:38.504][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 7F
+[10:32:38.630][I][fujitsu.heatpump:293][FujiTask]: RX raw (4/8, before XOR): 80 D7 E8 F7
+[10:32:38.657][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 80
+[10:32:38.676][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E7
+[10:32:38.698][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E8
+[10:32:38.721][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): B7
+[10:32:38.742][S][binary_sensor]: 'Bus Alive' >> ON
+[10:32:38.742][S][text_sensor]: 'Bus Status' >> 'Bus OK'
+[10:32:38.748][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 7F
+[10:32:38.877][I][fujitsu.heatpump:293][FujiTask]: RX raw (4/8, before XOR): 80 D7 E8 F7
+[10:32:38.902][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 80
+[10:32:38.926][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E7
+[10:32:38.945][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E8
+[10:32:38.968][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): B7
+[10:32:38.987][S][binary_sensor]: 'Bus Alive' >> ON
+[10:32:38.987][S][text_sensor]: 'Bus Status' >> 'Bus OK'
+[10:32:38.996][D][status_led:049]: 'Status LED': Setting state OFF
+[10:32:38.999][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 7F
+[10:32:39.123][I][fujitsu.heatpump:293][FujiTask]: RX raw (4/8, before XOR): 80 D7 E8 F7
+[10:32:39.155][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 80
+[10:32:39.173][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E7
+[10:32:39.192][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E8
+[10:32:39.215][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): B7
+[10:32:39.235][S][binary_sensor]: 'Bus Alive' >> ON
+[10:32:39.236][S][text_sensor]: 'Bus Status' >> 'Bus OK'
+[10:32:39.242][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 7F
+[10:32:39.376][I][fujitsu.heatpump:293][FujiTask]: RX raw (4/8, before XOR): 80 D7 E8 F7
+[10:32:39.388][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 80
+[10:32:39.410][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E7
+[10:32:39.434][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E8
+[10:32:39.456][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): B7
+[10:32:39.477][S][binary_sensor]: 'Bus Alive' >> ON
+[10:32:39.477][S][text_sensor]: 'Bus Status' >> 'Bus OK'
+[10:32:39.483][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 7F
+[10:32:39.618][I][fujitsu.heatpump:293][FujiTask]: RX raw (4/8, before XOR): 80 D7 E8 F7
+[10:32:39.637][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 80
+[10:32:39.659][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E7
+[10:32:39.682][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E8
+[10:32:39.705][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): B7
+[10:32:39.728][S][binary_sensor]: 'Bus Alive' >> ON
+[10:32:39.729][S][text_sensor]: 'Bus Status' >> 'Bus OK'
+[10:32:39.735][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 7F
+[10:32:39.868][I][fujitsu.heatpump:293][FujiTask]: RX raw (4/8, before XOR): 80 D7 E8 F7
+[10:32:39.886][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 80
+[10:32:39.908][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E7
+[10:32:39.931][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E8
+[10:32:39.952][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): B7
+[10:32:39.973][S][binary_sensor]: 'Bus Alive' >> ON
+[10:32:39.973][S][text_sensor]: 'Bus Status' >> 'Bus OK'
+[10:32:39.978][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 7F
+[10:32:40.115][I][fujitsu.heatpump:293][FujiTask]: RX raw (4/8, before XOR): 80 D7 E8 F7
+[10:32:40.137][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 80
+[10:32:40.160][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E7
+[10:32:40.178][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E8
+[10:32:40.201][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): B7
+[10:32:40.223][S][binary_sensor]: 'Bus Alive' >> ON
+[10:32:40.224][S][text_sensor]: 'Bus Status' >> 'Bus OK'
+[10:32:40.228][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 7F
+[10:32:40.359][I][fujitsu.heatpump:293][FujiTask]: RX raw (4/8, before XOR): 80 D7 E8 F7
+[10:32:40.381][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 80
+[10:32:40.402][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E7
+[10:32:40.425][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E8
+[10:32:40.449][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): B7
+[10:32:40.469][S][binary_sensor]: 'Bus Alive' >> ON
+[10:32:40.469][S][text_sensor]: 'Bus Status' >> 'Bus OK'
+[10:32:40.475][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 7F
+[10:32:40.603][D][status_led:049]: 'Status LED': Setting state ON
+[10:32:40.609][I][fujitsu.heatpump:293][FujiTask]: RX raw (4/8, before XOR): 80 D7 E8 F7
+[10:32:40.631][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 80
+[10:32:40.659][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E7
+[10:32:40.674][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E8
+[10:32:40.695][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): B7
+[10:32:40.721][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 7F
+[10:32:40.742][S][binary_sensor]: 'Bus Alive' >> ON
+[10:32:40.742][S][text_sensor]: 'Bus Status' >> 'Bus OK'
+[10:32:40.855][I][fujitsu.heatpump:293][FujiTask]: RX raw (4/8, before XOR): 80 D7 E8 F7
+[10:32:40.880][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 80
+[10:32:40.898][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E7
+[10:32:40.923][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E8
+[10:32:40.944][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): B7
+[10:32:40.964][S][binary_sensor]: 'Bus Alive' >> ON
+[10:32:40.965][S][text_sensor]: 'Bus Status' >> 'Bus OK'
+[10:32:40.972][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 7F
+[10:32:41.103][D][status_led:049]: 'Status LED': Setting state OFF
+[10:32:41.106][I][fujitsu.heatpump:293][FujiTask]: RX raw (4/8, before XOR): 80 D7 E8 F7
+[10:32:41.126][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 80
+[10:32:41.146][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E7
+[10:32:41.169][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E8
+[10:32:41.191][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): B7
+[10:32:41.216][S][binary_sensor]: 'Bus Alive' >> ON
+[10:32:41.216][S][text_sensor]: 'Bus Status' >> 'Bus OK'
+[10:32:41.220][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 7F
+[10:32:41.348][I][fujitsu.heatpump:293][FujiTask]: RX raw (4/8, before XOR): 80 D7 E8 F7
+[10:32:41.365][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 80
+[10:32:41.388][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E7
+[10:32:41.410][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): E8
+[10:32:41.434][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): B7
+[10:32:41.452][S][binary_sensor]: 'Bus Alive' >> ON
+[10:32:41.453][S][text_sensor]: 'Bus Status' >> 'Bus OK'
+[10:32:41.459][I][fujitsu.heatpump:293][FujiTask]: RX raw (1/8, before XOR): 7F
+[10:32:41.467][W][fujitsu.heatpump:276][FujiTask]: AOT30 test finished; the bus is released. Reconnect the wired remote (it takes over polling).
+[10:32:42.605][D][status_led:049]: 'Status LED': Setting state ON
+[10:32:42.739][S][select]: 'Fan Speed' >> Auto
+[10:32:43.109][D][status_led:049]: 'Status LED': Setting state OFF
+[10:32:43.563][S][text_sensor]: 'Status LED Pattern' >> 'HA Connected'
+[10:32:44.625][D][status_led:049]: 'Status LED': Setting state ON
+[10:32:45.124][D][status_led:049]: 'Status LED': Setting state OFF
+[10:32:45.471][S][binary_sensor]: 'Bus Alive' >> OFF
+[10:32:45.471][S][text_sensor]: 'Bus Status' >> 'No Signal'
