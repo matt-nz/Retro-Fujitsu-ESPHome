@@ -1,0 +1,362 @@
+INFO ESPHome 2026.9.0
+INFO Reading configuration /config/esphome/esphome-web-e4b13c.yaml...
+INFO Updating https://github.com/matt-nz/Retro-Fujitsu-ESPHome.git@debug/uart-receive-logging
+WARNING GPIO2 is a strapping PIN and should only be used for I/O with care.
+Attaching external pullup/down resistors to strapping pins can cause unexpected failures.
+See https://esphome.io/guides/faq/#why-am-i-getting-a-warning-about-strapping-pins
+INFO Generating C++ source...
+INFO Setting CONFIG_LWIP_MAX_SOCKETS to 17 (TCP=11 [api=3, captive_portal=3, web_server=5], UDP=3 [captive_portal=1, mdns=2], TCP_LISTEN=3 [api=1, ota=1, web_server_base=1])
+INFO Detected timezone 'Pacific/Auckland'
+INFO Compiling app... Build path: /data/build/heatpump
+INFO Build configuration is up to date
+INFO Checking ESP-IDF 5.5.5 framework ...
+INFO Checking ESP-IDF 5.5.5 framework installation ...
+INFO Checking ESP-IDF 5.5.5 Python environment ...
+Executing action: all (aliases: build)
+Running ninja in directory /data/build/heatpump/build
+Executing "ninja all"...
+[1/1] cd /data/build/heatpump/build/bootloader/esp-idf/esptool_py && /data/cache/idf/penvs/5.5.5/bin/python /data/cache/idf/frameworks/5.5.5/components/partition_table/check_sizes.py --offset 0x8000 bootloader 0x1000 /data/build/heatpump/build/bootloader/bootloader.bin
+Bootloader binary size 0x6620 bytes. 0x9e0 bytes (9%) free.
+[5/13] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/fujitsu_climate/FujiHeatPump.cpp.obj
+FAILED: esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/fujitsu_climate/FujiHeatPump.cpp.obj
+ccache /data/cache/idf/tools/xtensa-esp-elf/esp-14.2.0_20260121/xtensa-esp-elf/bin/xtensa-esp32-elf-g++ @esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/fujitsu_climate/FujiHeatPump.cpp.obj.rsp -MD -MT esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/fujitsu_climate/FujiHeatPump.cpp.obj -MF esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/fujitsu_climate/FujiHeatPump.cpp.obj.d -o esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/fujitsu_climate/FujiHeatPump.cpp.obj -c /data/build/heatpump/src/esphome/components/fujitsu_climate/FujiHeatPump.cpp
+In file included from ../managed_components/espressif__arduino-esp32/cores/esp32/esp32-hal.h:115,
+                 from ../managed_components/espressif__arduino-esp32/cores/esp32/Arduino.h:44,
+                 from ../src/esphome/components/fujitsu_climate/FujiHeatPump.h:45,
+                 from ../src/esphome/components/fujitsu_climate/FujiHeatPump.cpp:8:
+../managed_components/espressif__arduino-esp32/cores/esp32/esp32-hal-gpio.h:43:14: error: expected identifier before numeric constant
+   43 | #define HIGH 0x1
+      |              ^~~
+../src/esphome/components/fujitsu_climate/FujiAot30Cells.h:22:28: note: in expansion of macro 'HIGH'
+   22 | enum class Fan : uint8_t { HIGH = 1, MEDIUM = 2, LOW = 4, AUTO = 5 };
+      |                            ^~~~
+../managed_components/espressif__arduino-esp32/cores/esp32/esp32-hal-gpio.h:43:14: error: expected '}' before numeric constant
+   43 | #define HIGH 0x1
+      |              ^~~
+../src/esphome/components/fujitsu_climate/FujiAot30Cells.h:22:28: note: in expansion of macro 'HIGH'
+   22 | enum class Fan : uint8_t { HIGH = 1, MEDIUM = 2, LOW = 4, AUTO = 5 };
+      |                            ^~~~
+In file included from ../src/esphome/components/fujitsu_climate/FujiHeatPump.h:51:
+../src/esphome/components/fujitsu_climate/FujiAot30Cells.h:22:26: note: to match this '{'
+   22 | enum class Fan : uint8_t { HIGH = 1, MEDIUM = 2, LOW = 4, AUTO = 5 };
+      |                          ^
+../managed_components/espressif__arduino-esp32/cores/esp32/esp32-hal-gpio.h:43:14: error: expected unqualified-id before numeric constant
+   43 | #define HIGH 0x1
+      |              ^~~
+../src/esphome/components/fujitsu_climate/FujiAot30Cells.h:22:28: note: in expansion of macro 'HIGH'
+   22 | enum class Fan : uint8_t { HIGH = 1, MEDIUM = 2, LOW = 4, AUTO = 5 };
+      |                            ^~~~
+../src/esphome/components/fujitsu_climate/FujiAot30Cells.h:39:27: error: 'Mode' was not declared in this scope; did you mean 'fuji_aot30::Mode'?
+   39 | inline bool temp_in_range(Mode mode, uint8_t temp) {
+      |                           ^~~~
+      |                           fuji_aot30::Mode
+../src/esphome/components/fujitsu_climate/FujiAot30Cells.h:21:12: note: 'fuji_aot30::Mode' declared here
+   21 | enum class Mode : uint8_t { COOL = 1, HEAT = 2, FAN = 4, AUTO = 5 };
+      |            ^~~~
+../src/esphome/components/fujitsu_climate/FujiAot30Cells.h:39:46: error: expected primary-expression before 'temp'
+   39 | inline bool temp_in_range(Mode mode, uint8_t temp) {
+      |                                              ^~~~
+../src/esphome/components/fujitsu_climate/FujiAot30Cells.h:39:50: error: expression list treated as compound expression in initializer [-fpermissive]
+   39 | inline bool temp_in_range(Mode mode, uint8_t temp) {
+      |                                                  ^
+../src/esphome/components/fujitsu_climate/FujiAot30Cells.h:63:27: error: 'Mode' was not declared in this scope; did you mean 'fuji_aot30::Mode'?
+   63 | inline bool build_setting(Mode mode, Fan fan, uint8_t temp, bool eco, bool repeat, uint8_t *cells) {
+      |                           ^~~~
+      |                           fuji_aot30::Mode
+../src/esphome/components/fujitsu_climate/FujiAot30Cells.h:21:12: note: 'fuji_aot30::Mode' declared here
+   21 | enum class Mode : uint8_t { COOL = 1, HEAT = 2, FAN = 4, AUTO = 5 };
+      |            ^~~~
+../src/esphome/components/fujitsu_climate/FujiAot30Cells.h:63:38: error: 'Fan' was not declared in this scope; did you mean 'fuji_aot30::Fan'?
+   63 | inline bool build_setting(Mode mode, Fan fan, uint8_t temp, bool eco, bool repeat, uint8_t *cells) {
+      |                                      ^~~
+      |                                      fuji_aot30::Fan
+../src/esphome/components/fujitsu_climate/FujiAot30Cells.h:22:12: note: 'fuji_aot30::Fan' declared here
+   22 | enum class Fan : uint8_t { HIGH = 1, MEDIUM = 2, LOW = 4, AUTO = 5 };
+      |            ^~~
+../src/esphome/components/fujitsu_climate/FujiAot30Cells.h:63:55: error: expected primary-expression before 'temp'
+   63 | inline bool build_setting(Mode mode, Fan fan, uint8_t temp, bool eco, bool repeat, uint8_t *cells) {
+      |                                                       ^~~~
+../src/esphome/components/fujitsu_climate/FujiAot30Cells.h:63:61: error: expected primary-expression before 'bool'
+   63 | inline bool build_setting(Mode mode, Fan fan, uint8_t temp, bool eco, bool repeat, uint8_t *cells) {
+      |                                                             ^~~~
+../src/esphome/components/fujitsu_climate/FujiAot30Cells.h:63:71: error: expected primary-expression before 'bool'
+   63 | inline bool build_setting(Mode mode, Fan fan, uint8_t temp, bool eco, bool repeat, uint8_t *cells) {
+      |                                                                       ^~~~
+../src/esphome/components/fujitsu_climate/FujiAot30Cells.h:63:92: error: expected primary-expression before '*' token
+   63 | inline bool build_setting(Mode mode, Fan fan, uint8_t temp, bool eco, bool repeat, uint8_t *cells) {
+      |                                                                                            ^
+../src/esphome/components/fujitsu_climate/FujiAot30Cells.h:63:93: error: 'cells' was not declared in this scope
+   63 | inline bool build_setting(Mode mode, Fan fan, uint8_t temp, bool eco, bool repeat, uint8_t *cells) {
+      |                                                                                             ^~~~~
+../src/esphome/components/fujitsu_climate/FujiAot30Cells.h:63:98: error: expression list treated as compound expression in initializer [-fpermissive]
+   63 | inline bool build_setting(Mode mode, Fan fan, uint8_t temp, bool eco, bool repeat, uint8_t *cells) {
+      |                                                                                                  ^
+../src/esphome/components/fujitsu_climate/FujiAot30Cells.h: In function 'void build_poll(bool, bool, uint8_t*)':
+../src/esphome/components/fujitsu_climate/FujiAot30Cells.h:86:32: error: 'kPollCells' was not declared in this scope; did you mean 'fuji_aot30::kPollCells'?
+   86 |   load_base_(cells, kPollBase, kPollCells);
+      |                                ^~~~~~~~~~
+      |                                fuji_aot30::kPollCells
+../src/esphome/components/fujitsu_climate/FujiAot30Cells.h:17:18: note: 'fuji_aot30::kPollCells' declared here
+   17 | constexpr size_t kPollCells = 44;
+      |                  ^~~~~~~~~~
+../src/esphome/components/fujitsu_climate/FujiAot30Cells.h: In function 'void build_off(uint8_t*)':
+../src/esphome/components/fujitsu_climate/FujiAot30Cells.h:91:69: error: 'kOffCells' was not declared in this scope; did you mean 'fuji_aot30::kOffCells'?
+   91 | inline void build_off(uint8_t *cells) { load_base_(cells, kOffBase, kOffCells); }
+      |                                                                     ^~~~~~~~~
+      |                                                                     fuji_aot30::kOffCells
+../src/esphome/components/fujitsu_climate/FujiAot30Cells.h:18:18: note: 'fuji_aot30::kOffCells' declared here
+   18 | constexpr size_t kOffCells = 33;
+      |                  ^~~~~~~~~
+../src/esphome/components/fujitsu_climate/FujiAot30Cells.h: At global scope:
+../src/esphome/components/fujitsu_climate/FujiAot30Cells.h:93:1: error: expected declaration before '}' token
+   93 | }  // namespace fuji_aot30
+      | ^
+In file included from ../src/esphome/components/fujitsu_climate/FujiHeatPump.h:52:
+../src/esphome/components/fujitsu_climate/FujiAot30Scheduler.h:24:18: error: 'AUTO' is not a member of 'fuji_aot30::Fan'
+   24 |   Fan fan = Fan::AUTO;
+      |                  ^~~~
+../src/esphome/components/fujitsu_climate/FujiAot30Scheduler.h: In member function 'bool fuji_aot30::Scheduler::queue_setting(fuji_aot30::Mode, fuji_aot30::Fan, uint8_t, bool)':
+../src/esphome/components/fujitsu_climate/FujiAot30Scheduler.h:52:67: error: 'temp_in_range' cannot be used as a function
+   52 |     if (!active_ || busy() || (mode != Mode::FAN && !temp_in_range(mode, temp))) {
+      |                                                      ~~~~~~~~~~~~~^~~~~~~~~~~~
+../src/esphome/components/fujitsu_climate/FujiHeatPump.cpp: In member function 'bool FujiHeatPump::aot30EmulatorQueueSetting(fuji_aot30::Mode, fuji_aot30::Fan, uint8_t, bool)':
+../src/esphome/components/fujitsu_climate/FujiHeatPump.cpp:268:77: error: 'temp_in_range' is not a member of 'fuji_aot30'; did you mean 'temp_in_range'?
+  268 |   if (!emuEnabled_.load() || (mode != fuji_aot30::Mode::FAN && !fuji_aot30::temp_in_range(mode, temp))) {
+      |                                                                             ^~~~~~~~~~~~~
+../src/esphome/components/fujitsu_climate/FujiAot30Cells.h:39:13: note: 'temp_in_range' declared here
+   39 | inline bool temp_in_range(Mode mode, uint8_t temp) {
+      |             ^~~~~~~~~~~~~
+../src/esphome/components/fujitsu_climate/FujiHeatPump.cpp: In member function 'void FujiHeatPump::aot30EmulatorPump()':
+../src/esphome/components/fujitsu_climate/FujiHeatPump.cpp:458:19: error: 'build_poll' is not a member of 'fuji_aot30'; did you mean 'build_poll'?
+  458 |       fuji_aot30::build_poll(action.running, action.pending, cells);
+      |                   ^~~~~~~~~~
+../src/esphome/components/fujitsu_climate/FujiAot30Cells.h:85:13: note: 'build_poll' declared here
+   85 | inline void build_poll(bool running, bool pending, uint8_t *cells) {
+      |             ^~~~~~~~~~
+../src/esphome/components/fujitsu_climate/FujiHeatPump.cpp:463:24: error: 'build_setting' is not a member of 'fuji_aot30'; did you mean 'build_setting'?
+  463 |       if (!fuji_aot30::build_setting(action.mode, action.fan, action.temp, action.eco, action.repeat, cells)) {
+      |                        ^~~~~~~~~~~~~
+../src/esphome/components/fujitsu_climate/FujiAot30Cells.h:63:13: note: 'build_setting' declared here
+   63 | inline bool build_setting(Mode mode, Fan fan, uint8_t temp, bool eco, bool repeat, uint8_t *cells) {
+      |             ^~~~~~~~~~~~~
+../src/esphome/components/fujitsu_climate/FujiHeatPump.cpp:472:19: error: 'build_off' is not a member of 'fuji_aot30'; did you mean 'build_off'?
+  472 |       fuji_aot30::build_off(cells);
+      |                   ^~~~~~~~~
+../src/esphome/components/fujitsu_climate/FujiAot30Cells.h:91:13: note: 'build_off' declared here
+   91 | inline void build_off(uint8_t *cells) { load_base_(cells, kOffBase, kOffCells); }
+      |             ^~~~~~~~~
+[6/13] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/fujitsu_climate/FujitsuClimate.cpp.obj
+FAILED: esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/fujitsu_climate/FujitsuClimate.cpp.obj
+ccache /data/cache/idf/tools/xtensa-esp-elf/esp-14.2.0_20260121/xtensa-esp-elf/bin/xtensa-esp32-elf-g++ @esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/fujitsu_climate/FujitsuClimate.cpp.obj.rsp -MD -MT esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/fujitsu_climate/FujitsuClimate.cpp.obj -MF esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/fujitsu_climate/FujitsuClimate.cpp.obj.d -o esp-idf/src/CMakeFiles/__idf_src.dir/esphome/components/fujitsu_climate/FujitsuClimate.cpp.obj -c /data/build/heatpump/src/esphome/components/fujitsu_climate/FujitsuClimate.cpp
+In file included from ../managed_components/espressif__arduino-esp32/cores/esp32/esp32-hal.h:115,
+                 from ../managed_components/espressif__arduino-esp32/cores/esp32/Arduino.h:44,
+                 from ../src/esphome/core/macros.h:7,
+                 from ../src/esphome/core/defines.h:2,
+                 from ../src/esphome/core/component.h:8,
+                 from ../src/esphome/components/fujitsu_climate/FujitsuClimate.h:52,
+                 from ../src/esphome/components/fujitsu_climate/FujitsuClimate.cpp:1:
+../managed_components/espressif__arduino-esp32/cores/esp32/esp32-hal-gpio.h:43:14: error: expected identifier before numeric constant
+   43 | #define HIGH 0x1
+      |              ^~~
+../src/esphome/components/fujitsu_climate/FujiAot30Cells.h:22:28: note: in expansion of macro 'HIGH'
+   22 | enum class Fan : uint8_t { HIGH = 1, MEDIUM = 2, LOW = 4, AUTO = 5 };
+      |                            ^~~~
+../managed_components/espressif__arduino-esp32/cores/esp32/esp32-hal-gpio.h:43:14: error: expected '}' before numeric constant
+   43 | #define HIGH 0x1
+      |              ^~~
+../src/esphome/components/fujitsu_climate/FujiAot30Cells.h:22:28: note: in expansion of macro 'HIGH'
+   22 | enum class Fan : uint8_t { HIGH = 1, MEDIUM = 2, LOW = 4, AUTO = 5 };
+      |                            ^~~~
+In file included from ../src/esphome/components/fujitsu_climate/FujiHeatPump.h:51,
+                 from ../src/esphome/components/fujitsu_climate/FujitsuClimate.h:59:
+../src/esphome/components/fujitsu_climate/FujiAot30Cells.h:22:26: note: to match this '{'
+   22 | enum class Fan : uint8_t { HIGH = 1, MEDIUM = 2, LOW = 4, AUTO = 5 };
+      |                          ^
+../managed_components/espressif__arduino-esp32/cores/esp32/esp32-hal-gpio.h:43:14: error: expected unqualified-id before numeric constant
+   43 | #define HIGH 0x1
+      |              ^~~
+../src/esphome/components/fujitsu_climate/FujiAot30Cells.h:22:28: note: in expansion of macro 'HIGH'
+   22 | enum class Fan : uint8_t { HIGH = 1, MEDIUM = 2, LOW = 4, AUTO = 5 };
+      |                            ^~~~
+../src/esphome/components/fujitsu_climate/FujiAot30Cells.h:39:27: error: 'Mode' was not declared in this scope; did you mean 'fuji_aot30::Mode'?
+   39 | inline bool temp_in_range(Mode mode, uint8_t temp) {
+      |                           ^~~~
+      |                           fuji_aot30::Mode
+../src/esphome/components/fujitsu_climate/FujiAot30Cells.h:21:12: note: 'fuji_aot30::Mode' declared here
+   21 | enum class Mode : uint8_t { COOL = 1, HEAT = 2, FAN = 4, AUTO = 5 };
+      |            ^~~~
+../src/esphome/components/fujitsu_climate/FujiAot30Cells.h:39:46: error: expected primary-expression before 'temp'
+   39 | inline bool temp_in_range(Mode mode, uint8_t temp) {
+      |                                              ^~~~
+../src/esphome/components/fujitsu_climate/FujiAot30Cells.h:39:50: error: expression list treated as compound expression in initializer [-fpermissive]
+   39 | inline bool temp_in_range(Mode mode, uint8_t temp) {
+      |                                                  ^
+../src/esphome/components/fujitsu_climate/FujiAot30Cells.h:63:27: error: 'Mode' was not declared in this scope; did you mean 'fuji_aot30::Mode'?
+   63 | inline bool build_setting(Mode mode, Fan fan, uint8_t temp, bool eco, bool repeat, uint8_t *cells) {
+      |                           ^~~~
+      |                           fuji_aot30::Mode
+../src/esphome/components/fujitsu_climate/FujiAot30Cells.h:21:12: note: 'fuji_aot30::Mode' declared here
+   21 | enum class Mode : uint8_t { COOL = 1, HEAT = 2, FAN = 4, AUTO = 5 };
+      |            ^~~~
+../src/esphome/components/fujitsu_climate/FujiAot30Cells.h:63:38: error: 'Fan' was not declared in this scope; did you mean 'fuji_aot30::Fan'?
+   63 | inline bool build_setting(Mode mode, Fan fan, uint8_t temp, bool eco, bool repeat, uint8_t *cells) {
+      |                                      ^~~
+      |                                      fuji_aot30::Fan
+../src/esphome/components/fujitsu_climate/FujiAot30Cells.h:22:12: note: 'fuji_aot30::Fan' declared here
+   22 | enum class Fan : uint8_t { HIGH = 1, MEDIUM = 2, LOW = 4, AUTO = 5 };
+      |            ^~~
+../src/esphome/components/fujitsu_climate/FujiAot30Cells.h:63:55: error: expected primary-expression before 'temp'
+   63 | inline bool build_setting(Mode mode, Fan fan, uint8_t temp, bool eco, bool repeat, uint8_t *cells) {
+      |                                                       ^~~~
+../src/esphome/components/fujitsu_climate/FujiAot30Cells.h:63:61: error: expected primary-expression before 'bool'
+   63 | inline bool build_setting(Mode mode, Fan fan, uint8_t temp, bool eco, bool repeat, uint8_t *cells) {
+      |                                                             ^~~~
+../src/esphome/components/fujitsu_climate/FujiAot30Cells.h:63:71: error: expected primary-expression before 'bool'
+   63 | inline bool build_setting(Mode mode, Fan fan, uint8_t temp, bool eco, bool repeat, uint8_t *cells) {
+      |                                                                       ^~~~
+../src/esphome/components/fujitsu_climate/FujiAot30Cells.h:63:92: error: expected primary-expression before '*' token
+   63 | inline bool build_setting(Mode mode, Fan fan, uint8_t temp, bool eco, bool repeat, uint8_t *cells) {
+      |                                                                                            ^
+../src/esphome/components/fujitsu_climate/FujiAot30Cells.h:63:93: error: 'cells' was not declared in this scope
+   63 | inline bool build_setting(Mode mode, Fan fan, uint8_t temp, bool eco, bool repeat, uint8_t *cells) {
+      |                                                                                             ^~~~~
+../src/esphome/components/fujitsu_climate/FujiAot30Cells.h:63:98: error: expression list treated as compound expression in initializer [-fpermissive]
+   63 | inline bool build_setting(Mode mode, Fan fan, uint8_t temp, bool eco, bool repeat, uint8_t *cells) {
+      |                                                                                                  ^
+../src/esphome/components/fujitsu_climate/FujiAot30Cells.h: In function 'void build_poll(bool, bool, uint8_t*)':
+../src/esphome/components/fujitsu_climate/FujiAot30Cells.h:86:32: error: 'kPollCells' was not declared in this scope; did you mean 'fuji_aot30::kPollCells'?
+   86 |   load_base_(cells, kPollBase, kPollCells);
+      |                                ^~~~~~~~~~
+      |                                fuji_aot30::kPollCells
+../src/esphome/components/fujitsu_climate/FujiAot30Cells.h:17:18: note: 'fuji_aot30::kPollCells' declared here
+   17 | constexpr size_t kPollCells = 44;
+      |                  ^~~~~~~~~~
+../src/esphome/components/fujitsu_climate/FujiAot30Cells.h: In function 'void build_off(uint8_t*)':
+../src/esphome/components/fujitsu_climate/FujiAot30Cells.h:91:69: error: 'kOffCells' was not declared in this scope; did you mean 'fuji_aot30::kOffCells'?
+   91 | inline void build_off(uint8_t *cells) { load_base_(cells, kOffBase, kOffCells); }
+      |                                                                     ^~~~~~~~~
+      |                                                                     fuji_aot30::kOffCells
+../src/esphome/components/fujitsu_climate/FujiAot30Cells.h:18:18: note: 'fuji_aot30::kOffCells' declared here
+   18 | constexpr size_t kOffCells = 33;
+      |                  ^~~~~~~~~
+../src/esphome/components/fujitsu_climate/FujiAot30Cells.h: At global scope:
+../src/esphome/components/fujitsu_climate/FujiAot30Cells.h:93:1: error: expected declaration before '}' token
+   93 | }  // namespace fuji_aot30
+      | ^
+In file included from ../src/esphome/components/fujitsu_climate/FujiHeatPump.h:52:
+../src/esphome/components/fujitsu_climate/FujiAot30Scheduler.h:24:18: error: 'AUTO' is not a member of 'fuji_aot30::Fan'
+   24 |   Fan fan = Fan::AUTO;
+      |                  ^~~~
+../src/esphome/components/fujitsu_climate/FujiAot30Scheduler.h: In member function 'bool fuji_aot30::Scheduler::queue_setting(fuji_aot30::Mode, fuji_aot30::Fan, uint8_t, bool)':
+../src/esphome/components/fujitsu_climate/FujiAot30Scheduler.h:52:67: error: 'temp_in_range' cannot be used as a function
+   52 |     if (!active_ || busy() || (mode != Mode::FAN && !temp_in_range(mode, temp))) {
+      |                                                      ~~~~~~~~~~~~~^~~~~~~~~~~~
+../src/esphome/components/fujitsu_climate/FujitsuClimate.cpp: In member function 'void esphome::fujitsu_climate::FujitsuClimate::request_aot30_emulator_heat20()':
+../src/esphome/components/fujitsu_climate/FujitsuClimate.cpp:739:91: error: 'AUTO' is not a member of 'fuji_aot30::Fan'
+  739 |       !this->heat_pump.aot30EmulatorQueueSetting(fuji_aot30::Mode::HEAT, fuji_aot30::Fan::AUTO, 20, false)) {
+      |                                                                                           ^~~~
+[7/13] Building CXX object esp-idf/src/CMakeFiles/__idf_src.dir/main.cpp.obj
+FAILED: esp-idf/src/CMakeFiles/__idf_src.dir/main.cpp.obj
+ccache /data/cache/idf/tools/xtensa-esp-elf/esp-14.2.0_20260121/xtensa-esp-elf/bin/xtensa-esp32-elf-g++ @esp-idf/src/CMakeFiles/__idf_src.dir/main.cpp.obj.rsp -MD -MT esp-idf/src/CMakeFiles/__idf_src.dir/main.cpp.obj -MF esp-idf/src/CMakeFiles/__idf_src.dir/main.cpp.obj.d -o esp-idf/src/CMakeFiles/__idf_src.dir/main.cpp.obj -c /data/build/heatpump/src/main.cpp
+In file included from ../managed_components/espressif__arduino-esp32/cores/esp32/esp32-hal.h:115,
+                 from ../managed_components/espressif__arduino-esp32/cores/esp32/Arduino.h:44,
+                 from ../src/esphome/core/macros.h:7,
+                 from ../src/esphome.h:2,
+                 from ../src/main.cpp:3:
+../managed_components/espressif__arduino-esp32/cores/esp32/esp32-hal-gpio.h:43:14: error: expected identifier before numeric constant
+   43 | #define HIGH 0x1
+      |              ^~~
+../src/esphome/components/fujitsu_climate/FujiAot30Cells.h:22:28: note: in expansion of macro 'HIGH'
+   22 | enum class Fan : uint8_t { HIGH = 1, MEDIUM = 2, LOW = 4, AUTO = 5 };
+      |                            ^~~~
+../managed_components/espressif__arduino-esp32/cores/esp32/esp32-hal-gpio.h:43:14: error: expected '}' before numeric constant
+   43 | #define HIGH 0x1
+      |              ^~~
+../src/esphome/components/fujitsu_climate/FujiAot30Cells.h:22:28: note: in expansion of macro 'HIGH'
+   22 | enum class Fan : uint8_t { HIGH = 1, MEDIUM = 2, LOW = 4, AUTO = 5 };
+      |                            ^~~~
+In file included from ../src/esphome.h:39:
+../src/esphome/components/fujitsu_climate/FujiAot30Cells.h:22:26: note: to match this '{'
+   22 | enum class Fan : uint8_t { HIGH = 1, MEDIUM = 2, LOW = 4, AUTO = 5 };
+      |                          ^
+../managed_components/espressif__arduino-esp32/cores/esp32/esp32-hal-gpio.h:43:14: error: expected unqualified-id before numeric constant
+   43 | #define HIGH 0x1
+      |              ^~~
+../src/esphome/components/fujitsu_climate/FujiAot30Cells.h:22:28: note: in expansion of macro 'HIGH'
+   22 | enum class Fan : uint8_t { HIGH = 1, MEDIUM = 2, LOW = 4, AUTO = 5 };
+      |                            ^~~~
+../src/esphome/components/fujitsu_climate/FujiAot30Cells.h:39:27: error: 'Mode' was not declared in this scope; did you mean 'fuji_aot30::Mode'?
+   39 | inline bool temp_in_range(Mode mode, uint8_t temp) {
+      |                           ^~~~
+      |                           fuji_aot30::Mode
+../src/esphome/components/fujitsu_climate/FujiAot30Cells.h:21:12: note: 'fuji_aot30::Mode' declared here
+   21 | enum class Mode : uint8_t { COOL = 1, HEAT = 2, FAN = 4, AUTO = 5 };
+      |            ^~~~
+../src/esphome/components/fujitsu_climate/FujiAot30Cells.h:39:46: error: expected primary-expression before 'temp'
+   39 | inline bool temp_in_range(Mode mode, uint8_t temp) {
+      |                                              ^~~~
+../src/esphome/components/fujitsu_climate/FujiAot30Cells.h:39:50: error: expression list treated as compound expression in initializer [-fpermissive]
+   39 | inline bool temp_in_range(Mode mode, uint8_t temp) {
+      |                                                  ^
+../src/esphome/components/fujitsu_climate/FujiAot30Cells.h:63:27: error: 'Mode' was not declared in this scope; did you mean 'fuji_aot30::Mode'?
+   63 | inline bool build_setting(Mode mode, Fan fan, uint8_t temp, bool eco, bool repeat, uint8_t *cells) {
+      |                           ^~~~
+      |                           fuji_aot30::Mode
+../src/esphome/components/fujitsu_climate/FujiAot30Cells.h:21:12: note: 'fuji_aot30::Mode' declared here
+   21 | enum class Mode : uint8_t { COOL = 1, HEAT = 2, FAN = 4, AUTO = 5 };
+      |            ^~~~
+../src/esphome/components/fujitsu_climate/FujiAot30Cells.h:63:38: error: 'Fan' was not declared in this scope; did you mean 'fuji_aot30::Fan'?
+   63 | inline bool build_setting(Mode mode, Fan fan, uint8_t temp, bool eco, bool repeat, uint8_t *cells) {
+      |                                      ^~~
+      |                                      fuji_aot30::Fan
+../src/esphome/components/fujitsu_climate/FujiAot30Cells.h:22:12: note: 'fuji_aot30::Fan' declared here
+   22 | enum class Fan : uint8_t { HIGH = 1, MEDIUM = 2, LOW = 4, AUTO = 5 };
+      |            ^~~
+../src/esphome/components/fujitsu_climate/FujiAot30Cells.h:63:55: error: expected primary-expression before 'temp'
+   63 | inline bool build_setting(Mode mode, Fan fan, uint8_t temp, bool eco, bool repeat, uint8_t *cells) {
+      |                                                       ^~~~
+../src/esphome/components/fujitsu_climate/FujiAot30Cells.h:63:61: error: expected primary-expression before 'bool'
+   63 | inline bool build_setting(Mode mode, Fan fan, uint8_t temp, bool eco, bool repeat, uint8_t *cells) {
+      |                                                             ^~~~
+../src/esphome/components/fujitsu_climate/FujiAot30Cells.h:63:71: error: expected primary-expression before 'bool'
+   63 | inline bool build_setting(Mode mode, Fan fan, uint8_t temp, bool eco, bool repeat, uint8_t *cells) {
+      |                                                                       ^~~~
+../src/esphome/components/fujitsu_climate/FujiAot30Cells.h:63:92: error: expected primary-expression before '*' token
+   63 | inline bool build_setting(Mode mode, Fan fan, uint8_t temp, bool eco, bool repeat, uint8_t *cells) {
+      |                                                                                            ^
+../src/esphome/components/fujitsu_climate/FujiAot30Cells.h:63:93: error: 'cells' was not declared in this scope
+   63 | inline bool build_setting(Mode mode, Fan fan, uint8_t temp, bool eco, bool repeat, uint8_t *cells) {
+      |                                                                                             ^~~~~
+../src/esphome/components/fujitsu_climate/FujiAot30Cells.h:63:98: error: expression list treated as compound expression in initializer [-fpermissive]
+   63 | inline bool build_setting(Mode mode, Fan fan, uint8_t temp, bool eco, bool repeat, uint8_t *cells) {
+      |                                                                                                  ^
+../src/esphome/components/fujitsu_climate/FujiAot30Cells.h: In function 'void build_poll(bool, bool, uint8_t*)':
+../src/esphome/components/fujitsu_climate/FujiAot30Cells.h:86:32: error: 'kPollCells' was not declared in this scope; did you mean 'fuji_aot30::kPollCells'?
+   86 |   load_base_(cells, kPollBase, kPollCells);
+      |                                ^~~~~~~~~~
+      |                                fuji_aot30::kPollCells
+../src/esphome/components/fujitsu_climate/FujiAot30Cells.h:17:18: note: 'fuji_aot30::kPollCells' declared here
+   17 | constexpr size_t kPollCells = 44;
+      |                  ^~~~~~~~~~
+../src/esphome/components/fujitsu_climate/FujiAot30Cells.h: In function 'void build_off(uint8_t*)':
+../src/esphome/components/fujitsu_climate/FujiAot30Cells.h:91:69: error: 'kOffCells' was not declared in this scope; did you mean 'fuji_aot30::kOffCells'?
+   91 | inline void build_off(uint8_t *cells) { load_base_(cells, kOffBase, kOffCells); }
+      |                                                                     ^~~~~~~~~
+      |                                                                     fuji_aot30::kOffCells
+../src/esphome/components/fujitsu_climate/FujiAot30Cells.h:18:18: note: 'fuji_aot30::kOffCells' declared here
+   18 | constexpr size_t kOffCells = 33;
+      |                  ^~~~~~~~~
+../src/esphome/components/fujitsu_climate/FujiAot30Cells.h: At global scope:
+../src/esphome/components/fujitsu_climate/FujiAot30Cells.h:93:1: error: expected declaration before '}' token
+   93 | }  // namespace fuji_aot30
+      | ^
+In file included from ../src/esphome.h:40:
+../src/esphome/components/fujitsu_climate/FujiAot30Scheduler.h:24:18: error: 'AUTO' is not a member of 'fuji_aot30::Fan'
+   24 |   Fan fan = Fan::AUTO;
+      |                  ^~~~
+../src/esphome/components/fujitsu_climate/FujiAot30Scheduler.h: In member function 'bool fuji_aot30::Scheduler::queue_setting(fuji_aot30::Mode, fuji_aot30::Fan, uint8_t, bool)':
+../src/esphome/components/fujitsu_climate/FujiAot30Scheduler.h:52:67: error: 'temp_in_range' cannot be used as a function
+   52 |     if (!active_ || busy() || (mode != Mode::FAN && !temp_in_range(mode, temp))) {
+      |                                                      ~~~~~~~~~~~~~^~~~~~~~~~~~
+ninja: build stopped: subcommand failed.
+ninja failed with exit code 1, output of the command is in the /data/build/heatpump/build/log/idf_py_stderr_output_50893 and /data/build/heatpump/build/log/idf_py_stdout_output_50893

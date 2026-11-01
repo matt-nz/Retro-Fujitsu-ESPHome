@@ -216,7 +216,9 @@ The mapping currently covers FAN values `03`, `05`, `09`, `0B`; AUTO values `73`
 `75`, `79`, `7B` at 23°C; COOL values `B9`, `BA`, `BC` for HIGH/MEDIUM/LOW fan at
 23°C, `C4` at 24°C with fan unknown, and `95`, `9D`, `A5`, `AD`, `B5`, `BD`, `C5`,
 `CD`, `D5`, `DD`, `E5`, `ED`, `F5` for AUTO fan at 18-30°C; and HEAT values `52`, `72`, `92`, `B2`, `D2`,
-`E6`, `EA`, `F2`, `F6`. The COOL/AUTO sweep is recorded in
+`E6`, `EA`, `F2`, `F6`. HEAT values `52` through `D2` represent 18-22°C with LOW fan
+in the captured setpoint sweep; `E6`, `EA`, `F2`, and `F6` are the 23°C HIGH, MEDIUM,
+LOW, and AUTO fan observations. The COOL/AUTO sweep is recorded in
 [`captures/matt-captures/cold-test.log`](captures/matt-captures/cold-test.log) and
 replayed by `tests/passive_stream_test.cpp`. The `T31` label was not a 31°C setting
 change; the remote's COOL setpoint range is 18-30°C. HEAT `12` (24°C) is deliberately

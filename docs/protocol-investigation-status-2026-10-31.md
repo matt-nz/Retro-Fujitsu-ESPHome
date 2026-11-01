@@ -313,6 +313,10 @@ Examples: COOL 23°C low fan `BC` = `10111 100`; AUTO 23°C low `79` = `0111 100
 23°C low `F2` = `111 100 10`. Fan only changes the 3-bit field, and the field moves left
 with the mode, which is why the same fan setting gives different bytes per mode.
 
+The HEAT 18–22°C setpoint capture values `52`, `72`, `92`, `B2`, and `D2` match LOW fan
+under this model, consistent with the previously observed LOW setting. The observer now
+reports LOW for that captured sequence. Other unobserved combinations remain unmapped.
+
 This also predicts values that no committed capture contains but the earlier AI notes
 reported: HEAT 24°C = `12` and 17°C = `32`. That is weak independent support for those
 notes, not confirmation, so `0x12` stays unmapped in the parser.
@@ -325,8 +329,8 @@ full setpoint, the missing bits must be somewhere else in the message (for examp
 comparing every byte of the setting messages tests this directly. Predicted values for
 COOL 16–30°C at low fan: `84 8C 94 9C A4 AC B4 BC C4 CC D4 DC E4 EC F4`.
 
-The model is a description of 22 observations, not a validated spec. Quiet fan, DRY, and
-any other remote settings are unmodelled.
+The model is a description of the labeled observations, not a validated spec. Quiet fan,
+DRY, and any other remote settings are unmodelled.
 
 ## Logic-analyser decode of the start-up capture (1 Nov 2026)
 
@@ -351,8 +355,8 @@ any other remote settings are unmodelled.
 ## Next logic-analyser session checklist (1 Nov 2026)
 
 Goal: find out whether any byte or cell besides the setting value varies with the setting, and
-whether the unit sends anything without the remote. Capture on D1 (1 MHz for the short runs; 50 kHz is enough for long ones) with the same
-wiring as `start-up.sr`, one file per step, and decode each with
+whether the unit sends anything without the remote. Capture on D1 (1 MHz for the short runs; 50 kHz
+for long ones) with the same wiring as `start-up.sr`, one file per step, and decode each with
 `python3 tools/decode_logic_capture.py <file>.sr --messages`. Write the time of every press on paper
 (the analyser file has no labels), and keep presses at least 5 s apart.
 
@@ -370,12 +374,13 @@ wiring as `start-up.sr`, one file per step, and decode each with
 5. **Idle soak (use a low sample rate).** Sample rate is the thing to cut, not the length. At 1 MHz
    ten minutes is 600 million samples, which PulseView holds in RAM; the compressed `.sr` would be small
    but the session would not. A bit is 2 ms wide, so 50 kHz (20 µs resolution) is plenty: ten minutes
-   is 30 million samples (about 30 MB in memory). I replayed `start-up.sr` decimated to 100, 50 and
-   20 kHz and `decode_logic_capture.py --check` still passed at all three (bit times within 0.1 % of
-   the 1 MHz values, same 659 bytes, 392 parity and 22 framing flags). If memory is still a worry,
-   take two or three five-minute files instead. Anything the idle soak is looking for (`0A` polls,
-   changed replies, a stalled reply) is a whole-message event, so the lower rate does not hide it. Leave the unit running 10 minutes with no presses to see whether `08` becomes `0A`,
-   a reply byte other than `48 80` appears, or the 1 s reply stall repeats.
+   is 30 million samples (about 30 MB in memory). I replayed `start-up.sr` decimated to 100, 50,
+   and 20 kHz; `decode_logic_capture.py --check` still passed at all three (bit times within 0.1%
+   of the 1 MHz values, same 659 bytes, 392 parity and 22 framing flags). If memory is still a
+   worry, take two or three five-minute files instead. Anything the idle soak is looking for
+   (`0A` polls, changed replies, a stalled reply) is a whole-message event, so the lower rate
+   does not hide it. Leave the unit running 10 minutes with no presses to see whether `08` becomes
+   `0A`, a reply byte other than `48 80` appears, or the 1 s reply stall repeats.
 6. **Room temperature (low priority).** Existing data already says the reply carries none: across all
    ESP logs from 31 Oct (warm day, 13:22–21:53; 3,000 replies) and `start-up.sr` from 1 Nov (cooler
    morning, 105 replies), the unit's reply is always `7F 18 13|17 48 80`; the only exception is the

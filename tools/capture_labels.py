@@ -24,14 +24,15 @@ def stamp():
     return now.strftime("%H:%M:%S.") + "%03d" % (now.microsecond // 1000)
 
 
-def write_line(out, line):
+def write_line(out, line, echo=True):
     with lock:
         out.write(line + "\n")
         out.flush()
-        print(line, flush=True)
+        if echo:
+            print(line, flush=True)
 
 
-def read_labels(out):
+def read_labels(out, echo=True):
     try:
         tty = open("/dev/tty")
     except OSError:
@@ -39,7 +40,7 @@ def read_labels(out):
     for text in tty:
         text = text.strip()
         if text:
-            write_line(out, "[%s][LABEL] %s" % (stamp(), text))
+            write_line(out, "[%s][LABEL] %s" % (stamp(), text), echo=echo)
 
 
 def main():

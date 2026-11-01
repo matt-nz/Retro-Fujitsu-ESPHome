@@ -1240,3 +1240,9 @@
 [23:02:23.390][I][fujitsu.heatpump:204][FujiTask]: <-- 18 13 48 80 7F 28 13 08  mSrc:24 mDst:19 mType:0 write:1 login:0 unknown:0 onOff:0 temp:127 mode:0 cP:1 uM:2 cTemp:9 acError:1
 [23:02:23.391][I][fujitsu.heatpump:242][FujiTask]: RX raw (8/8, before XOR): 80 E7 EC B7 7F 80 D7 EC
 [23:02:23.399][I][fujitsu.heatpump:204][FujiTask]: <-- 7F 18 13 48 80 7F 28 13  mSrc:127 mDst:24 mType:1 write:0 login:0 unknown:0 onOff:0 temp:0 mode:4 cP:0 uM:7 cTemp:20 acError:0
+[07:06:30.377][CAPTURE] connected to heatpump.local
+[07:06:30.702][D][status_led:049]: 'Status LED': Setting state OFF
+[07:06:32.342][D][status_led:049]: 'Status LED': Setting state ON
+[07:06:32.751][D][status_led:049]: 'Status LED': Setting state OFF
+[07:06:34.389][D][status_led:049]: 'Status LED': Setting state ON
+[07:06:34.799][D][status_led:049]: 'Status LED': Setting state OFF

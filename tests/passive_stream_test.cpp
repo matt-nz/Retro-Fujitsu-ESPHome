@@ -98,11 +98,11 @@ static void test_decode_table() {
           s.temperature_valid && s.temperature == temperature);
   }
   CHECK(!decode_setting(0x94, &s) && !decode_setting(0xFD, &s));
-  CHECK(decode_setting(0x52, &s) && s.mode == kModeHeat && !s.fan_valid && s.temperature == 18);
-  CHECK(decode_setting(0x72, &s) && s.temperature == 19);
-  CHECK(decode_setting(0x92, &s) && s.temperature == 20);
-  CHECK(decode_setting(0xB2, &s) && s.temperature == 21);
-  CHECK(decode_setting(0xD2, &s) && s.temperature == 22);
+  CHECK(decode_setting(0x52, &s) && s.mode == kModeHeat && s.fan_valid && s.fan == kFanLow && s.temperature == 18);
+  CHECK(decode_setting(0x72, &s) && s.fan_valid && s.fan == kFanLow && s.temperature == 19);
+  CHECK(decode_setting(0x92, &s) && s.fan_valid && s.fan == kFanLow && s.temperature == 20);
+  CHECK(decode_setting(0xB2, &s) && s.fan_valid && s.fan == kFanLow && s.temperature == 21);
+  CHECK(decode_setting(0xD2, &s) && s.fan_valid && s.fan == kFanLow && s.temperature == 22);
   CHECK(!decode_setting(0x12, &s));  // 24 C HEAT has not been captured
   CHECK(!decode_setting(0x00, &s) && !decode_setting(0x7F, &s) && !decode_setting(0xFF, &s));
 }
