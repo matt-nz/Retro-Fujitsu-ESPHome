@@ -100,3 +100,45 @@ so a slowly changing or rare temperature message cannot be ruled out. The unit m
 To confirm: (1) check whether the wired remote's display shows a room temperature, (2) with the master controller running, set HEAT 16 and then
 HEAT 26 in a room at about 21 °C for 20-30 min each and see whether the unit throttles back or stops, and (3) capture 45-60 min of passive logs
 with the real remote and the unit on, then look for any message other than the four poll and two reply patterns.
+
+## Using a Home Assistant room sensor (setpoint offset)
+
+The unit regulates on its own return-air sensor and shuts the compressor down once that reads the setpoint. To make the *room* reach a target,
+let HA move the unit's setpoint by the difference between the room sensor and the target. This only changes what the master controller sends, nothing
+on the bus. Rules for the automation:
+
+- The setpoint is whole degrees: HEAT 16-30, COOL and AUTO 18-30. Clamp the result to the mode's range.
+- Each change is two setting rounds over about 1.5 s. Change it rarely: re-evaluate every 5-10 minutes and only act on a change of at least 1 °C.
+- Keep the master controller on while the unit idles: polling must continue even when the compressor is stopped, and the status stays `Running`.
+- Do not send off/on for thermostatting; move the setpoint instead.
+
+Example (heating, adjust the entity ids to yours):
+
+```yaml
+alias: Aircon room temperature trim
+trigger:
+  - platform: time_pattern
+    minutes: "/10"
+condition:
+  - condition: state
+    entity_id: switch.master_controller
+    state: "on"
+  - condition: state
+    entity_id: climate.aircon
+    state: "heat"
+action:
+  - variables:
+      target_room: 21
+      room: "{{ states('sensor.living_room_temperature') | float(none) }}"
+      current: "{{ state_attr('climate.aircon', 'temperature') | float(none) }}"
+      new: "{{ [16, [30, (current + target_room - room) | round(0)] | min] | max }}"
+  - condition: template
+    value_template: "{{ room is not none and current is not none and new != current }}"
+  - service: climate.set_temperature
+    target:
+      entity_id: climate.aircon
+    data:
+      temperature: "{{ new }}"
+```
+
+The climate entity's temperature is the last setpoint the ESP sent, so it is the right value to offset from.
