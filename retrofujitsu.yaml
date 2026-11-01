@@ -490,8 +490,8 @@ button:
   - platform: safe_mode
     name: "Safe Mode Boot"
     entity_category: diagnostic
-  # EXPERIMENTAL -- DISCONNECT THE WIRED REMOTE FIRST (it is the bus master; nothing can be sent while it
-  # is connected). The ESP32 takes the remote's place for about 20 s: waits for a silent bus, polls, sends
+  # EXPERIMENTAL -- DISCONNECT THE WIRED REMOTE FIRST, ALL THREE WIRES (it is the bus master; nothing can be
+  # sent while it is connected, and an attached but unpowered remote still pulls the LIN line down). The ESP32 takes the remote's place for about 20 s: waits for a silent bus, polls, sends
   # HEAT 20 (auto fan, ECO off) the way the remote does, keeps polling, then releases the bus. Polls follow
   # the unit's own replies, so the unit may be on or off. It refuses to run if it sees wired-remote messages, and
   # aborts on any read-back mismatch. See the

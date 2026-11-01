@@ -546,5 +546,6 @@ test with an explanatory log line when the bus does not idle high.
 Measured with a multimeter: the LIN wire sits at 8.2–9.3 V with the wired remote connected, and at 2.6 V with only the ESP32
 module connected (module supply 12 V). 2.6 V is below the LIN dominant threshold, which is why RX stays low; the remote supplies
 the missing pull-up. Suggested fix: a 2.2 kΩ resistor plus small diode from the 12 V supply to the LIN wire at the module
-(1 kΩ if the line idles below about 8 V), fitted only while the remote is disconnected. Details and the reasoning are at the end
-of the settings-captures notes.
+(1 kΩ if the line idles below about 8 V), fitted only while the remote is disconnected. **Retracted:** with all three of the
+remote's wires removed the LIN line idles at 12 V on its own; the low level came from the unpowered remote loading the line.
+No pull-up is needed. See the resolution at the end of the settings-captures notes.

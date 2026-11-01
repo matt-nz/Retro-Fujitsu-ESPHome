@@ -194,3 +194,11 @@ the test, with a message saying this, when the bus is low with no traffic after 
   remote is disconnected. Check with the meter that the LIN wire then idles at about 8–10 V; if it is lower, use
   1 kΩ (the LIN master value). Fit it only while the remote is disconnected, since the remote has its own pull-up.
   After that the firmware's check should see the line high and the test button should start polling.
+
+### Resolution (2 Nov 2026): an attached but unpowered remote clamps the line
+
+With the wired remote disconnected completely (all three wires removed), the LIN wire at the ESP32 module sits at
+12 V, so the bus idles high on its own. The 2.6 V and the permanently low RX in `test.sr` were caused by the
+remote's circuitry still being attached to the LIN wire while unpowered, loading it toward ground. The pull-up
+resistor suggested above is **not needed**; ignore that suggestion. For any emulator test, remove all three of the
+remote's wires (at least LIN and its 12 V), not just its power.
