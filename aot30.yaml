@@ -186,9 +186,40 @@ number:
       - lambda: |-
           id(fujitsu_hp).make_call().set_target_temperature(x).perform();
 
-# Fan speed and Economy Mode as separate entities, because the ESPHome web UI's climate row only shows mode and
-# target. This unit has Auto/Low/Medium/High (no Quiet).
+# Mode, fan speed and Economy Mode as separate entities, because the ESPHome web UI's climate row does not give a usable
+# control for them. In Home Assistant use the climate entity itself (a Thermostat card). This unit has fan
+# Auto/Low/Medium/High (no Quiet).
 select:
+  # Mode, for the web UI. Commands only go to the unit while the Master Controller switch is on.
+  - platform: template
+    name: "Mode"
+    id: fujitsu_mode
+    icon: "mdi:air-conditioner"
+    update_interval: 5s
+    options:
+      - "Off"
+      - "Auto"
+      - "Cool"
+      - "Heat"
+      - "Fan Only"
+    lambda: |-
+      switch (id(fujitsu_hp).mode) {
+        case climate::CLIMATE_MODE_OFF: return std::string("Off");
+        case climate::CLIMATE_MODE_AUTO: return std::string("Auto");
+        case climate::CLIMATE_MODE_COOL: return std::string("Cool");
+        case climate::CLIMATE_MODE_HEAT: return std::string("Heat");
+        case climate::CLIMATE_MODE_FAN_ONLY: return std::string("Fan Only");
+        default: return {};
+      }
+    set_action:
+      - lambda: |-
+          climate::ClimateMode m = climate::CLIMATE_MODE_OFF;
+          if (x == "Auto") m = climate::CLIMATE_MODE_AUTO;
+          else if (x == "Cool") m = climate::CLIMATE_MODE_COOL;
+          else if (x == "Heat") m = climate::CLIMATE_MODE_HEAT;
+          else if (x == "Fan Only") m = climate::CLIMATE_MODE_FAN_ONLY;
+          id(fujitsu_hp).make_call().set_mode(m).perform();
+
   - platform: template
     name: "Fan Speed"
     id: fujitsu_fan_speed

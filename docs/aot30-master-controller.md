@@ -36,7 +36,10 @@ setting sent even 20 % faster (speed-ladder test, 2 Nov 2026). Keeping the remot
 | **Unit Running** (binary sensor) | The run flag in the unit's own replies. Unknown until the unit has answered a poll. |
 | **Bus Alive** / **Bus Status** | Recognised messages are arriving (`Bus OK`, `No Signal`, `Never Seen`). Works with the Master Controller off and the real remote connected. |
 | **Fujitsu Heat Pump** (climate) | Modes Off/Auto/Cool/Heat/Fan, setpoint, fan Auto/Low/Medium/High, preset ECO. While the master controller runs, the climate state is the last state the ESP commanded. With the Master Controller off, commands are ignored and the state is a best-effort view of a connected remote (see Known limits). |
-| **Set Temperature**, **Fan Speed**, **Economy Mode** | Duplicates of the climate controls for the ESPHome web UI and for Auto mode, where HA hides the target temperature. |
+| **Mode**, **Set Temperature**, **Fan Speed**, **Economy Mode** | Duplicates of the climate controls for the ESPHome web UI (its climate row has no usable mode or fan control) and for Auto mode, where HA hides the target temperature. |
+
+In Home Assistant the climate entity (`climate.fujitsu_heat_pump`) appears by itself once the device is added; show it with a Thermostat card (the
+auto-generated dashboard already does). Its mode list is Off/Auto/Cool/Heat/Fan only. Commands do nothing until the Master Controller switch is on.
 
 Supported: HEAT 16-30 °C, COOL 18-30 °C, AUTO 18-30 °C, FAN (no setpoint), fans auto/low/medium/high, ECO.
 Not available on this unit: DRY, quiet fan, vane control (so no swing entity), room temperature. Out-of-range setpoints are clamped. The room temperature is not on the bus.
