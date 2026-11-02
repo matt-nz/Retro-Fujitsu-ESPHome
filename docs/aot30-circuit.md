@@ -129,3 +129,18 @@ flowchart LR
   a plain high level, so look at it with the logic analyser.
 - The second transceiver also needs the same TXD pull-up and the pin choices above must not clash with the strapping pins (GPIO0, 2, 12, 15) or the
   flash pins.
+
+### What is shared and what is repeated
+
+| Built once | Repeated for each transceiver (A and B) |
+|---|---|
+| 12 V feed from the unit, one fuse, one TVS diode | 10 k pull-up from 3V3 to TXD (holds it recessive while the ESP32 boots) |
+| Buck module and the ESP32 | SLP_N tied high (unless the module already does it) |
+| Common ground and the 3V3 rail | VBAT supply connection and a local 100 nF decoupling capacitor (most breakouts already have one, check yours) |
+| Remote's 12 V and GND, passed straight through from the unit | Its own TXD/RXD pair on its own UART |
+
+- No capacitor is needed on the LIN pin for a short in-building run (the 220 pF-1 nF EMC capacitor used in vehicles is optional).
+- **Not simply a copy of A:** the remote-side wire may need a pull-up to 12 V (about 1 k in series with a diode), because the unit provides the pull-up today and
+  the remote would no longer be connected to it. Measure before building.
+- One transceiver cannot serve both buses, because the ESP has to talk to the unit and answer the remote at the same time. Software side: the unit-side
+  half is the existing `Aot30Bus` master; the remote side would be a new slave class plus a cell-level decoder for the remote's settings.
