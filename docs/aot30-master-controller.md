@@ -159,6 +159,24 @@ sequenceDiagram
   cold start with no unit answering, and whether the remote's display can be made to follow Home Assistant's changes by echoing a setting to it. If the
   remote's display cannot follow, the two will show different states after a change from Home Assistant.
 
+## Alternative: a touch-screen master instead of the bridge
+
+If keeping the old remote is not essential, the least work is to give the **master controller its own screen**: an ESP32 touch-screen board (a "cheap yellow
+display" ESP32-2432S028, or an ESP32-S3 panel) with the LIN transceiver wired to two free GPIOs, replacing the wired remote. The firmware side already exists; the new
+work is mostly YAML:
+
+- An ESPHome `lvgl` + `touchscreen` UI with power, mode, fan, setpoint +/- and ECO buttons that call the existing climate entity (`make_call()`), a Master Controller status
+  line and a screen timeout. The UI needs no WiFi or Home Assistant, so the unit stays controllable locally if the network is down.
+- Power from the remote cable's 12 V through a buck module (the board needs 5 V, with a few hundred mA for the backlight).
+- Pins: any free GPIO pair works (RX can be an input-only pin); the transmit code takes the pin numbers from `rx_pin`/`tx_pin`.
+- **One software caveat:** the transmit busy-waits for up to 166 ms on core 1 (87 ms for every poll), the same core as the ESPHome main loop that draws the screen, so the UI
+  would stutter. Fixes, in order of effort: pin the bus task to core 0 and check the cell timing, or replace the bit-banging with RMT (also step 2 of the bridge plan).
+- Not tried: ESP32-S3 boards (the code uses UART2 and the GPIO matrix, which the S3 has).
+
+A screen that only *shows* the settings next to a live remote needs the receive-only cell decoder (step 1 of the bridge plan) and cannot control anything, so it does
+not give Home Assistant control. Rough order of work: touch-screen master (mostly YAML) is much less than the bridge (RMT transmit, a slave with a 6 ms deadline,
+a cell decoder and arbitration).
+
 ### Bridge software plan
 
 **Reused as is:** the cell encoder and message scripts (`Aot30Cells.h`, `Aot30Scheduler.h`) for the unit side, the message parser (`Aot30Passive.h`), the unit-side master
