@@ -84,9 +84,9 @@ Every transmitted cell is read back from the bus. The ESP never transmits within
 
 - The climate state is what was commanded, not what the unit reports. Only the run flag comes from the unit (`Unit Running`). Setting echoes
   cannot be decoded from the byte view (the old `0x96` "unmapped" log line is that aliasing).
-- If the ESP reboots or loses power, the unit keeps running for 1 minute (it shuts down exactly 1 minute after the last poll, timed by the operator), so
-  a reboot or WiFi drop does not switch it off. An OTA update plus reboot takes a good part of that minute, so do not rely on it for long gaps. The Master
-  Controller switch is restored on boot.
+- If the ESP reboots or loses power, the unit kept running for 1 minute in the one timed test (it shut down exactly 1 minute after the last poll, with the
+  compressor not running; with the compressor running for a while it may differ, untested). So a reboot or WiFi drop should not switch it off. An OTA
+  update plus reboot takes a good part of that minute, so do not rely on it for long gaps. The Master Controller switch is restored on boot.
 - The unit occasionally skips a reply (3 of 52 polls in one capture). The master tolerates that.
 - Round 2 of a setting was missing from the unit's echo 3 times in 50 on the real remote; it makes no difference here.
 
