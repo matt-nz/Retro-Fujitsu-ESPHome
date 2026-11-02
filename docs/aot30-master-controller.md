@@ -170,7 +170,8 @@ work is mostly YAML:
 - Power from the remote cable's 12 V through a buck module (the board needs 5 V, with a few hundred mA for the backlight).
 - Pins: any free GPIO pair works (RX can be an input-only pin); the transmit code takes the pin numbers from `rx_pin`/`tx_pin`.
 - **One software caveat:** the transmit busy-waits for up to 166 ms on core 1 (87 ms for every poll), the same core as the ESPHome main loop that draws the screen, so the UI
-  would stutter. Fixes, in order of effort: pin the bus task to core 0 and check the cell timing, or replace the bit-banging with RMT (also step 2 of the bridge plan).
+  would stutter. Moving the bus task to core 0 is a one-line change but a trade-off (it shares the core with WiFi); RMT is the proper fix. See
+  [aot30-touchscreen-controller.md](aot30-touchscreen-controller.md) for the options, a finished-design diagram, a screen flow and a bill of materials.
 - Not tried: ESP32-S3 boards (the code uses UART2 and the GPIO matrix, which the S3 has).
 
 A screen that only *shows* the settings next to a live remote needs the receive-only cell decoder (step 1 of the bridge plan) and cannot control anything, so it does
