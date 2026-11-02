@@ -22,7 +22,7 @@ setting sent even 20 % faster (speed-ladder test, 2 Nov 2026). Keeping the remot
 
 ## Hardware
 
-- ESP32 with a LIN transceiver (TJA1021, "linttl3"). RX is GPIO16, TX is GPIO17 (see `aot30.yaml`).
+- ESP32 with a LIN transceiver (TJA1021, "linttl3"). RX is GPIO16, TX is GPIO17 (see `aot30.yaml`). A suggested circuit is in [aot30-circuit.md](aot30-circuit.md).
 - Transceiver powered from 12 V. Power the ESP32 from 5 V or from the 12 V rail through a regulator.
 - **Disconnect the wired remote completely: LIN, power and ground.** An attached but unpowered remote clamps the LIN line low (measured 2.6 V);
   with all three wires removed the LIN idles at 12 V.
