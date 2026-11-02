@@ -32,8 +32,8 @@ This bus is **not** the 8-byte frame protocol of the newer units (`PROTOCOL.md`,
 - The **wired remote is the bus master**. It polls the unit about every 247 ms. The **unit only replies** (and echoes the settings it accepts).
 - Nothing else has been seen on the bus: no room temperature, no fault code, no second device. The second byte's high nibble identifies the
   sender: `2` remote, `1` unit.
-- The unit switches itself off when polling stops (no off message is sent; observed after the ESP32 stopped polling, the delay was not measured). A
-  master must poll continuously.
+- The unit does not switch off the moment polling stops: it takes **a minute or more** (operator observation, not timed). No off message is sent. So a short
+  polling gap (an ESP32 reboot, a WiFi drop, an OTA update) does not turn the unit off. A master must still poll continuously.
 
 ## 3. Messages
 
@@ -119,7 +119,11 @@ A UART at 500 baud 8E1 on the inverted stream decodes `7F`, the second byte and 
 "value byte" is 8 cells starting at the next falling edge. Where that falls depends on the mode bits, so the byte mixes mode, fan and setpoint bits
 differently per mode, and the setpoint's top bits arrive as parity/framing information. Consequences:
 
-- HEAT 16 and 24 (17 and 25, ... 22 and 30) give the same byte; some bytes are shared across modes. Examples seen: HEAT 20 fan auto reads `96`.
+- The aliasing is a property of the UART view, **not of the unit**: the unit reads the cells, and the setpoint's top bits (cells 43-44) are on the wire in
+  every message. Our encoder sends all 84 cells, and the master reads each one back from the bus. So the unit always gets an unambiguous setpoint;
+  only a UART-based *monitor* cannot tell the aliased values apart.
+- In HEAT, setpoints 8 apart give the same byte (16 and 24, 17 and 25, ... 22 and 30; for example 18 and 26). COOL and AUTO sweeps are unambiguous within the
+  mode, but some bytes are shared across modes. Example seen: HEAT 20 fan auto reads `96`.
 - Reading the remote's state through a UART is therefore ambiguous. Unambiguous decoding needs the cells (GPIO edge timestamps).
 - The firmware's passive monitor (`Aot30Passive.h`) only maps byte values labelled in the captures and ignores the rest. In master mode it is not used
   for state: the climate state is what was commanded.
@@ -160,4 +164,8 @@ differently per mode, and the setpoint's top bits arrive as parity/framing infor
 - Whether any cell in the constant stretches carries information (no checksum found), and whether the lower limits of COOL and AUTO below 18 exist.
 - A cell-level monitor (GPIO edge timestamps) to read a real remote's exact state without aliasing; only needed for monitor-only use with the
   remote connected.
-- A bridge (ESP between unit and remote, second LIN transceiver) to keep the physical remote: not built, see aot30-master-controller.md.
+- Remote features that were never captured: defrost / de-icing (the unit may report it some other way, or only the outdoor unit does it), and the
+  test run mode listed in the remote's manual. Neither seems important for control.
+- What the unit does if a master restarts while it is running: our first poll carries the run flag "idle" (as after power-up) although the unit is
+  running. Untested; the shutdown delay of a minute or more makes it harmless for short restarts.
+- A bridge (ESP between unit and remote, second LIN transceiver) to keep the physical remote: not built, design sketch in aot30-master-controller.md.

@@ -84,7 +84,8 @@ Every transmitted cell is read back from the bus. The ESP never transmits within
 
 - The climate state is what was commanded, not what the unit reports. Only the run flag comes from the unit (`Unit Running`). Setting echoes
   cannot be decoded from the byte view (the old `0x96` "unmapped" log line is that aliasing).
-- If the ESP reboots or loses power the unit shuts down within moments. The switch is restored on boot to limit the gap.
+- If the ESP reboots or loses power, the unit keeps running for a minute or more (it only shuts down well after polling stops, operator observation), so
+  an ESP reboot, WiFi drop or OTA update does not switch it off. The Master Controller switch is restored on boot.
 - The unit occasionally skips a reply (3 of 52 polls in one capture). The master tolerates that.
 - Round 2 of a setting was missing from the unit's echo 3 times in 50 on the real remote; it makes no difference here.
 
@@ -99,16 +100,63 @@ The full protocol is in [aot30-protocol.md](aot30-protocol.md); the investigatio
 `sh tests/run_all.sh` runs everything on a desktop: capture decoding, the cell encoder against 677 golden vectors from the Python model, the
 scheduler, and the master controller with fake time, GPIO and UART. ESPHome itself is built in the HA add-on.
 
-## Future work: bridge
+## Future work: bridge (design sketch, not built)
 
-A bridge keeps the physical remote usable: the ESP sits between the unit and the remote with a **second LIN transceiver**, master towards the unit
-and slave towards the remote.
+A bridge keeps the physical remote usable. The ESP sits between the unit and the remote with a **second LIN transceiver** and treats the two as
+**independent buses**: master towards the unit, slave towards the remote. It never has to delay the remote, because it answers the remote's polls itself,
+from the unit's latest reply, within the few milliseconds the remote expects (the reply starts 1.75-6 ms after the poll ends).
 
-- Relay the remote's polls and settings to the unit, and the unit's replies to the remote.
-- To send its own setting, hold back the remote's next poll for about 400 ms and answer the remote itself in that time (the remote must see
-  plausible replies), then resume relaying.
-- Open questions: how the real remote reacts to a delayed poll and a synthetic reply, what it sends if its own setting is pressed at the same time,
-  and whether the remote's display can be made to follow the ESP's changes (it will not unless the ESP relays them).
+```mermaid
+flowchart LR
+    HA["Home Assistant"] <-->|"API: climate, switch"| ESP
+    subgraph ESP["ESP32 bridge"]
+        direction TB
+        RS["Remote-side slave<br/>(answers the remote's polls)"]
+        CORE["State and schedule<br/>target = last command<br/>from the remote or HA"]
+        US["Unit-side master<br/>(polls every 247 ms,<br/>sends settings)"]
+        RS <--> CORE <--> US
+    end
+    REMOTE["Wired remote<br/>(bus master on its own bus)"] <-->|"LIN transceiver B"| RS
+    US <-->|"LIN transceiver A"| UNIT["Indoor unit ART30RL"]
+```
+
+```mermaid
+sequenceDiagram
+    participant R as Wired remote
+    participant E as ESP32 bridge
+    participant U as Indoor unit
+    participant H as Home Assistant
+
+    loop every 247 ms
+        R->>E: poll
+        E-->>R: reply (copy of the unit's last reply, within a few ms)
+    end
+    loop every 247 ms
+        E->>U: poll (run flag follows the unit)
+        U-->>E: reply
+    end
+
+    Note over R,U: Change made on the remote
+    R->>E: setting (166 ms)
+    E-->>R: echo (as the unit would)
+    E->>U: setting, round 1 then round 2 (the captured schedule)
+    U-->>E: echoes
+    E->>H: state updated from the remote's message
+
+    Note over R,U: Change made in Home Assistant
+    H->>E: set mode / setpoint / fan / ECO
+    E->>U: setting, round 1 then round 2
+    U-->>E: echoes (command acknowledged)
+    E->>H: state updated
+    Note over R: the remote's display still shows the old state
+```
+
+- **What is already built:** the unit-side master (`Aot30Bus`, `Aot30Scheduler`, `Aot30Cells`) is exactly the current master controller.
+- **What is new:** a second UART and transceiver for the remote side, a slave that can answer a poll in a few milliseconds, and a receive-only decoder for the
+  remote's setting cells (GPIO edge timestamps), because the byte view aliases (see [aot30-protocol.md](aot30-protocol.md#5-the-byte-view-and-why-it-aliases)).
+- **Open questions:** how the remote reacts to synthetic echoes and replies (does it accept them, does it show a fault), what it sends at the very start of a
+  cold start with no unit answering, and whether the remote's display can be made to follow Home Assistant's changes by echoing a setting to it. If the
+  remote's display cannot follow, the two will show different states after a change from Home Assistant.
 
 ## Open question: room temperature
 
