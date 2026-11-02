@@ -33,6 +33,7 @@ setting sent even 20 % faster (speed-ladder test, 2 Nov 2026). Keeping the remot
 |---|---|
 | **Master Controller** (switch) | On: the ESP takes over the remote's role. Remembered across reboots. It turns itself off if the controller refuses to start or has to stop. |
 | **Master Controller Status** (text) | `Off`, `Checking bus`, `Running`, or why it refused or stopped (see below). |
+| **Master Last Command** (text) | Whether the unit echoed the last setting or off message (`Acknowledged by the unit` / `Not acknowledged by the unit`). The unit repeats what it accepts, so this checks every command, including setpoints and modes not yet tried on the real unit. |
 | **Unit Running** (binary sensor) | The run flag in the unit's own replies. Unknown until the unit has answered a poll. |
 | **Bus Alive** / **Bus Status** | Recognised messages are arriving (`Bus OK`, `No Signal`, `Never Seen`). Works with the Master Controller off and the real remote connected. |
 | **Fujitsu Heat Pump** (climate) | Modes Off/Auto/Cool/Heat/Fan, setpoint, fan Auto/Low/Medium/High, preset ECO. While the master controller runs, the climate state is the last state the ESP commanded. With the Master Controller off, commands are ignored and the state is a best-effort view of a connected remote (see Known limits). |
@@ -89,12 +90,8 @@ Every transmitted cell is read back from the bus. The ESP never transmits within
 
 ## Protocol summary
 
-The full analysis is in [protocol-investigation-status-2026-10-31.md](protocol-investigation-status-2026-10-31.md) and
-`captures/matt-captures/settings-captures-notes.md`. In short: about 500 baud, line inverted, remote bit time 1980.8 µs.
+The full protocol is in [aot30-protocol.md](aot30-protocol.md); the investigation log is in [protocol-investigation-status-2026-10-31.md](protocol-investigation-status-2026-10-31.md).
 
-- Poll `7F 28 13|17 08|0A`: run flag, pending flag. Reply `7F 18 13|17 48 80`.
-- Setting: an 84-cell bit-serial packet sent twice (rounds `03` and `13`). Mode is cells 33-35, fan 37-39, setpoint 40-44, ECO 54.
-- Off `7F 24 03`. A change goes out 397 ms after the last poll, then `0A` poll +405 ms, round 2 +803 ms, `0A` poll +1210 ms, normal poll +1516 ms.
 - Code, all in `components/fujitsu_aot30/`: `Aot30Cells.h` (message cells), `Aot30Scheduler.h` (timing script), `Aot30Passive.h` (message parser), `Aot30Bus.cpp` (bus task: reading, master controller, bit-banged transmit), `Aot30Climate.cpp` (HA climate entity).
 
 ## Tests

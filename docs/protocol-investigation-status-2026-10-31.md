@@ -36,7 +36,7 @@ specification. The role of address `0x22` is unknown; do not assume it is the ou
 unit or that it is addressed to the ESP.
 
 The value mappings currently implemented are documented in
-[`protocol-matt.md`](../protocol-matt.md). Unknown values are ignored rather than
+[`aot30-protocol.md`](aot30-protocol.md) (this note's earlier reference, `protocol-matt.md`, was replaced by it and removed; see git history). Unknown values are ignored rather than
 guessed. No captured evidence yet establishes the complete secondary login exchange,
 all operating-state fields, or safe command transmission.
 
@@ -67,7 +67,7 @@ When providing these materials to another protocol analyst, ask them to:
 5. Do not recommend transmitting or changing addresses until the frame roles and
    reply timing are supported by evidence.
 
-Materials: this note, [`../protocol-matt.md`](../protocol-matt.md), the original nine logs in
+Materials: this note, [`aot30-protocol.md`](aot30-protocol.md), the original nine logs in
 [`../captures/matt-captures/`](../captures/matt-captures/), the current
 `components/fujitsu_climate/FujiHeatPump.cpp`, and the included sniffer sketch.
 

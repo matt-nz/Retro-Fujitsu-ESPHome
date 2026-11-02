@@ -19,6 +19,9 @@ const char *const TAG = "aot30.bus";
 
 constexpr uint32_t kCmdStart = 1;
 constexpr uint32_t kCmdStop = 2;
+// The unit's echo of a setting or power-off message should have arrived this long after we finished sending it
+// (it starts about 190 ms after the start of the message and is repeated after the next poll).
+constexpr uint32_t kAckWaitMs = 450;
 // The bus must have been silent this long before starting; a connected remote polls every ~247 ms.
 constexpr uint32_t kQuietMs = 1500;
 // Polling time before the first command, so the unit sees a normal cycle first.
@@ -161,6 +164,9 @@ void Bus::on_byte(uint8_t value) {
 
   switch (message.kind) {
     case fuji_passive::Kind::SETTING: {
+      if (message.direction == fuji_passive::Direction::UNIT_TO_REMOTE) {
+        unit_echo_count_++;
+      }
       if (master_enabled_.load()) {
         return;  // the byte view aliases settings; the master controller publishes the state it commanded itself
       }
@@ -185,6 +191,9 @@ void Bus::on_byte(uint8_t value) {
       break;
     }
     case fuji_passive::Kind::POWER_OFF:
+      if (message.direction == fuji_passive::Direction::UNIT_TO_REMOTE) {
+        unit_echo_count_++;
+      }
       observe_off();
       break;
     case fuji_passive::Kind::STATUS:
@@ -281,6 +290,7 @@ void Bus::apply_target() {
 void Bus::finish_master(MasterState state) {
   scheduler_.stop();
   stage_ = Stage::IDLE;
+  ack_pending_ = false;
   target_dirty_.store(false);
   master_state_.store(static_cast<uint8_t>(state));
   master_enabled_.store(false);
@@ -363,6 +373,17 @@ bool Bus::transmit(const uint8_t *cells, size_t count, const char *what) {
 void Bus::master_step() {
   uint32_t now = millis();
 
+  if (ack_pending_ && static_cast<int32_t>(now - ack_at_ms_) >= 0) {
+    ack_pending_ = false;
+    const bool acked = unit_echo_count_ != ack_baseline_;
+    last_ack_.store(acked ? 1 : 2);
+    if (acked) {
+      ESP_LOGI(TAG, "Master: the unit acknowledged the %s (echoed it)", ack_what_);
+    } else {
+      ESP_LOGW(TAG, "Master: the unit did NOT acknowledge the %s (no echo seen)", ack_what_);
+    }
+  }
+
   const uint32_t command = command_.exchange(0);
   if (command == kCmdStop) {
     if (master_enabled_.load()) {
@@ -375,6 +396,8 @@ void Bus::master_step() {
     ignore_rx_until_ms_ = now;
     unit_running_known_ = false;  // learn it from the unit's replies once polling starts
     unit_run_state_.store(-1);
+    ack_pending_ = false;
+    last_ack_.store(0);
     scheduler_.stop();
     stage_ = Stage::WAIT_QUIET;
     stage_start_ms_ = now;
@@ -484,6 +507,13 @@ void Bus::master_step() {
   ignore_rx_until_ms_ = millis() + kOwnEchoMs;
   if (action.kind != Action::Kind::POLL) {
     ESP_LOGW(TAG, "Master: sent %s", what);
+  }
+  // The final message of a change (round 2, or the power-off) is the one whose echo we check.
+  if (action.kind == Action::Kind::OFF || (action.kind == Action::Kind::SETTING && action.repeat)) {
+    ack_baseline_ = unit_echo_count_;
+    ack_at_ms_ = millis() + kAckWaitMs;
+    ack_pending_ = true;
+    ack_what_ = action.kind == Action::Kind::OFF ? "power-off" : "setting";
   }
 }
 

@@ -101,6 +101,9 @@ class Bus {
   int unit_run_state() const { return unit_run_state_.load(); }
   Observed observed() const { return Observed::unpack(observed_word_.load()); }
   uint32_t observed_revision() const { return observed_revision_.load(); }
+  // Whether the unit echoed the last setting or off message the master sent (the unit repeats what it accepts):
+  // 0 none yet, 1 acknowledged, 2 not acknowledged.
+  int last_ack() const { return last_ack_.load(); }
   // millis() of the last recognised message on the bus, 0 if none yet.
   uint32_t last_message_ms() const { return last_message_ms_.load(); }
   // Test hook for the host tests; the firmware never turns dry run on.
@@ -134,6 +137,12 @@ class Bus {
   bool passive_running_ = false;
   bool unit_running_known_ = false;
   bool unit_running_ = false;
+  uint32_t unit_echo_count_ = 0;  // setting and power-off messages sent by the unit (its echoes)
+  uint32_t ack_baseline_ = 0;
+  uint32_t ack_at_ms_ = 0;
+  bool ack_pending_ = false;
+  const char *ack_what_ = "";
+  std::atomic<int8_t> last_ack_{0};
   std::atomic<uint32_t> last_message_ms_{0};
   std::atomic<int8_t> unit_run_state_{-1};
   std::atomic<uint32_t> observed_word_{0};

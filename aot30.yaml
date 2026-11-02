@@ -271,6 +271,16 @@ text_sensor:
     lambda: |-
       return id(fujitsu_hp)->master_controller_status();
 
+  # Did the unit echo the last setting / power-off the Master Controller sent? (It repeats what it accepts.)
+  - platform: template
+    name: "Master Last Command"
+    id: master_last_command
+    icon: "mdi:check-network-outline"
+    entity_category: diagnostic
+    update_interval: 2s
+    lambda: |-
+      return id(fujitsu_hp)->master_last_command();
+
   # Bus OK / No Signal / Never Seen, from the recognised messages on the bus.
   - platform: template
     name: "Bus Status"

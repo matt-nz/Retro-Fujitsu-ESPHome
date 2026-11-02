@@ -311,6 +311,32 @@ int main() {
   hp.stop_master();
   advance(hp, 10);
 
+  // 6b. The unit's echo of a setting is checked: echoed -> acknowledged, no echo -> not acknowledged.
+  reset(serial, hp);
+  hp.set_dry_run(true);
+  CHECK(hp.start_master());
+  advance(hp, 4000);
+  CHECK(hp.last_ack() == 0);
+  Target t1;
+  t1.on = true;
+  t1.mode = Mode::COOL;
+  t1.temp = 24;
+  CHECK(hp.submit_target(t1));
+  for (int i = 0; i < 3000 && !log_has("would send setting (round 2)"); i++) advance(hp, 1);
+  CHECK(log_has("would send setting (round 2)"));
+  advance(hp, 100);
+  for (uint8_t b : {0x80, 0xED, 0xEC, 0xA9, 0xFD, 0xA0, 0x81, 0x80}) serial.rx.push_back(b);  // 7F 12 13 56 02 5F 7E
+  advance(hp, 600);
+  CHECK(hp.last_ack() == 1 && log_has("acknowledged the setting"));
+  Target t2 = t1;
+  t2.temp = 25;
+  g_log.clear();
+  CHECK(hp.submit_target(t2));
+  advance(hp, 2700);  // sent, and no echo arrives
+  CHECK(hp.last_ack() == 2 && log_has("did NOT acknowledge the setting"));
+  hp.stop_master();
+  advance(hp, 10);
+
   // 7. Monitor mode (master controller off, real remote connected): messages are parsed into a best-effort state.
   static Bus hp2;
   reset(serial, hp2);

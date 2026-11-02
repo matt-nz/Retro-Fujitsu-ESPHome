@@ -44,6 +44,14 @@ class Aot30Climate : public climate::Climate, public Component {
   std::string master_controller_status() const {
     return fuji_aot30::Bus::master_state_text(bus_.master_state());
   }
+  // Did the unit echo the last setting / power-off we sent? Echoing is how it acknowledges what it accepts.
+  std::string master_last_command() const {
+    switch (bus_.last_ack()) {
+      case 1: return "Acknowledged by the unit";
+      case 2: return "Not acknowledged by the unit";
+      default: return "None yet";
+    }
+  }
   // Run flag from the unit's replies: -1 unknown, 0 idle, 1 running.
   int unit_run_state() const { return bus_.unit_run_state(); }
   // True while recognised messages are still arriving.

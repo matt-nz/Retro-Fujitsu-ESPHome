@@ -241,7 +241,7 @@ Findings:
 
 `full-run.sr` is the ESP emulating the remote, so its timings reflect the emulator's script, not the real remote. In the
 real-remote captures (`heat.sr`, `fan-mode.sr`, `eco.sr`) the first setting round follows the last normal poll by
-**397 ms** in 19 of 21 changes (247 ms in the other two). The real remote does not simply swap a poll for the
+**397 ms** in 22 of 24 changes (247 ms in the other two). The real remote does not simply swap a poll for the
 setting: the exchange is longer (setting 164 ms, then the unit's echo), and the next message goes out after the unit has
 finished. Gaps during a change: 397 (poll -> round 1), 405 (-> `0A` poll), 398 (-> round 2), 407 (-> `0A` poll), 306 (-> normal
 poll). The scheduler now waits an extra 150 ms before round 1 to match (`kSettingExtraDelayMs`); the earlier firmware used 247 ms and

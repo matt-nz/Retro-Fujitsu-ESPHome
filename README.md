@@ -22,7 +22,7 @@ This repository holds two independent ESPHome components. Pick by the bus your u
 | Units | Newer units with the 8-byte frame protocol (for example ART30LUAK) | Older ducted units with a 3-wire LIN wired remote (ART30RL indoor, AOT30L outdoor) |
 | ESP32 role | Secondary controller next to the wired remote, which stays connected | **Replaces the wired remote** as the bus master (remote fully disconnected) |
 | Config | [`retrofujitsu.yaml`](retrofujitsu.yaml) | [`aot30.yaml`](aot30.yaml) |
-| Docs | The rest of this README, [PROTOCOL.md](PROTOCOL.md) | [docs/aot30-master-controller.md](docs/aot30-master-controller.md) |
+| Docs | The rest of this README, [PROTOCOL.md](PROTOCOL.md) | [docs/aot30-master-controller.md](docs/aot30-master-controller.md), [docs/aot30-protocol.md](docs/aot30-protocol.md) |
 | Status | Upstream design, unchanged here | Experimental, protocol verified on one real run |
 
 They do not share code and cannot run in the same firmware (one UART, one bus). `components/fujitsu_climate/` and `retrofujitsu.yaml` are back to their state before the AOT30L work (upstream plus two small
