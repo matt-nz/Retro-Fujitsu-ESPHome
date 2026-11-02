@@ -32,8 +32,9 @@ This bus is **not** the 8-byte frame protocol of the newer units (`PROTOCOL.md`,
 - The **wired remote is the bus master**. It polls the unit about every 247 ms. The **unit only replies** (and echoes the settings it accepts).
 - Nothing else has been seen on the bus: no room temperature, no fault code, no second device. The second byte's high nibble identifies the
   sender: `2` remote, `1` unit.
-- The unit does not switch off the moment polling stops: it takes **a minute or more** (operator observation, not timed). No off message is sent. So a short
-  polling gap (an ESP32 reboot, a WiFi drop, an OTA update) does not turn the unit off. A master must still poll continuously.
+- The unit does not switch off the moment polling stops: it shuts down **1 minute after the last poll** (timed by the operator). No off message is sent; it looks
+  like a communication-loss timeout. So a polling gap shorter than a minute (an ESP32 reboot, a WiFi drop) does not turn the unit off, but an OTA
+  update plus reboot can come close. A master must still poll continuously.
 
 ## 3. Messages
 
