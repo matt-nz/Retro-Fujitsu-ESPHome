@@ -159,6 +159,35 @@ sequenceDiagram
   cold start with no unit answering, and whether the remote's display can be made to follow Home Assistant's changes by echoing a setting to it. If the
   remote's display cannot follow, the two will show different states after a change from Home Assistant.
 
+### Bridge software plan
+
+**Reused as is:** the cell encoder and message scripts (`Aot30Cells.h`, `Aot30Scheduler.h`) for the unit side, the message parser (`Aot30Passive.h`), the unit-side master
+with its read-back and safety checks (`Aot30Bus`), the climate/HA layer (`Aot30Climate`, one shared `Target`), the `Master Last Command` acknowledgement, and the
+host-test setup with fake time, GPIO and UART.
+
+**New:**
+1. **Hardware-timed transmit (RMT) instead of bit-banging.** The current transmit busy-waits for up to 166 ms on one core, so it cannot send to the unit and
+   answer the remote at the same time. The ESP32's RMT peripheral can send a pre-computed pulse train with microsecond timing and no CPU, on each transceiver
+   independently. The cell time must be a parameter again: 1980.8 µs towards the unit (as the remote), 2055.6 µs towards the remote (as the unit).
+2. **A remote-side slave with a tight deadline.** The remote expects the reply 1.75-6 ms after the end of its poll, so the slave must start sending the cached
+   reply (`7F 18 <run> 48 80`, run flag from the unit's latest real reply) almost immediately after the poll's last byte: a high-priority task woken by the UART,
+   or an edge interrupt. It also echoes the remote's settings and off message as the unit would (about 190 ms later, then again after the `0A` poll).
+3. **A cell-level receiver for the remote's settings** (RMT receive or GPIO edge timestamps), decoding cells 33-35, 37-39, 40-44 and 54 back into a `Target`. This
+   removes the byte-view aliasing, so Home Assistant can mirror what is pressed on the physical remote.
+4. **Arbitration:** one shared `Target`, last writer wins, whether it came from the remote or from Home Assistant. A setting from the remote is stored,
+   then forwarded to the unit with the captured schedule (about 170 ms later than the remote sent it). While a change is being sent to the unit, a new one waits.
+5. **Pure-logic state machine plus replay tests.** Like `Scheduler`, the slave logic can be written without hardware and tested by replaying the real-remote
+   captures (`heat.sr`, `fan-mode.sr`, `eco.sr`) as the remote-side input and checking reply latency, the echoes and the unit-side script.
+
+**Suggested order, each step useful on its own:**
+1. Receive-only tap on transceiver B with the real remote connected: the cell decoder and Home Assistant mirroring the remote. No transmitting, so no risk.
+2. Move the existing master's transmit to RMT and confirm the unit still accepts it (the master controller keeps working).
+3. Remote-side slave on the bench (remote plus ESP plus transceiver B, no unit): does the remote accept synthetic replies and echoes?
+4. Combine both sides and add the arbitration.
+
+**Risks and unknowns:** whether the remote tolerates a slightly later reply than 6 ms, how it reacts to a cold start with a synthetic unit, what happens if a remote
+change and a Home Assistant change arrive together, and whether its display can be made to follow Home Assistant.
+
 ## Open question: room temperature
 
 No room temperature has been seen on the bus. Over about 21 min of passive logging (`idle.log`, 5,205 polls and 5,206 replies, unit off) and several
